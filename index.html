@@ -638,22 +638,19 @@
             </div>
           </section>
 
-          {/* OFFICIAL POSTER & KIT SECTION */}
+          {/* OFFICIAL KIT SECTION */}
           <section id="race-kit" className="py-24 bg-navy-950 text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-5">
-                <img src="./assets/official-poster.jpg" alt="4th Edition Dwarka Half Marathon Official Poster" className="rounded-3xl border-2 border-amber-400/60 shadow-2xl w-full" />
+              <div className="lg:col-span-7">
+                <img src="./assets/race-kit-2027.jpg" alt="Official Race Kit" className="rounded-3xl border border-white/15 w-full h-auto object-cover shadow-2xl" />
               </div>
-              <div className="lg:col-span-7 space-y-6">
-                <img src="./assets/race-kit-2027.jpg" alt="Official Race Kit" className="rounded-3xl border border-white/15 w-full h-64 object-cover" />
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {KIT_HOTSPOTS.map((item) => (
-                    <div key={item.id} className="bg-white/5 border border-white/10 rounded-2xl p-4">
-                      <h4 className="font-display font-extrabold text-sm text-white">{item.title}</h4>
-                      <p className="text-xs text-slate-300 mt-1">{item.desc}</p>
-                    </div>
-                  ))}
-                </div>
+              <div className="lg:col-span-5 space-y-4">
+                {KIT_HOTSPOTS.map((item) => (
+                  <div key={item.id} className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                    <h4 className="font-display font-extrabold text-sm text-white">{item.title}</h4>
+                    <p className="text-xs text-slate-300 mt-1">{item.desc}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </section>

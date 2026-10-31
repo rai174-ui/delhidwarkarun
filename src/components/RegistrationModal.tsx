@@ -3,6 +3,12 @@
 import React, { useState } from "react";
 import { RACE_CATEGORIES, RaceCategory, RunnerResult, START_VENUE } from "../data/raceData";
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 interface RegistrationModalProps {
   initialCategory: RaceCategory;
   onClose: () => void;
@@ -20,6 +26,7 @@ export default function RegistrationModal({
   const [discountApplied, setDiscountApplied] = useState(true); // 50% OFF till 30-Nov-2026 auto-applied
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "netbanking">("upi");
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
   const [confirmedBib, setConfirmedBib] = useState<{
     bib: string;
     txnId: string;
@@ -104,45 +111,145 @@ export default function RegistrationModal({
   const discountAmount = discountApplied ? Math.round(originalFee * 0.5) : 0;
   const totalPayable = originalFee - discountAmount;
 
-  const handleSimulatedPayment = () => {
+  const finalizeRegistration = (paymentId: string) => {
+    const prefix =
+      category.id === "half"
+        ? "21"
+        : category.id === "10.5k"
+        ? "10"
+        : category.id === "5k"
+        ? "50"
+        : "30";
+    const generatedBib = prefix + Math.floor(100 + Math.random() * 899);
+
+    const confirmedObj = {
+      bib: generatedBib,
+      txnId: paymentId,
+      name: formData.fullName,
+      category: category.name,
+      distance: category.distance,
+      startTime: category.startTime,
+      gender: formData.gender,
+      tshirtSize: formData.tshirtSize,
+      amountPaid: totalPayable,
+    };
+
+    setConfirmedBib(confirmedObj);
+    setIsProcessingPayment(false);
+    setStep(3);
+    onSuccessRegister({
+      bib: generatedBib,
+      name: formData.fullName,
+      category: category.name,
+      gender: formData.gender,
+      netTime: "Registered (14-Feb-2027)",
+      pace: "Lucky Draw Eligible",
+      isNew: true,
+    });
+  };
+
+  const handleRazorpayCheckout = async () => {
     setIsProcessingPayment(true);
-    setTimeout(() => {
-      const prefix =
-        category.id === "half"
-          ? "21"
-          : category.id === "10.5k"
-          ? "10"
-          : category.id === "5k"
-          ? "50"
-          : "30";
-      const generatedBib = prefix + Math.floor(100 + Math.random() * 899);
-      const txnId = "pay_DDR27_" + Math.random().toString(36).substring(2, 9).toUpperCase();
+    setPaymentError(null);
 
-      const confirmedObj = {
-        bib: generatedBib,
-        txnId,
-        name: formData.fullName,
-        category: category.name,
-        distance: category.distance,
-        startTime: category.startTime,
-        gender: formData.gender,
-        tshirtSize: formData.tshirtSize,
-        amountPaid: totalPayable,
-      };
-
-      setConfirmedBib(confirmedObj);
-      setIsProcessingPayment(false);
-      setStep(3);
-      onSuccessRegister({
-        bib: generatedBib,
-        name: formData.fullName,
-        category: category.name,
-        gender: formData.gender,
-        netTime: "Registered (14-Feb-2027)",
-        pace: "Lucky Draw Eligible",
-        isNew: true,
+    try {
+      // 1. Create order on backend API
+      const orderRes = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: totalPayable,
+          categoryId: category.id,
+          categoryName: category.name,
+          runnerName: formData.fullName,
+          email: formData.email,
+          mobile: formData.mobile,
+        }),
       });
-    }, 1000);
+
+      const orderData = await orderRes.json();
+
+      if (!orderRes.ok) {
+        throw new Error(orderData.error || "Could not initiate Razorpay order.");
+      }
+
+      // 2. If Razorpay Key ID is configured on server/env, launch real Razorpay Checkout Modal
+      if (
+        (orderData.mode === "live_order" || orderData.mode === "client_key") &&
+        orderData.keyId &&
+        typeof window !== "undefined" &&
+        window.Razorpay
+      ) {
+        const options: any = {
+          key: orderData.keyId,
+          amount: orderData.amount,
+          currency: orderData.currency || "INR",
+          name: "Delhi Dwarka Run 2027",
+          description: `4th Edition Dwarka Half Marathon — ${category.name}`,
+          order_id: orderData.orderId || undefined,
+          prefill: {
+            name: formData.fullName,
+            email: formData.email,
+            contact: formData.mobile,
+          },
+          notes: {
+            category: category.name,
+            tshirtSize: formData.tshirtSize,
+            eventDate: "14-Feb-2027",
+            startingPoint: START_VENUE,
+          },
+          theme: {
+            color: "#FF5722",
+          },
+          modal: {
+            ondismiss: () => {
+              setIsProcessingPayment(false);
+            },
+          },
+          handler: async function (response: any) {
+            try {
+              const verifyRes = await fetch("/api/razorpay/verify-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(response),
+              });
+              const verifyData = await verifyRes.json();
+              if (!verifyRes.ok || !verifyData.verified) {
+                setPaymentError(
+                  verifyData.error || "Payment verification failed. Please contact support."
+                );
+                setIsProcessingPayment(false);
+                return;
+              }
+              finalizeRegistration(response.razorpay_payment_id);
+            } catch (err: any) {
+              setPaymentError(err?.message || "Error verifying payment.");
+              setIsProcessingPayment(false);
+            }
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", function (response: any) {
+          setPaymentError(
+            response?.error?.description || "Payment failed. Please try again."
+          );
+          setIsProcessingPayment(false);
+        });
+        rzp.open();
+        return;
+      }
+
+      // 3. Fallback simulated checkout when RAZORPAY_KEY_ID is not yet added in Railway Variables
+      setTimeout(() => {
+        const mockTxnId =
+          "pay_DDR27_" + Math.random().toString(36).substring(2, 9).toUpperCase();
+        finalizeRegistration(mockTxnId);
+      }, 900);
+    } catch (err: any) {
+      setPaymentError(err?.message || "Payment initialization failed.");
+      setIsProcessingPayment(false);
+    }
   };
 
   return (
@@ -155,7 +262,9 @@ export default function RegistrationModal({
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-500 text-navy-950 text-[11px] font-display font-black uppercase tracking-wider">
                 50% OFF Till 30-Nov-2026
               </span>
-              <span className="text-xs text-slate-300">Event Date: 14-Feb-2027 • Step {step} of 3</span>
+              <span className="text-xs text-slate-300">
+                Event Date: 14-Feb-2027 • Step {step} of 3
+              </span>
             </div>
             <h3 className="font-display font-extrabold text-lg sm:text-xl mt-1">
               {step === 1 && "Runner Registration & Live Bib Preview"}
@@ -423,9 +532,7 @@ export default function RegistrationModal({
                     <h4 className="font-display font-extrabold text-lg text-navy-900">
                       {category.name}
                     </h4>
-                    <p className="text-xs text-slate-500">
-                      Starting Point: {START_VENUE}
-                    </p>
+                    <p className="text-xs text-slate-500">Starting Point: {START_VENUE}</p>
                   </div>
                   <button
                     onClick={() => setStep(1)}
@@ -493,11 +600,36 @@ export default function RegistrationModal({
                 </div>
               </div>
 
+              {paymentError && (
+                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 font-semibold">
+                  ⚠️ {paymentError}
+                </div>
+              )}
+
               <div className="border-2 border-indigo-600/20 bg-indigo-50/40 rounded-2xl p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white font-display font-black text-xs flex items-center justify-center">
+                      R
+                    </div>
+                    <div>
+                      <div className="font-display font-bold text-sm text-navy-900">
+                        Razorpay Payment Gateway
+                      </div>
+                      <div className="text-[11px] text-slate-500">
+                        Supports UPI, GPay, PhonePe, Cards &amp; NetBanking
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-indigo-700 bg-indigo-100 px-2.5 py-1 rounded">
+                    128-BIT SSL
+                  </span>
+                </div>
+
                 <div className="grid grid-cols-3 gap-2.5 text-xs font-semibold">
                   {(
                     [
-                      { id: "upi", label: "⚡ UPI / GPay" },
+                      { id: "upi", label: "⚡ UPI / QR" },
                       { id: "card", label: "💳 Card" },
                       { id: "netbanking", label: "🏦 NetBanking" },
                     ] as const
@@ -520,12 +652,12 @@ export default function RegistrationModal({
                 <button
                   type="button"
                   disabled={isProcessingPayment}
-                  onClick={handleSimulatedPayment}
+                  onClick={handleRazorpayCheckout}
                   className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-display font-extrabold text-base py-4 rounded-xl shadow-lg transition-all"
                 >
                   {isProcessingPayment
-                    ? "Verifying Payment & Assigning Bib..."
-                    : `Pay ₹${totalPayable} & Confirm Registration`}
+                    ? "Opening Razorpay Gateway..."
+                    : `Pay ₹${totalPayable} via Razorpay`}
                 </button>
               </div>
             </div>
@@ -548,7 +680,7 @@ export default function RegistrationModal({
               <div className="bg-gradient-to-br from-navy-900 via-navy-800 to-navy-950 text-white rounded-3xl p-6 max-w-md mx-auto border-2 border-coral-500 shadow-2xl text-left">
                 <div className="flex items-center justify-between border-b border-white/15 pb-3">
                   <div className="font-display font-black text-xs tracking-wider text-coral-400">
-                    4TH DWARKA HALF MARATHON • 14 FEB 2027
+                    4TH DWARKA HALF MARATHON • 14-FEB-2027
                   </div>
                   <span className="px-2.5 py-1 rounded bg-white text-navy-900 font-display font-black text-xs">
                     {confirmedBib.distance}

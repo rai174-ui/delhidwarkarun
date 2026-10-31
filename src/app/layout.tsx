@@ -2,9 +2,9 @@ import React from "react";
 import "./globals.css";
 
 export const metadata = {
-  title: "Delhi Dwarka Run 2027 | Premier Marathon & Registration Portal",
+  title: "4th Edition Dwarka Half Marathon | Delhi Dwarka Run 2027",
   description:
-    "Conquer the Asphalt at Delhi Dwarka Run 2027. Register for Full Marathon (42.2K), Half Marathon (21.1K), 10K Challenge, or 5K Fun Run in Dwarka, New Delhi.",
+    "4th Edition of Dwarka Half Marathon (Delhi Dwarka Run 2027) on 14-Feb-2027. Starting Point: Max Hospital, Sector 10, Dwarka, New Delhi. Register for 21.097 KM, 10.5 KM, 5 KM, or 3 KM with 50% Discount till 30-Nov-2026!",
 };
 
 export default function RootLayout({
@@ -21,6 +21,8 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Teko:wght@600;700&display=swap"
           rel="stylesheet"
         />
+        {/* Official Razorpay Standard Checkout SDK */}
+        <script src="https://checkout.razorpay.com/v1/checkout.js" async />
       </head>
       <body className="bg-slate-50 text-charcoal selection:bg-coral-500 selection:text-white">
         {children}

@@ -800,15 +800,15 @@ export default function DelhiDwarkaRunPage() {
         </div>
       </section>
 
-      {/* OFFICIAL POSTER & 2027 RACE KIT SHOWCASE */}
+      {/* OFFICIAL 2027 RACE KIT & MEDAL STUDIO SHOWCASE */}
       <section id="race-kit" className="py-24 bg-navy-950 text-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="inline-block px-3.5 py-1 rounded-full bg-coral-500/20 text-coral-400 font-display font-black text-xs uppercase tracking-widest mb-3">
-              🏅 4th Edition Official Poster &amp; Runner Gear
+              🏅 4th Edition Official Runner Gear
             </span>
             <h2 className="font-display font-black italic text-3xl sm:text-5xl uppercase tracking-tight">
-              Official Event Poster &amp; Finisher Kit
+              Crafted for Champions: Your Finisher Kit
             </h2>
             <p className="text-slate-300 mt-3 text-sm sm:text-base">
               Organized by <strong>Delhi Dwarka Runners (DDR)</strong> with Health Partner{" "}
@@ -818,33 +818,22 @@ export default function DelhiDwarkaRunPage() {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-8 items-center">
-            {/* Official Poster Card */}
-            <div className="lg:col-span-5">
-              <div className="rounded-3xl overflow-hidden border-2 border-amber-400/60 shadow-2xl bg-navy-900">
-                <img
-                  src="/assets/official-poster.jpg"
-                  alt="4th Edition of Dwarka Half Marathon Official Poster"
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-            </div>
-
-            {/* Race Kit Photo + Gear Specs */}
-            <div className="lg:col-span-7 space-y-6">
+          <div className="grid lg:grid-cols-12 gap-10 items-center">
+            {/* Left 7 Cols: Race Kit Studio Photo */}
+            <div className="lg:col-span-7">
               <div className="relative rounded-3xl overflow-hidden border-2 border-white/15 shadow-2xl group">
                 <img
                   src="/assets/race-kit-2027.jpg"
                   alt="Delhi Dwarka Run 2027 Official Finisher Medal, Dry-Fit Jersey and Bib"
-                  className="w-full h-64 sm:h-72 object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-5 right-5 flex flex-wrap items-center justify-between gap-3">
+                <div className="absolute bottom-5 left-5 right-5 flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <span className="px-2.5 py-1 rounded bg-coral-500 text-white font-display font-black text-[10px] uppercase tracking-wider">
                       Included With Every Entry
                     </span>
-                    <h3 className="font-display font-black text-lg text-white mt-1">
+                    <h3 className="font-display font-black text-lg sm:text-xl text-white mt-1">
                       DDR Dry-Fit Tee + 3D Medal + RFID Bib + Lucky Draw
                     </h3>
                   </div>
@@ -856,31 +845,41 @@ export default function DelhiDwarkaRunPage() {
                   </button>
                 </div>
               </div>
+            </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                {KIT_HOTSPOTS.map((item) => {
-                  const isActive = activeHotspot.id === item.id;
-                  return (
-                    <div
-                      key={item.id}
-                      onClick={() => setActiveHotspot(item)}
-                      className={`cursor-pointer rounded-2xl p-4 transition-all border ${
-                        isActive
-                          ? "bg-gradient-to-r from-navy-800 to-navy-900 border-coral-500 shadow-glow"
-                          : "bg-white/5 border-white/10 hover:bg-white/10"
-                      }`}
-                    >
-                      <h4 className="font-display font-extrabold text-sm text-white">
+            {/* Right 5 Cols: Gear Breakdown */}
+            <div className="lg:col-span-5 space-y-4">
+              {KIT_HOTSPOTS.map((item) => {
+                const isActive = activeHotspot.id === item.id;
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => setActiveHotspot(item)}
+                    className={`cursor-pointer rounded-2xl p-5 transition-all border ${
+                      isActive
+                        ? "bg-gradient-to-r from-navy-800 to-navy-900 border-coral-500 shadow-glow"
+                        : "bg-white/5 border-white/10 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-display font-extrabold text-base text-white">
                         {item.title}
                       </h4>
-                      <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">{item.desc}</p>
-                      <div className="mt-2.5 inline-block px-2 py-0.5 rounded bg-black/30 text-[10px] font-mono text-volt">
-                        {item.spec}
-                      </div>
+                      <span
+                        className={`w-2.5 h-2.5 rounded-full ${
+                          isActive ? "bg-coral-500" : "bg-white/30"
+                        }`}
+                      />
                     </div>
-                  );
-                })}
-              </div>
+                    <p className="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
+                      {item.desc}
+                    </p>
+                    <div className="mt-2.5 inline-block px-2.5 py-1 rounded bg-black/30 text-[11px] font-mono text-volt">
+                      {item.spec}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
