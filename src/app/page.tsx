@@ -165,7 +165,7 @@ export default function DelhiDwarkaRunPage() {
                 </span>
                 50% DISCOUNT VALID TILL 30-NOV-2026 (CODE: DDR50)
               </span>
-              <span>📅 EVENT DATE: 14th FEB 2027</span>
+              <span>📅 EVENT DATE: 14-Feb-2027</span>
               <span>📍 STARTING POINT: MAX HOSPITAL, SECTOR 10, DWARKA, NEW DELHI</span>
               <span>🏃‍♂️ 21.097 KM @ ₹1100 • 10.5 KM @ ₹1000 • 5 KM @ ₹900 • 3 KM @ ₹800</span>
               <span>🎁 LUCKY DRAW: WIN EXCITING PRIZES &amp; MANY MORE!</span>
@@ -316,7 +316,7 @@ export default function DelhiDwarkaRunPage() {
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-coral-500/20 border border-coral-500/40 backdrop-blur-md">
                   <span className="w-2 h-2 rounded-full bg-volt animate-ping" />
                   <span className="text-xs font-display font-extrabold uppercase tracking-wider text-volt">
-                    EVENT DATE: 14th FEB 2027
+                    EVENT DATE: 14-Feb-2027
                   </span>
                 </div>
 
@@ -383,12 +383,12 @@ export default function DelhiDwarkaRunPage() {
                 </div>
               </div>
 
-              {/* Radial-Style Countdown Cards to 14th Feb 2027 */}
+              {/* Radial-Style Countdown Cards to 14-Feb-2027 */}
               <div className="pt-1">
                 <div className="flex items-center justify-between max-w-lg mb-2.5">
                   <span className="text-[11px] font-display font-bold uppercase tracking-widest text-slate-300 flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-coral-500" />
-                    Countdown to Flag-Off (14th Feb 2027 • 05:30 AM)
+                    Countdown to Flag-Off (14-Feb-2027 • 05:30 AM)
                   </span>
                 </div>
 
@@ -463,7 +463,7 @@ export default function DelhiDwarkaRunPage() {
                     </h2>
                   </div>
                   <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-bold">
-                    14th Feb 2027
+                    14-Feb-2027
                   </span>
                 </div>
 
@@ -536,7 +536,7 @@ export default function DelhiDwarkaRunPage() {
               { tag: "ORGANIZER", title: "DDR (4th Edition)", sub: "Delhi Dwarka Runners" },
               { tag: "HEALTH PARTNER", title: "MAX Healthcare", sub: "Max Hospital Sec-10" },
               { tag: "STARTING POINT", title: "Max Hospital, Sec-10", sub: "Dwarka, New Delhi" },
-              { tag: "EVENT DATE", title: "14th Feb 2027", sub: "Sunday Morning Flag-Off" },
+              { tag: "EVENT DATE", title: "14-Feb-2027", sub: "Sunday Morning Flag-Off" },
               { tag: "EARLY BIRD OFFER", title: "Flat 50% Discount", sub: "Valid till 30-Nov-2026" },
               { tag: "SPECIAL ATTRACTION", title: "Lucky Draw Prizes", sub: "For All Participants" },
             ].map((item, idx) => (
@@ -566,7 +566,7 @@ export default function DelhiDwarkaRunPage() {
                 <span>🔥 Flat 50% Discount Applicable Till 30-Nov-2026</span>
               </div>
               <h2 className="font-display font-black italic text-3xl sm:text-5xl text-navy-950 uppercase tracking-tight">
-                4 Race Categories — 14th Feb 2027
+                4 Race Categories — 14-Feb-2027
               </h2>
             </div>
             <p className="text-slate-600 max-w-md text-sm sm:text-base">
@@ -814,7 +814,7 @@ export default function DelhiDwarkaRunPage() {
               Organized by <strong>Delhi Dwarka Runners (DDR)</strong> with Health Partner{" "}
               <strong>Max Healthcare</strong>. Starting from{" "}
               <strong>Max Hospital, Sector 10, Dwarka, New Delhi</strong> on{" "}
-              <strong>14th Feb 2027</strong>.
+              <strong>14-Feb-2027</strong>.
             </p>
           </div>
 

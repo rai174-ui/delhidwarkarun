@@ -138,7 +138,7 @@ export default function RegistrationModal({
         name: formData.fullName,
         category: category.name,
         gender: formData.gender,
-        netTime: "Registered (14 Feb 2027)",
+        netTime: "Registered (14-Feb-2027)",
         pace: "Lucky Draw Eligible",
         isNew: true,
       });
@@ -155,7 +155,7 @@ export default function RegistrationModal({
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-500 text-navy-950 text-[11px] font-display font-black uppercase tracking-wider">
                 50% OFF Till 30-Nov-2026
               </span>
-              <span className="text-xs text-slate-300">Step {step} of 3</span>
+              <span className="text-xs text-slate-300">Event Date: 14-Feb-2027 • Step {step} of 3</span>
             </div>
             <h3 className="font-display font-extrabold text-lg sm:text-xl mt-1">
               {step === 1 && "Runner Registration & Live Bib Preview"}
@@ -217,7 +217,7 @@ export default function RegistrationModal({
               <div className="bg-gradient-to-r from-navy-950 via-navy-900 to-navy-800 rounded-2xl p-4 text-white flex items-center justify-between border border-coral-500/40">
                 <div>
                   <div className="text-[10px] font-display font-bold uppercase text-volt">
-                    DDR 4th Edition • 14th Feb 2027 • {START_VENUE}
+                    DDR 4th Edition • 14-Feb-2027 • {START_VENUE}
                   </div>
                   <div className="font-display font-black text-lg uppercase tracking-wide text-white mt-0.5">
                     {formData.fullName ? formData.fullName : "YOUR NAME ON BIB"}
@@ -384,7 +384,7 @@ export default function RegistrationModal({
                     <strong>Medical &amp; Fitness Declaration:</strong> I declare that I am
                     physically fit and trained to participate in the{" "}
                     <strong>{category.name}</strong> starting at{" "}
-                    <strong>Max Hospital, Sector 10, Dwarka, New Delhi</strong> on 14th Feb 2027.
+                    <strong>Max Hospital, Sector 10, Dwarka, New Delhi</strong> on 14-Feb-2027.
                   </span>
                 </label>
                 {errors.medicalDeclaration && (
@@ -418,7 +418,7 @@ export default function RegistrationModal({
                 <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                   <div>
                     <span className="text-xs font-bold uppercase text-coral-600">
-                      Selected Category • 14th Feb 2027
+                      Selected Category • 14-Feb-2027
                     </span>
                     <h4 className="font-display font-extrabold text-lg text-navy-900">
                       {category.name}
