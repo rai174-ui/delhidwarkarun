@@ -6,6 +6,7 @@ import {
   RACE_DATE_ISO,
   ROUTE_DATA,
   INITIAL_RESULTS,
+  START_VENUE,
   RaceCategory,
   RunnerResult,
 } from "../data/raceData";
@@ -14,55 +15,55 @@ import RegistrationModal from "../components/RegistrationModal";
 const KIT_HOTSPOTS = [
   {
     id: "jersey",
-    title: "130 GSM AeroMesh Pro Race Jersey",
-    desc: "Laser-perforated sweat-wicking fabric in signature Deep Navy with Neon Coral speed stripes and reflective 3M back print.",
+    title: "130 GSM AeroMesh DDR Race Jersey",
+    desc: "Laser-perforated sweat-wicking fabric in signature Deep Navy with Neon Coral speed stripes and official Delhi Dwarka Runners branding.",
     spec: "UV-40+ Protection • Anti-Chafe Flatlock Seams",
   },
   {
     id: "medal",
-    title: "3D Zinc-Alloy Finisher Medal (85mm)",
-    desc: "Heavyweight antique gold & navy enamel medallion with embossed Delhi/Dwarka architecture and satin coral lanyard.",
-    spec: "Weight: 145g • Free Laser Time Engraving at Expo",
+    title: "3D Zinc-Alloy Finisher Medal (4th Edition)",
+    desc: "Heavyweight antique gold & navy enamel medallion for all finishers across 21.097 KM, 10.5 KM, 5 KM, and 3 KM categories.",
+    spec: "All Finishers • Free Time Engraving at Finish Tent",
   },
   {
     id: "bib",
-    title: "Mylaps Dual-Chip Waterproof Tyvek Bib",
-    desc: "Tear-proof, sweat-resistant race bib pre-fitted with disposable Mylaps BibTag RFID foam transponders for instant net-time splits.",
-    spec: "Corral Wave A/B/C/D Color-Coded",
+    title: "Official RFID Timing Bib & Lucky Draw Coupon",
+    desc: "Tear-proof, sweat-resistant race bib with RFID timing transponder and tear-off stub for the Race Day Lucky Draw.",
+    spec: "🎉 Win Exciting Prizes in the Official Lucky Draw!",
   },
   {
     id: "hydration",
-    title: "Post-Run Hot Breakfast & Finisher Sipper",
-    desc: "Every finisher receives a hot breakfast box, electrolyte recovery drink, banana, protein bar, and finisher refreshment kit.",
-    spec: "Served Hot from 05:45 AM at Finish Festival",
+    title: "Max Healthcare Support & Post-Run Breakfast",
+    desc: "Full medical coverage by Health Partner Max Hospital Sector 10, hydration stations along the route, and hot post-run breakfast.",
+    spec: "Starting Point: Max Hospital, Sector 10, Dwarka",
   },
 ];
 
 const RACE_DAY_SCHEDULE = [
-  { time: "03:45 AM", event: "Assembly, Baggage Counter & Warm-Up Arena Opens", tag: "Arena Gate 1" },
-  { time: "04:30 AM", event: "42.2 KM Full Marathon Flag-Off", tag: "Wave A & B" },
-  { time: "05:30 AM", event: "21.1 KM Half Marathon Flag-Off", tag: "Wave A, B & C" },
-  { time: "06:15 AM", event: "10 KM Challenge Flag-Off", tag: "Timed Corrals" },
-  { time: "06:45 AM", event: "5 KM Fun Run / Walk Flag-Off", tag: "Open / Family" },
-  { time: "07:30 AM", event: "Podium Prize Ceremony, Live Dhol & Zumba Festival", tag: "Main Stage" },
+  { time: "04:45 AM", event: "Assembly, Baggage Counter & Warm-Up at Max Hospital Sec-10", tag: "Start Arena" },
+  { time: "05:30 AM", event: "21.097 KM Half Marathon Flag-Off", tag: "Flagship Run" },
+  { time: "06:00 AM", event: "10.5 KM Challenge Flag-Off", tag: "Timed Run" },
+  { time: "06:30 AM", event: "5 KM Run Flag-Off", tag: "Fitness Run" },
+  { time: "06:45 AM", event: "3 KM Fun Run / Walk Flag-Off", tag: "Family & Kids" },
+  { time: "07:30 AM", event: "Podium Ceremony, Lucky Draw & Live Dhol Festival", tag: "Main Stage" },
 ];
 
 const FAQS = [
   {
+    q: "What is the Starting & Finishing Point for the race?",
+    a: "The race starts and finishes at Max Hospital, Sector 10, Dwarka, New Delhi. Ample parking, baggage counters, and medical stations are located right at the starting arena.",
+  },
+  {
+    q: "How does the 50% Discount till 30-Nov-2026 work?",
+    a: "All 4 categories currently have a flat 50% early-bird discount automatically applied till 30th November 2026 (Code: DDR50): Half Marathon (21.097 KM) is ₹1,100 (Reg. ₹2,200), 10.5 KM is ₹1,000 (Reg. ₹2,000), 5 KM is ₹900 (Reg. ₹1,800), and 3 KM is ₹800 (Reg. ₹1,600).",
+  },
+  {
+    q: "How do I participate in the Lucky Draw?",
+    a: "Every registered runner across 21.097 KM, 10.5 KM, 5 KM, and 3 KM is automatically entered into the Race Day Lucky Draw by Bib Number to win exciting prizes and hampers!",
+  },
+  {
     q: "Where and when is the Bib & Race Kit Expo?",
-    a: "The Bib & Goodie Bag Distribution Expo takes place on Friday, Feb 19 & Saturday, Feb 20, 2027 (10:00 AM to 07:00 PM) at DDA Sports Complex Indoor Hall, Sector 10, Dwarka. Outstation runners can opt for verified representative pickup.",
-  },
-  {
-    q: "Is the Delhi Dwarka Run 2027 timing certificate valid for other marathons?",
-    a: "Yes! All 10K, Half Marathon (21.1K), and Full Marathon (42.2K) finishers receive an official Mylaps RFID-timed certificate accepted as a qualifier for Tata Mumbai Marathon, Vedanta Delhi Half Marathon, and Comrades.",
-  },
-  {
-    q: "Are there baggage counters, parking, and metro access at the venue?",
-    a: "Yes. Free secure baggage counters and parking for 2,500+ vehicles are available at Sector 10 Ground. Dwarka Sector 10 Metro Station (Blue Line) is just 300 meters from the Start/Finish gantry.",
-  },
-  {
-    q: "Can I change my race category or transfer my bib after registering?",
-    a: "Category upgrades/downgrades are permitted through your runner dashboard until January 31, 2027. Use code DWARKA2027 during checkout for a 10% early-bird discount.",
+    a: "The Bib & T-Shirt Distribution Expo will be held on Friday, 12th Feb & Saturday, 13th Feb 2027 (10:00 AM to 06:00 PM) in Sector 10, Dwarka, New Delhi.",
   },
 ];
 
@@ -70,7 +71,7 @@ export default function DelhiDwarkaRunPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [heroBgVideo, setHeroBgVideo] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<RaceCategory>(
-    RACE_CATEGORIES[1]
+    RACE_CATEGORIES[0] // Default 21.097 KM Half Marathon
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeRouteTab, setActiveRouteTab] = useState<RaceCategory["id"]>("half");
@@ -83,7 +84,7 @@ export default function DelhiDwarkaRunPage() {
   const [contactSubmitted, setContactSubmitted] = useState(false);
 
   // Target Pace Calculator state
-  const [calcDist, setCalcDist] = useState(21.0975);
+  const [calcDist, setCalcDist] = useState(21.097);
   const [calcHours, setCalcHours] = useState(1);
   const [calcMins, setCalcMins] = useState(55);
 
@@ -159,16 +160,15 @@ export default function DelhiDwarkaRunPage() {
           {[1, 2].map((loop) => (
             <React.Fragment key={loop}>
               <span className="flex items-center gap-2">
-                <span className="px-2 py-0.5 bg-navy-950 text-volt rounded text-[10px]">LIVE</span>
-                DELHI DWARKA RUN 2027 • SUNDAY, FEB 21, 2027
+                <span className="px-2 py-0.5 bg-navy-950 text-volt rounded text-[10px]">
+                  50% OFF
+                </span>
+                50% DISCOUNT VALID TILL 30-NOV-2026 (CODE: DDR50)
               </span>
-              <span>⚡ AIMS CERTIFIED FAST ASPHALT COURSE</span>
-              <span>🏆 ₹10,00,000+ TOTAL PRIZE POOL</span>
-              <span>
-                🎟️ EARLY BIRD CODE: <u className="text-navy-950 font-black">DWARKA2027</u> (10% OFF)
-              </span>
-              <span>⏱️ MYLAPS BIBTAG RFID CHIP TIMING</span>
-              <span>📍 DDA SPORTS COMPLEX, SECTOR 10, DWARKA</span>
+              <span>📅 EVENT DATE: 14th FEB 2027</span>
+              <span>📍 STARTING POINT: MAX HOSPITAL, SECTOR 10, DWARKA, NEW DELHI</span>
+              <span>🏃‍♂️ 21.097 KM @ ₹1100 • 10.5 KM @ ₹1000 • 5 KM @ ₹900 • 3 KM @ ₹800</span>
+              <span>🎁 LUCKY DRAW: WIN EXCITING PRIZES &amp; MANY MORE!</span>
             </React.Fragment>
           ))}
         </div>
@@ -183,7 +183,7 @@ export default function DelhiDwarkaRunPage() {
                 DDR
               </span>
               <span className="absolute -bottom-1 -right-1 bg-volt text-navy-950 text-[9px] font-display font-black px-1.5 py-0.2 rounded">
-                27
+                4th
               </span>
             </div>
             <div>
@@ -192,11 +192,11 @@ export default function DelhiDwarkaRunPage() {
                   DELHI DWARKA
                 </span>
                 <span className="font-display font-black italic text-lg sm:text-xl tracking-tight text-coral-500">
-                  RUN
+                  RUN 2027
                 </span>
               </div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                Official Marathon Series • New Delhi
+              <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
+                4th Edition Dwarka Half Marathon • Health Partner: Max Healthcare
               </div>
             </div>
           </a>
@@ -206,10 +206,10 @@ export default function DelhiDwarkaRunPage() {
               Home
             </a>
             <a href="#categories" className="hover:text-coral-400 transition-colors">
-              Categories
+              Categories (50% Off)
             </a>
             <a href="#race-kit" className="hover:text-coral-400 transition-colors">
-              Race Kit &amp; Medal
+              Race Kit &amp; Poster
             </a>
             <a href="#route-map" className="hover:text-coral-400 transition-colors">
               Route Map
@@ -230,7 +230,7 @@ export default function DelhiDwarkaRunPage() {
               onClick={() => handleOpenRegister()}
               className="bg-gradient-to-r from-coral-500 to-orange-600 text-white font-display font-black uppercase tracking-wider text-xs px-6 py-3.5 rounded-xl shadow-glow hover:shadow-glow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
             >
-              <span>Register Now</span>
+              <span>Register @ 50% Off</span>
               <span>→</span>
             </button>
           </div>
@@ -254,7 +254,7 @@ export default function DelhiDwarkaRunPage() {
                 Categories
               </a>
               <a href="#race-kit" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-lg bg-white/5">
-                Medal &amp; Kit
+                Poster &amp; Kit
               </a>
               <a href="#route-map" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-lg bg-white/5">
                 Route Map
@@ -273,13 +273,13 @@ export default function DelhiDwarkaRunPage() {
               }}
               className="w-full bg-coral-500 text-white font-display font-black uppercase py-3.5 rounded-xl shadow-glow"
             >
-              Register Your Spot
+              Register Now (50% OFF)
             </button>
           </div>
         )}
       </header>
 
-      {/* HERO SECTION — CINEMATIC STADIUM & SUNRISE RUNNERS */}
+      {/* HERO SECTION — INSPIRED BY OFFICIAL POSTER */}
       <section id="home" className="relative bg-navy-950 text-white overflow-hidden min-h-[88vh] flex items-center">
         <div className="absolute inset-0 z-0">
           {heroBgVideo ? (
@@ -295,15 +295,15 @@ export default function DelhiDwarkaRunPage() {
           ) : (
             <img
               src="/assets/hero-runners.jpg"
-              alt="Delhi Dwarka Run 2027 Sunrise Marathon Runners"
+              alt="Delhi Dwarka Run 2027 — 4th Edition Dwarka Half Marathon"
               className="w-full h-full object-cover object-center opacity-50 scale-105 transition-transform duration-1000"
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/45" />
           <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-navy-950/60" />
           <div className="absolute -bottom-8 left-4 select-none pointer-events-none hidden lg:block">
-            <span className="font-display font-black italic text-[140px] leading-none text-outline uppercase tracking-tighter">
-              DWARKA 42.2K
+            <span className="font-display font-black italic text-[130px] leading-none text-outline uppercase tracking-tighter">
+              21.097 KM • DDR 4TH
             </span>
           </div>
         </div>
@@ -311,12 +311,17 @@ export default function DelhiDwarkaRunPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20 w-full">
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             <div className="lg:col-span-7 space-y-6">
+              {/* Top Partner & Event Date Pills */}
               <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-coral-500/20 border border-coral-500/40 backdrop-blur-md">
                   <span className="w-2 h-2 rounded-full bg-volt animate-ping" />
-                  <span className="text-xs font-display font-extrabold uppercase tracking-wider text-coral-300">
-                    7th Edition • Sunday, Feb 21, 2027
+                  <span className="text-xs font-display font-extrabold uppercase tracking-wider text-volt">
+                    EVENT DATE: 14th FEB 2027
                   </span>
+                </div>
+
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/20 border border-sky-400/40 backdrop-blur-md text-xs font-display font-bold text-sky-200">
+                  🏥 Health Partner: MAX Healthcare
                 </div>
 
                 <button
@@ -327,40 +332,69 @@ export default function DelhiDwarkaRunPage() {
                 </button>
               </div>
 
-              <div className="space-y-2">
-                <div className="text-xs sm:text-sm font-display font-black uppercase tracking-[0.25em] text-volt">
-                  DDA SPORTS COMPLEX, SECTOR 10 • NEW DELHI
+              <div className="space-y-2.5">
+                <div className="text-xs sm:text-sm font-display font-black uppercase tracking-[0.2em] text-volt">
+                  📍 STARTING POINT: MAX HOSPITAL, SECTOR 10, DWARKA, NEW DELHI
                 </div>
-                <h1 className="font-display font-black italic text-4xl sm:text-6xl lg:text-[64px] leading-[1.02] tracking-tight uppercase">
-                  Conquer the Asphalt:{" "}
+                <h1 className="font-display font-black italic text-4xl sm:text-5xl lg:text-[58px] leading-[1.04] tracking-tight uppercase">
+                  4th Edition of Dwarka Half Marathon:{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral-400 via-orange-500 to-amber-300 block sm:inline">
                     Delhi Dwarka Run 2027
                   </span>
                 </h1>
               </div>
 
-              <p className="text-base sm:text-lg text-slate-200 max-w-2xl leading-relaxed">
-                Experience New Delhi&apos;s fastest, flattest championship course. Run alongside{" "}
-                <strong className="text-white font-bold">12,000+ athletes</strong> on traffic-free
-                6-lane boulevards with Mylaps RFID timing, official Pacer Squads, and a roaring
-                stadium finish.
-              </p>
+              {/* Gold Poster Banner Quote */}
+              <div className="inline-block bg-navy-900/90 border-2 border-amber-400/80 rounded-2xl px-5 py-3 shadow-lg">
+                <p className="font-display font-extrabold text-xs sm:text-sm uppercase tracking-wider text-amber-300">
+                  ★ Be a Part of the Biggest Running Event of Dwarka. Create Lifetime Memories. ★
+                </p>
+              </div>
 
-              {/* Radial-Style Countdown Cards */}
+              {/* Poster Dual Promo Badges: 50% Discount + Lucky Draw */}
+              <div className="grid sm:grid-cols-2 gap-4 max-w-xl">
+                <div className="bg-gradient-to-br from-blue-900/90 to-navy-900 border-2 border-volt rounded-2xl p-4 flex items-center gap-3.5 shadow-xl">
+                  <div className="w-14 h-14 rounded-2xl bg-volt text-navy-950 font-athletic font-bold text-3xl flex flex-col items-center justify-center leading-none shrink-0">
+                    <span>50%</span>
+                    <span className="text-[10px] font-display font-black">OFF</span>
+                  </div>
+                  <div>
+                    <div className="font-display font-black text-sm uppercase text-volt">
+                      50% Discount Till 30-Nov-2026!
+                    </div>
+                    <div className="text-xs text-slate-200 mt-0.5">
+                      Auto-applied at checkout • Code: <strong className="text-white">DDR50</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-emerald-900/90 to-teal-950 border-2 border-amber-400 rounded-2xl p-4 flex items-center gap-3.5 shadow-xl">
+                  <div className="w-14 h-14 rounded-2xl bg-amber-400 text-navy-950 text-2xl flex items-center justify-center shrink-0">
+                    🎁
+                  </div>
+                  <div>
+                    <div className="font-display font-black text-sm uppercase text-amber-300">
+                      🎉 Lucky Draw Included!
+                    </div>
+                    <div className="text-xs text-slate-200 mt-0.5">
+                      Win Exciting Prizes &amp; Many More on Race Day!
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Radial-Style Countdown Cards to 14th Feb 2027 */}
               <div className="pt-1">
                 <div className="flex items-center justify-between max-w-lg mb-2.5">
                   <span className="text-[11px] font-display font-bold uppercase tracking-widest text-slate-300 flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-coral-500" />
-                    Race Flag-Off Countdown
-                  </span>
-                  <span className="text-[11px] font-mono text-volt font-bold">
-                    04:30 AM IST • 21.02.2027
+                    Countdown to Flag-Off (14th Feb 2027 • 05:30 AM)
                   </span>
                 </div>
 
                 <div className="grid grid-cols-4 gap-3 sm:gap-4 max-w-lg">
                   {[
-                    { label: "DAYS", value: timeLeft.days, max: 365 },
+                    { label: "DAYS", value: timeLeft.days, max: 150 },
                     { label: "HOURS", value: timeLeft.hours, max: 24 },
                     { label: "MINUTES", value: timeLeft.minutes, max: 60 },
                     { label: "SECONDS", value: timeLeft.seconds, max: 60 },
@@ -369,7 +403,7 @@ export default function DelhiDwarkaRunPage() {
                     return (
                       <div
                         key={item.label}
-                        className="relative bg-navy-900/85 border border-white/15 rounded-2xl p-3 sm:p-4 text-center backdrop-blur-xl shadow-2xl overflow-hidden group hover:border-coral-500/60 transition-all"
+                        className="relative bg-navy-900/85 border border-white/15 rounded-2xl p-3 sm:p-4 text-center backdrop-blur-xl shadow-2xl overflow-hidden"
                       >
                         <div className="font-athletic font-bold text-4xl sm:text-5xl text-white leading-none tracking-wide tabular-nums">
                           {String(item.value).padStart(2, "0")}
@@ -390,13 +424,13 @@ export default function DelhiDwarkaRunPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-3 flex flex-wrap items-center gap-4">
+              <div className="pt-2 flex flex-wrap items-center gap-4">
                 <button
                   onClick={() => handleOpenRegister()}
                   className="bg-gradient-to-r from-coral-500 via-orange-500 to-amber-500 hover:from-coral-600 hover:to-orange-600 text-white font-display font-black uppercase tracking-wider text-sm sm:text-base px-8 py-4 rounded-2xl shadow-glow-lg hover:scale-[1.02] transition-all flex items-center gap-3"
                 >
-                  <span>Register Your Spot</span>
-                  <span className="bg-black/25 px-2.5 py-1 rounded-lg text-xs">From ₹799</span>
+                  <span>Register Your Spot (50% OFF)</span>
+                  <span className="bg-black/25 px-2.5 py-1 rounded-lg text-xs">From ₹800</span>
                 </button>
 
                 <button
@@ -408,50 +442,28 @@ export default function DelhiDwarkaRunPage() {
                   </span>
                   <div className="text-left">
                     <div className="text-xs font-extrabold uppercase tracking-wider">
-                      Watch Race Reel
+                      Watch Official Reel
                     </div>
-                    <div className="text-[10px] text-slate-300">Official Dwarka Run Film</div>
+                    <div className="text-[10px] text-slate-300">DDR Half Marathon Video</div>
                   </div>
                 </button>
               </div>
-
-              {/* Social Proof Bar */}
-              <div className="pt-2 flex items-center gap-3 text-xs text-slate-300">
-                <div className="flex -space-x-2">
-                  <span className="w-7 h-7 rounded-full bg-coral-500 border-2 border-navy-950 flex items-center justify-center font-bold text-[10px]">
-                    AS
-                  </span>
-                  <span className="w-7 h-7 rounded-full bg-sky-500 border-2 border-navy-950 flex items-center justify-center font-bold text-[10px]">
-                    MK
-                  </span>
-                  <span className="w-7 h-7 rounded-full bg-emerald-500 border-2 border-navy-950 flex items-center justify-center font-bold text-[10px]">
-                    VR
-                  </span>
-                  <span className="w-7 h-7 rounded-full bg-amber-500 border-2 border-navy-950 flex items-center justify-center font-bold text-[10px]">
-                    +9k
-                  </span>
-                </div>
-                <span>
-                  <strong className="text-volt">9,420+ Runners</strong> already registered for 2027
-                  • Early Bird Phase II closing soon
-                </span>
-              </div>
             </div>
 
-            {/* Right 5 Cols: Interactive Pro Race Selector Card */}
+            {/* Right 5 Cols: Poster-Styled Category Pricing Stack */}
             <div className="lg:col-span-5">
-              <div className="bg-navy-900/85 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden">
+              <div className="bg-navy-900/90 backdrop-blur-2xl border-2 border-white/20 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden">
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <span className="text-[11px] font-display font-black uppercase tracking-widest text-volt">
-                      ⚡ Instant Bib Booking
+                      ⚡ 50% OFF TILL 30-NOV-2026
                     </span>
                     <h2 className="font-display font-black text-xl text-white uppercase tracking-tight">
-                      Select Your Distance
+                      Choose Your Race Category
                     </h2>
                   </div>
                   <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-bold">
-                    ● Registrations Open
+                    14th Feb 2027
                   </span>
                 </div>
 
@@ -462,74 +474,33 @@ export default function DelhiDwarkaRunPage() {
                       <div
                         key={cat.id}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`cursor-pointer rounded-2xl p-3.5 transition-all border ${
+                        className={`cursor-pointer rounded-2xl p-4 transition-all border-2 ${
                           isSelected
-                            ? "bg-white text-navy-950 border-coral-500 shadow-xl scale-[1.01]"
-                            : "bg-navy-950/70 text-white border-white/10 hover:border-white/30"
+                            ? "bg-navy-950 text-white border-volt shadow-xl scale-[1.01]"
+                            : "bg-navy-950/75 text-white border-white/10 hover:border-white/30"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-3.5">
-                            <div
-                              className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.color} text-white flex flex-col items-center justify-center shadow-md shrink-0`}
-                            >
-                              <span className="font-athletic font-bold text-2xl leading-none pt-1">
-                                {cat.distance.split(" ")[0]}
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-athletic font-bold text-3xl sm:text-4xl text-white leading-none">
+                                {cat.distance}
                               </span>
-                              <span className="text-[9px] font-display font-extrabold uppercase tracking-widest">
-                                KM
+                              <span className="px-2 py-0.5 text-[9px] font-display font-black uppercase rounded bg-coral-500 text-white">
+                                50% OFF
                               </span>
                             </div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-display font-extrabold text-sm sm:text-base">
-                                  {cat.name}
-                                </h3>
-                                {cat.popular && (
-                                  <span className="px-2 py-0.5 text-[9px] font-display font-black uppercase rounded bg-coral-500 text-white">
-                                    HOT
-                                  </span>
-                                )}
-                              </div>
-                              <p
-                                className={`text-xs ${
-                                  isSelected ? "text-slate-600" : "text-slate-300"
-                                }`}
-                              >
-                                Flag-off: {cat.startTime} • {cat.prizePool}
-                              </p>
-                              <div className="flex items-center gap-2 mt-1.5">
-                                <div
-                                  className={`w-24 h-1.5 rounded-full overflow-hidden ${
-                                    isSelected ? "bg-slate-200" : "bg-white/15"
-                                  }`}
-                                >
-                                  <div
-                                    className="bg-coral-500 h-full rounded-full"
-                                    style={{ width: `${cat.slotsFilled}%` }}
-                                  />
-                                </div>
-                                <span
-                                  className={`text-[10px] font-bold ${
-                                    isSelected ? "text-coral-600" : "text-coral-400"
-                                  }`}
-                                >
-                                  {cat.slotsFilled}% Booked
-                                </span>
-                              </div>
-                            </div>
+                            <p className="text-xs text-slate-300 mt-0.5">
+                              {cat.name} • Start: {cat.startTime}
+                            </p>
                           </div>
 
                           <div className="text-right shrink-0">
-                            <div className="text-xs line-through opacity-50">
-                              ₹{cat.originalFee}
+                            <div className="text-xs sm:text-sm font-display font-bold text-slate-400 line-through">
+                              RS. {cat.originalFee}
                             </div>
-                            <div
-                              className={`font-display font-black text-xl ${
-                                isSelected ? "text-coral-600" : "text-volt"
-                              }`}
-                            >
-                              ₹{cat.fee}
+                            <div className="font-display font-black text-xl sm:text-2xl text-emerald-400">
+                              RS. {cat.fee}
                             </div>
                           </div>
                         </div>
@@ -543,10 +514,14 @@ export default function DelhiDwarkaRunPage() {
                   className="mt-5 w-full bg-gradient-to-r from-coral-500 to-orange-600 hover:from-coral-600 hover:to-orange-700 text-white font-display font-black uppercase tracking-wider text-sm py-4 rounded-2xl shadow-glow transition-all flex items-center justify-center gap-2"
                 >
                   <span>
-                    Lock {selectedCategory.distance} Spot — ₹{selectedCategory.fee}
+                    Register {selectedCategory.distance} @ RS. {selectedCategory.fee}
                   </span>
                   <span>→</span>
                 </button>
+
+                <p className="text-center text-[11px] text-slate-300 mt-3">
+                  📍 Starting Point: <strong className="text-white">{START_VENUE}</strong>
+                </p>
               </div>
             </div>
           </div>
@@ -558,12 +533,12 @@ export default function DelhiDwarkaRunPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-center text-center">
             {[
-              { tag: "COURSE CERTIFICATION", title: "AIMS / IAAF Grade", sub: "Laser Measured Loop" },
-              { tag: "TIMING PARTNER", title: "Mylaps BibTag RFID", sub: "Net & Gun Time Splits" },
-              { tag: "MEDICAL PARTNER", title: "Max Super Speciality", sub: "6 ACLS Ambulances" },
-              { tag: "HYDRATION PARTNER", title: "Fast&Up Isotonic", sub: "Every 2.0 KM Station" },
-              { tag: "VENUE PARTNER", title: "DDA Sports Complex", sub: "Sector 10, Dwarka" },
-              { tag: "TRANSIT ACCESS", title: "DMRC Blue Line", sub: "300m from Sec-10 Metro" },
+              { tag: "ORGANIZER", title: "DDR (4th Edition)", sub: "Delhi Dwarka Runners" },
+              { tag: "HEALTH PARTNER", title: "MAX Healthcare", sub: "Max Hospital Sec-10" },
+              { tag: "STARTING POINT", title: "Max Hospital, Sec-10", sub: "Dwarka, New Delhi" },
+              { tag: "EVENT DATE", title: "14th Feb 2027", sub: "Sunday Morning Flag-Off" },
+              { tag: "EARLY BIRD OFFER", title: "Flat 50% Discount", sub: "Valid till 30-Nov-2026" },
+              { tag: "SPECIAL ATTRACTION", title: "Lucky Draw Prizes", sub: "For All Participants" },
             ].map((item, idx) => (
               <div
                 key={idx}
@@ -582,21 +557,22 @@ export default function DelhiDwarkaRunPage() {
         </div>
       </section>
 
-      {/* RACE CATEGORIES SECTION WITH VISUAL CARDS & PACE CALCULATOR */}
+      {/* RACE CATEGORIES SECTION WITH 50% DISCOUNT CARDS */}
       <section id="categories" className="py-24 bg-slate-50 asphalt-grid">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-14 gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-coral-500/10 text-coral-600 font-display font-extrabold text-xs uppercase tracking-widest mb-3">
-                <span>🏃‍♂️ 4 Championship Distances</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/15 text-emerald-700 font-display font-extrabold text-xs uppercase tracking-widest mb-3">
+                <span>🔥 Flat 50% Discount Applicable Till 30-Nov-2026</span>
               </div>
               <h2 className="font-display font-black italic text-3xl sm:text-5xl text-navy-950 uppercase tracking-tight">
-                Choose Your Race Category
+                4 Race Categories — 14th Feb 2027
               </h2>
             </div>
             <p className="text-slate-600 max-w-md text-sm sm:text-base">
-              Every category features wave-wise corral starts, official finisher medals,
-              high-visibility AeroMesh jerseys, and post-race hot breakfast.
+              Starting from <strong>Max Hospital, Sector 10, Dwarka, New Delhi</strong>. Every
+              participant receives a Finisher Medal, Race T-Shirt, Bib, Breakfast, and Lucky Draw
+              entry!
             </p>
           </div>
 
@@ -624,8 +600,8 @@ export default function DelhiDwarkaRunPage() {
                       >
                         {cat.badge}
                       </span>
-                      <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-[11px] font-bold">
-                        {cat.minAge}
+                      <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-volt text-[11px] font-bold">
+                        50% OFF
                       </span>
                     </div>
                     <div className="absolute bottom-3 left-5 right-5 flex items-end justify-between text-white">
@@ -643,8 +619,8 @@ export default function DelhiDwarkaRunPage() {
                   <div className="p-6 space-y-5">
                     <div>
                       <div className="flex justify-between text-xs font-bold mb-1">
-                        <span className="text-slate-500">Slot Capacity</span>
-                        <span className="text-coral-600">{cat.slotsFilled}% Filled</span>
+                        <span className="text-slate-500">Early Bird Slots</span>
+                        <span className="text-coral-600">{cat.slotsFilled}% Booked</span>
                       </div>
                       <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                         <div
@@ -672,9 +648,9 @@ export default function DelhiDwarkaRunPage() {
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-400 block text-[11px]">Timing</span>
+                        <span className="text-slate-400 block text-[11px]">Start Venue</span>
                         <span className="font-display font-extrabold text-navy-900">
-                          {cat.timed ? "Mylaps RFID" : "Fun Run"}
+                          Max Hospital Sec-10
                         </span>
                       </div>
                       <div>
@@ -706,20 +682,20 @@ export default function DelhiDwarkaRunPage() {
                 <div className="p-6 pt-3 border-t border-slate-100">
                   <div className="flex items-baseline justify-between mb-4">
                     <div>
-                      <span className="text-[11px] text-slate-400 block font-semibold">
-                        Early Bird Entry
+                      <span className="text-[11px] text-emerald-700 block font-bold">
+                        50% OFF Till 30-Nov-2026
                       </span>
                       <div className="flex items-baseline gap-2">
-                        <span className="font-display font-black text-3xl text-navy-950">
+                        <span className="font-display font-black text-3xl text-emerald-600">
                           ₹{cat.fee}
                         </span>
-                        <span className="text-xs text-slate-400 line-through font-semibold">
+                        <span className="text-sm text-slate-400 line-through font-bold">
                           ₹{cat.originalFee}
                         </span>
                       </div>
                     </div>
-                    <span className="text-[10px] font-display font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-lg">
-                      Save ₹{cat.originalFee - cat.fee}
+                    <span className="text-[10px] font-display font-black uppercase tracking-wider text-white bg-emerald-600 px-2.5 py-1 rounded-lg">
+                      SAVE ₹{cat.originalFee - cat.fee}
                     </span>
                   </div>
 
@@ -731,7 +707,9 @@ export default function DelhiDwarkaRunPage() {
                         : "bg-navy-950 hover:bg-coral-500 text-white"
                     }`}
                   >
-                    <span>Register {cat.distance}</span>
+                    <span>
+                      Register {cat.distance} @ ₹{cat.fee}
+                    </span>
                     <span>→</span>
                   </button>
                 </div>
@@ -747,12 +725,10 @@ export default function DelhiDwarkaRunPage() {
                   ⏱️ Interactive Runner Tool
                 </span>
                 <h3 className="font-display font-black italic text-2xl sm:text-3xl uppercase">
-                  Target Pace &amp; Corral Wave Calculator
+                  Target Pace &amp; Corral Calculator
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  Plan your race strategy on Dwarka&apos;s flat asphalt. Select your distance and
-                  target finish time to calculate your required per-kilometer split and starting
-                  corral wave.
+                  Plan your race strategy across our 21.097 KM, 10.5 KM, 5 KM, or 3 KM distances.
                 </p>
               </div>
 
@@ -766,10 +742,10 @@ export default function DelhiDwarkaRunPage() {
                     onChange={(e) => setCalcDist(Number(e.target.value))}
                     className="w-full bg-navy-950 border border-white/20 rounded-xl px-3 py-3 text-xs sm:text-sm font-bold text-white"
                   >
+                    <option value={21.097}>21.097 KM</option>
+                    <option value={10.5}>10.5 KM</option>
                     <option value={5}>5 KM</option>
-                    <option value={10}>10 KM</option>
-                    <option value={21.0975}>21.1 KM</option>
-                    <option value={42.195}>42.2 KM</option>
+                    <option value={3}>3 KM</option>
                   </select>
                 </div>
                 <div>
@@ -779,7 +755,7 @@ export default function DelhiDwarkaRunPage() {
                   <input
                     type="number"
                     min={0}
-                    max={6}
+                    max={4}
                     value={calcHours}
                     onChange={(e) => setCalcHours(Number(e.target.value))}
                     className="w-full bg-navy-950 border border-white/20 rounded-xl px-3 py-3 text-sm font-bold text-white"
@@ -824,83 +800,87 @@ export default function DelhiDwarkaRunPage() {
         </div>
       </section>
 
-      {/* OFFICIAL 2027 RACE KIT & MEDAL STUDIO SHOWCASE */}
+      {/* OFFICIAL POSTER & 2027 RACE KIT SHOWCASE */}
       <section id="race-kit" className="py-24 bg-navy-950 text-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="inline-block px-3.5 py-1 rounded-full bg-coral-500/20 text-coral-400 font-display font-black text-xs uppercase tracking-widest mb-3">
-              🏅 Official 2027 Runner Gear
+              🏅 4th Edition Official Poster &amp; Runner Gear
             </span>
             <h2 className="font-display font-black italic text-3xl sm:text-5xl uppercase tracking-tight">
-              Crafted for Champions: Your 2027 Race Kit
+              Official Event Poster &amp; Finisher Kit
             </h2>
             <p className="text-slate-300 mt-3 text-sm sm:text-base">
-              Every registered participant receives our pro-grade marathon kit at the Two-Day Bib
-              Expo (Feb 19–20, 2027) and a heavyweight 3D Die-Cast Finisher Medal upon crossing the
-              gantry.
+              Organized by <strong>Delhi Dwarka Runners (DDR)</strong> with Health Partner{" "}
+              <strong>Max Healthcare</strong>. Starting from{" "}
+              <strong>Max Hospital, Sector 10, Dwarka, New Delhi</strong> on{" "}
+              <strong>14th Feb 2027</strong>.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-7">
+          <div className="grid lg:grid-cols-12 gap-8 items-center">
+            {/* Official Poster Card */}
+            <div className="lg:col-span-5">
+              <div className="rounded-3xl overflow-hidden border-2 border-amber-400/60 shadow-2xl bg-navy-900">
+                <img
+                  src="/assets/official-poster.jpg"
+                  alt="4th Edition of Dwarka Half Marathon Official Poster"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Race Kit Photo + Gear Specs */}
+            <div className="lg:col-span-7 space-y-6">
               <div className="relative rounded-3xl overflow-hidden border-2 border-white/15 shadow-2xl group">
                 <img
                   src="/assets/race-kit-2027.jpg"
                   alt="Delhi Dwarka Run 2027 Official Finisher Medal, Dry-Fit Jersey and Bib"
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-64 sm:h-72 object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-transparent to-transparent" />
-                <div className="absolute bottom-5 left-5 right-5 flex flex-wrap items-center justify-between gap-3">
+                <div className="absolute bottom-4 left-5 right-5 flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <span className="px-2.5 py-1 rounded bg-coral-500 text-white font-display font-black text-[10px] uppercase tracking-wider">
-                      2027 Collector&apos;s Edition
+                      Included With Every Entry
                     </span>
-                    <h3 className="font-display font-black text-lg sm:text-xl text-white mt-1">
-                      AeroMesh Singlet + 85mm Gold/Navy Medal + RFID Bib
+                    <h3 className="font-display font-black text-lg text-white mt-1">
+                      DDR Dry-Fit Tee + 3D Medal + RFID Bib + Lucky Draw
                     </h3>
                   </div>
                   <button
                     onClick={() => handleOpenRegister()}
                     className="bg-volt text-navy-950 hover:bg-white font-display font-black text-xs uppercase px-4 py-2.5 rounded-xl transition-colors"
                   >
-                    Claim Your Kit →
+                    Book @ 50% Off →
                   </button>
                 </div>
               </div>
-            </div>
 
-            <div className="lg:col-span-5 space-y-4">
-              {KIT_HOTSPOTS.map((item) => {
-                const isActive = activeHotspot.id === item.id;
-                return (
-                  <div
-                    key={item.id}
-                    onClick={() => setActiveHotspot(item)}
-                    className={`cursor-pointer rounded-2xl p-5 transition-all border ${
-                      isActive
-                        ? "bg-gradient-to-r from-navy-800 to-navy-900 border-coral-500 shadow-glow"
-                        : "bg-white/5 border-white/10 hover:bg-white/10"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-display font-extrabold text-base sm:text-lg text-white">
+              <div className="grid sm:grid-cols-2 gap-4">
+                {KIT_HOTSPOTS.map((item) => {
+                  const isActive = activeHotspot.id === item.id;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => setActiveHotspot(item)}
+                      className={`cursor-pointer rounded-2xl p-4 transition-all border ${
+                        isActive
+                          ? "bg-gradient-to-r from-navy-800 to-navy-900 border-coral-500 shadow-glow"
+                          : "bg-white/5 border-white/10 hover:bg-white/10"
+                      }`}
+                    >
+                      <h4 className="font-display font-extrabold text-sm text-white">
                         {item.title}
                       </h4>
-                      <span
-                        className={`w-2.5 h-2.5 rounded-full ${
-                          isActive ? "bg-coral-500" : "bg-white/30"
-                        }`}
-                      />
+                      <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">{item.desc}</p>
+                      <div className="mt-2.5 inline-block px-2 py-0.5 rounded bg-black/30 text-[10px] font-mono text-volt">
+                        {item.spec}
+                      </div>
                     </div>
-                    <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
-                      {item.desc}
-                    </p>
-                    <div className="mt-3 inline-block px-2.5 py-1 rounded-md bg-black/30 text-[11px] font-mono text-volt">
-                      {item.spec}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -912,7 +892,7 @@ export default function DelhiDwarkaRunPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div>
               <span className="inline-block px-3.5 py-1 rounded-full bg-navy-900/10 text-navy-900 font-display font-black text-xs uppercase tracking-widest mb-2">
-                📍 AIMS-Standard Course Telemetry
+                📍 Starting Point: {START_VENUE}
               </span>
               <h2 className="font-display font-black italic text-3xl sm:text-5xl text-navy-950 uppercase tracking-tight">
                 Interactive Route &amp; Elevation Map
@@ -922,10 +902,10 @@ export default function DelhiDwarkaRunPage() {
             <div className="inline-flex flex-wrap gap-2 bg-slate-100 p-1.5 rounded-2xl">
               {(
                 [
-                  { id: "5k", label: "5K Loop" },
-                  { id: "10k", label: "10K Circuit" },
-                  { id: "half", label: "21.1K Half" },
-                  { id: "full", label: "42.2K Full" },
+                  { id: "half", label: "21.097 KM Half" },
+                  { id: "10.5k", label: "10.5 KM Run" },
+                  { id: "5k", label: "5 KM Run" },
+                  { id: "3k", label: "3 KM Fun Run" },
                 ] as const
               ).map((tab) => (
                 <button
@@ -948,7 +928,7 @@ export default function DelhiDwarkaRunPage() {
               <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <div>
                   <span className="text-[11px] uppercase tracking-widest text-volt font-display font-extrabold">
-                    GPS Course Map • Dwarka Sub-City
+                    GPS Course Map • Start/Finish: Max Hospital Sector 10
                   </span>
                   <h3 className="font-display font-black text-xl text-white">
                     {ROUTE_DATA[activeRouteTab].title}
@@ -962,7 +942,7 @@ export default function DelhiDwarkaRunPage() {
                     <span className="w-2.5 h-2.5 rounded-full bg-sky-400" /> Hydration
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-volt" /> Start/Finish
+                    <span className="w-2.5 h-2.5 rounded-full bg-volt" /> Max Hospital Sec-10
                   </span>
                 </div>
               </div>
@@ -979,7 +959,7 @@ export default function DelhiDwarkaRunPage() {
                     GOLF COURSE RD / SEC 21
                   </text>
                   <text x="280" y="305" fill="rgba(255,255,255,0.3)" fontSize="11" fontWeight="800">
-                    SECTOR 10, 11 &amp; 12 METRO CORRIDOR
+                    SECTOR 10 &amp; 11 METRO CORRIDOR
                   </text>
 
                   <path
@@ -1001,33 +981,33 @@ export default function DelhiDwarkaRunPage() {
 
                   <circle cx="220" cy="95" r="7" fill="#38BDF8" />
                   <text x="195" y="78" fill="#BAE6FD" fontSize="10" fontWeight="700">
-                    💧 KM 2.5 Aid
+                    💧 Hydration 1
                   </text>
 
                   <circle cx="480" cy="105" r="7" fill="#38BDF8" />
-                  <text x="450" y="88" fill="#BAE6FD" fontSize="10" fontWeight="700">
-                    ⚡ Energy + Med
+                  <text x="440" y="88" fill="#BAE6FD" fontSize="10" fontWeight="700">
+                    🏥 Max Medical &amp; Aid
                   </text>
 
                   <circle cx="380" cy="275" r="7" fill="#38BDF8" />
                   <text x="350" y="293" fill="#BAE6FD" fontSize="10" fontWeight="700">
-                    💧 Fast&amp;Up Station
+                    💧 Hydration &amp; Energy
                   </text>
 
                   <circle cx="80" cy="215" r="12" fill="#CCFF00" />
                   <circle cx="80" cy="215" r="5" fill="#040814" />
                   <rect
-                    x="20"
+                    x="15"
                     y="232"
-                    width="155"
+                    width="185"
                     height="26"
                     rx="6"
                     fill="#040814"
                     stroke="#CCFF00"
                     strokeWidth="1.5"
                   />
-                  <text x="30" y="249" fill="#CCFF00" fontSize="10" fontWeight="800">
-                    🏁 SEC-10 START / FINISH
+                  <text x="24" y="249" fill="#CCFF00" fontSize="10" fontWeight="800">
+                    🏁 MAX HOSPITAL SEC-10 START
                   </text>
                 </svg>
               </div>
@@ -1035,7 +1015,7 @@ export default function DelhiDwarkaRunPage() {
               <div className="mt-4 bg-navy-900/80 rounded-2xl p-4 border border-white/10">
                 <div className="flex items-center justify-between text-xs mb-2">
                   <span className="font-display font-bold uppercase text-slate-400">
-                    Elevation Profile (212m – 224m ASL)
+                    Elevation Profile (Flat Dwarka Asphalt)
                   </span>
                   <span className="font-mono font-bold text-volt">
                     {ROUTE_DATA[activeRouteTab].elevationGain}
@@ -1068,7 +1048,7 @@ export default function DelhiDwarkaRunPage() {
 
                 <div>
                   <div className="text-xs font-display font-extrabold uppercase tracking-wider text-slate-400 mb-3">
-                    Race Morning Timeline (Sun, Feb 21, 2027)
+                    Race Morning Timeline (Sun, 14th Feb 2027)
                   </div>
                   <div className="space-y-2">
                     {RACE_DAY_SCHEDULE.map((s, idx) => (
@@ -1099,15 +1079,15 @@ export default function DelhiDwarkaRunPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div>
               <span className="text-volt font-display font-black text-xs uppercase tracking-widest">
-                🎬 Race Atmosphere &amp; Highlights
+                🎬 4th Edition Race Atmosphere &amp; Highlights
               </span>
               <h2 className="font-display font-black italic text-3xl sm:text-5xl uppercase tracking-tight mt-1">
-                More Than a Race — It&apos;s a Festival
+                Be a Part of the Biggest Running Event of Dwarka
               </h2>
             </div>
             <p className="text-slate-300 text-sm max-w-md">
-              From Punjabi Dhol troops along Sector 10 &amp; 11 to confetti cannons at the finish
-              gantry, watch how Dwarka celebrates every single finisher.
+              Create lifetime memories with thousands of runners, live Dhol beats, Lucky Draw
+              prizes, and Max Healthcare wellness zones at Max Hospital, Sector 10, Dwarka.
             </p>
           </div>
 
@@ -1117,7 +1097,7 @@ export default function DelhiDwarkaRunPage() {
                 <div className="flex items-center gap-2.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-coral-500 animate-pulse" />
                   <span className="font-display font-bold text-xs uppercase tracking-wider">
-                    Official Race Aftermovie — Delhi Dwarka Marathon
+                    Official Highlight Reel — DDR Dwarka Half Marathon
                   </span>
                 </div>
                 <span className="text-[11px] font-mono text-volt">1080p HD</span>
@@ -1142,31 +1122,31 @@ export default function DelhiDwarkaRunPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
                 <div className="absolute bottom-5 left-5 right-5">
                   <span className="px-2.5 py-1 rounded bg-coral-500 text-white text-[10px] font-display font-black uppercase">
-                    Finish Line Carnival
+                    🎉 Lucky Draw &amp; Finish Carnival
                   </span>
                   <h3 className="font-display font-black text-xl text-white mt-1">
-                    Roaring Crowds, Live DJ, Medal Engraving &amp; Recovery Zone
+                    Win Exciting Prizes, Trophies &amp; Finisher Medals on 14th Feb 2027
                   </h3>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
-                  <div className="font-athletic font-bold text-4xl text-volt">28+</div>
+                  <div className="font-athletic font-bold text-4xl text-volt">50% OFF</div>
                   <div className="text-[11px] text-slate-300 font-semibold">
-                    Official Pacer Buses
+                    Valid Till 30-Nov-2026
                   </div>
                 </div>
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
-                  <div className="font-athletic font-bold text-4xl text-coral-400">15</div>
+                  <div className="font-athletic font-bold text-4xl text-coral-400">4th</div>
                   <div className="text-[11px] text-slate-300 font-semibold">
-                    Cheering &amp; Dhol Zones
+                    Championship Edition
                   </div>
                 </div>
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
-                  <div className="font-athletic font-bold text-4xl text-white">100%</div>
+                  <div className="font-athletic font-bold text-4xl text-white">14 FEB</div>
                   <div className="text-[11px] text-slate-300 font-semibold">
-                    Free AI Race Photos
+                    2027 Race Date
                   </div>
                 </div>
               </div>
@@ -1221,7 +1201,7 @@ export default function DelhiDwarkaRunPage() {
                     <th className="py-4 px-5">Category</th>
                     <th className="py-4 px-5">Gender</th>
                     <th className="py-4 px-5">Net Time / Status</th>
-                    <th className="py-4 px-5">Pace</th>
+                    <th className="py-4 px-5">Pace / Perks</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 text-sm bg-white">
@@ -1289,22 +1269,22 @@ export default function DelhiDwarkaRunPage() {
           <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-5 space-y-5">
               <span className="inline-block px-3.5 py-1 rounded-full bg-coral-500/10 text-coral-600 font-display font-black text-xs uppercase tracking-widest">
-                Corporate &amp; Club Desk
+                Delhi Dwarka Runners (DDR) Helpdesk
               </span>
               <h2 className="font-display font-black italic text-3xl text-navy-950 uppercase">
-                Get in Touch With the Race Secretariat
+                Get in Touch With the Organizing Team
               </h2>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Planning a corporate team run, RWA group entry (15+ runners), or sponsorship
-                activation at the Dwarka Sector 10 Finish Arena? Reach out to our organizing team.
+                Planning a corporate group entry, RWA bulk registration, or sponsorship at the 4th
+                Edition of Dwarka Half Marathon? Reach out to Delhi Dwarka Runners.
               </p>
               <div className="space-y-3 text-sm pt-2">
                 <div className="bg-white p-4 rounded-2xl border border-slate-200">
                   <div className="font-display font-bold text-navy-950">
-                    📍 Venue &amp; Expo Complex
+                    📍 Starting &amp; Finishing Point
                   </div>
                   <div className="text-slate-600 text-xs mt-0.5">
-                    DDA Sports Complex, Sector 10, Dwarka, New Delhi – 110075
+                    Max Hospital, Sector 10, Dwarka, New Delhi – 110075
                   </div>
                 </div>
                 <div className="bg-white p-4 rounded-2xl border border-slate-200">
@@ -1328,7 +1308,7 @@ export default function DelhiDwarkaRunPage() {
                     <div className="text-3xl">✅</div>
                     <div className="font-display font-bold text-emerald-900">Message Received!</div>
                     <p className="text-xs text-emerald-700">
-                      Our Race Secretariat team will get back to you within 24 hours.
+                      Our Delhi Dwarka Runners team will get back to you within 24 hours.
                     </p>
                   </div>
                 ) : (
@@ -1396,9 +1376,11 @@ export default function DelhiDwarkaRunPage() {
             </div>
             <div>
               <div className="font-display font-black text-white text-sm uppercase">
-                DELHI DWARKA RUN 2027
+                DELHI DWARKA RUN 2027 • 4TH EDITION DWARKA HALF MARATHON
               </div>
-              <div>Official Marathon Portal • support@delhidwarkarun.in</div>
+              <div>
+                Starting Point: Max Hospital, Sector 10, Dwarka, New Delhi • support@delhidwarkarun.in
+              </div>
             </div>
           </div>
           <div className="flex flex-wrap gap-5 font-semibold text-slate-300">
@@ -1409,7 +1391,7 @@ export default function DelhiDwarkaRunPage() {
               Categories
             </a>
             <a href="#race-kit" className="hover:text-coral-400">
-              Medal &amp; Kit
+              Poster &amp; Kit
             </a>
             <a href="#route-map" className="hover:text-coral-400">
               Route Map
@@ -1418,7 +1400,7 @@ export default function DelhiDwarkaRunPage() {
               Results
             </a>
           </div>
-          <div>© 2026–2027 Delhi Dwarka Run Secretariat. All rights reserved.</div>
+          <div>© 2026–2027 Delhi Dwarka Runners (DDR). All rights reserved.</div>
         </div>
       </footer>
 

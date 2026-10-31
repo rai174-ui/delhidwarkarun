@@ -1,5 +1,5 @@
 export interface RaceCategory {
-  id: "5k" | "10k" | "half" | "full";
+  id: "half" | "10.5k" | "5k" | "3k";
   name: string;
   distance: string;
   numericKm: number;
@@ -8,9 +8,8 @@ export interface RaceCategory {
   startTime: string;
   cutoffTime: string;
   minAge: string;
-  fee: number;
-  originalFee: number;
-  earlyBirdFee: number;
+  originalFee: number; // Base fee before 50% discount (2200, 2000, 1800, 1600)
+  fee: number; // 50% discounted fee valid till 30-Nov-2026 (1100, 1000, 900, 800)
   timed: boolean;
   slotsFilled: number;
   prizePool: string;
@@ -22,127 +21,126 @@ export interface RaceCategory {
   perks: string[];
 }
 
-export const RACE_DATE_ISO = "2027-02-21T04:30:00+05:30";
+export const RACE_DATE_ISO = "2027-02-14T05:30:00+05:30";
+export const DISCOUNT_DEADLINE_ISO = "2026-11-30T23:59:59+05:30";
+export const START_VENUE = "Max Hospital, Sector 10, Dwarka, New Delhi";
 
 export const RACE_CATEGORIES: RaceCategory[] = [
   {
+    id: "half",
+    name: "Half Marathon (21.097 KM)",
+    distance: "21.097 KM",
+    numericKm: 21.097,
+    tagline: "Flagship Championship Half Marathon",
+    description:
+      "The crown jewel of the 4th Edition Dwarka Half Marathon! Flat, fast course starting from Max Hospital Sector 10 with official Pacer Buses, RFID timing, and Lucky Draw entry.",
+    startTime: "05:30 AM",
+    cutoffTime: "3.5 Hours",
+    minAge: "18+ Yrs",
+    originalFee: 2200,
+    fee: 1100,
+    timed: true,
+    slotsFilled: 86,
+    prizePool: "Trophies, Podium Awards & Lucky Draw",
+    color: "from-blue-600 via-indigo-600 to-navy-900",
+    badge: "FLAGSHIP 21.097 KM",
+    popular: true,
+    image: "/assets/hero-runners.jpg",
+    hydrationPoints: 8,
+    perks: [
+      "3D Finisher Medal",
+      "Official DDR Dry-Fit Jersey",
+      "RFID Timing Chip Bib",
+      "Official Timing Certificate",
+      "Hot Post-Run Refreshments",
+      "Lucky Draw Entry + Free Race Photos",
+    ],
+  },
+  {
+    id: "10.5k",
+    name: "10.5 KM Challenge",
+    distance: "10.5 KM",
+    numericKm: 10.5,
+    tagline: "Quarter Marathon Timed Challenge",
+    description:
+      "Push your endurance on Dwarka's scenic tree-lined boulevards starting at Max Hospital Sector 10. Includes RFID timing chip, hydration stations, and Lucky Draw eligibility.",
+    startTime: "06:00 AM",
+    cutoffTime: "2 Hours",
+    minAge: "14+ Yrs",
+    originalFee: 2000,
+    fee: 1000,
+    timed: true,
+    slotsFilled: 89,
+    prizePool: "Age-Category Podium & Lucky Draw",
+    color: "from-coral-500 via-orange-500 to-amber-500",
+    badge: "MOST POPULAR • 50% OFF",
+    image: "/assets/race-kit-2027.jpg",
+    hydrationPoints: 4,
+    perks: [
+      "3D Finisher Medal",
+      "Official DDR Dry-Fit Jersey",
+      "RFID Timing Chip Bib",
+      "Official Timing Certificate",
+      "Hot Post-Run Refreshments",
+      "Lucky Draw Entry + Free Race Photos",
+    ],
+  },
+  {
     id: "5k",
-    name: "5K Fun Run / Walk",
+    name: "5 KM Run",
     distance: "5 KM",
     numericKm: 5,
-    tagline: "Great for beginners and families",
+    tagline: "High-Energy Fitness Run",
     description:
-      "A vibrant, non-timed celebration run through Dwarka's tree-lined boulevards with live Dhol beats, Zumba warm-ups, and family photo zones.",
-    startTime: "06:45 AM",
-    cutoffTime: "90 Mins",
-    minAge: "8+ Yrs",
-    fee: 799,
-    originalFee: 1099,
-    earlyBirdFee: 699,
-    timed: false,
-    slotsFilled: 74,
-    prizePool: "Goodie Hampers & Trophies",
+      "Perfect for fitness enthusiasts, corporate teams, and club runners looking for a fast 5 KM morning run across Sector 10 Dwarka with full race perks.",
+    startTime: "06:30 AM",
+    cutoffTime: "75 Mins",
+    minAge: "10+ Yrs",
+    originalFee: 1800,
+    fee: 900,
+    timed: true,
+    slotsFilled: 78,
+    prizePool: "Exciting Prizes & Lucky Draw",
     color: "from-emerald-500 via-teal-500 to-cyan-600",
-    badge: "BEGINNER & FAMILY",
+    badge: "FITNESS FAVORITE",
     image: "/assets/finish-line.jpg",
     hydrationPoints: 2,
     perks: [
       "3D Finisher Medal",
-      "AeroMesh Race Tee",
-      "Color Souvenir Bib",
-      "Hot Post-Run Breakfast",
-      "E-Certificate",
+      "Official DDR Dry-Fit Jersey",
+      "Race Bib with Timing",
+      "Digital Finisher Certificate",
+      "Hot Post-Run Breakfast & Refreshments",
+      "Lucky Draw Entry",
     ],
   },
   {
-    id: "10k",
-    name: "10K Challenge",
-    distance: "10 KM",
-    numericKm: 10,
-    tagline: "Timed run for fitness enthusiasts",
+    id: "3k",
+    name: "3 KM Fun Run / Walk",
+    distance: "3 KM",
+    numericKm: 3,
+    tagline: "Great for Beginners, Kids & Families",
     description:
-      "Test your 10K speed on a laser-measured, flat asphalt circuit. Mylaps RFID chip timing with age-group podium awards and qualifier certificate.",
-    startTime: "06:15 AM",
-    cutoffTime: "2 Hours",
-    minAge: "14+ Yrs",
-    fee: 1199,
-    originalFee: 1499,
-    earlyBirdFee: 999,
-    timed: true,
-    slotsFilled: 89,
-    prizePool: "₹1,50,000 Prize Pool",
-    color: "from-coral-500 via-orange-500 to-amber-500",
-    badge: "MOST POPULAR • SELLING FAST",
-    popular: true,
-    image: "/assets/hero-runners.jpg",
-    hydrationPoints: 4,
+      "Be a part of the biggest running event of Dwarka! A joyful 3 KM community run & walk starting from Max Hospital Sector 10 to create lifetime memories with family.",
+    startTime: "06:45 AM",
+    cutoffTime: "60 Mins",
+    minAge: "6+ Yrs",
+    originalFee: 1600,
+    fee: 800,
+    timed: false,
+    slotsFilled: 72,
+    prizePool: "Lucky Draw & Finisher Goodies",
+    color: "from-purple-600 via-fuchsia-600 to-pink-600",
+    badge: "FAMILY & BEGINNERS",
+    image: "/assets/finish-line.jpg",
+    hydrationPoints: 2,
     perks: [
       "3D Finisher Medal",
-      "Pro Dry-Fit Jersey",
-      "Mylaps RFID Timing Chip",
-      "Official Split Certificate",
-      "Hot Breakfast & Energy Gel",
-      "Free HD Race Photos",
-    ],
-  },
-  {
-    id: "half",
-    name: "Half Marathon (21.1 KM)",
-    distance: "21.1 KM",
-    numericKm: 21.0975,
-    tagline: "Serious endurance run",
-    description:
-      "Our flagship championship distance! Supported by experienced Pacer Buses (1:45 to 3:00 hrs), isotonic stations, and an electric finish gantry.",
-    startTime: "05:30 AM",
-    cutoffTime: "3.5 Hours",
-    minAge: "18+ Yrs",
-    fee: 1599,
-    originalFee: 1999,
-    earlyBirdFee: 1399,
-    timed: true,
-    slotsFilled: 82,
-    prizePool: "₹3,50,000 Prize Pool",
-    color: "from-blue-600 via-indigo-600 to-violet-700",
-    badge: "CHAMPIONSHIP QUALIFIER",
-    image: "/assets/race-kit-2027.jpg",
-    hydrationPoints: 8,
-    perks: [
-      "Heavy Gold/Navy Medal",
-      "Pro Race Singlet/Tee",
-      "Mylaps RFID Timing Chip",
-      "Major Marathon Qualifier Cert",
-      "Dedicated Pacer Support",
-      "Ice-Bath & Physio Recovery",
-    ],
-  },
-  {
-    id: "full",
-    name: "Full Marathon (42.2 KM)",
-    distance: "42.2 KM",
-    numericKm: 42.195,
-    tagline: "Elite endurance test",
-    description:
-      "The ultimate crown jewel of Delhi Dwarka Run 2027. A fast, flat twin-loop AIMS-grade course built for Boston, Comrades & Abbott Majors qualification.",
-    startTime: "04:30 AM",
-    cutoffTime: "6 Hours",
-    minAge: "18+ Yrs",
-    fee: 1999,
-    originalFee: 2499,
-    earlyBirdFee: 1749,
-    timed: true,
-    slotsFilled: 68,
-    prizePool: "₹5,00,000 Prize Pool",
-    color: "from-amber-500 via-coral-500 to-rose-600",
-    badge: "ELITE MARATHON",
-    image: "/assets/hero-runners.jpg",
-    hydrationPoints: 15,
-    perks: [
-      "Oversized 42.2K Crown Medal",
-      "Finisher Pro Tee + Towel",
-      "Mylaps Dual RFID Chip",
-      "Official Qualifier Certificate",
-      "4x Energy Gel & Salt Stations",
-      "VIP Recovery Lounge Access",
+      "Official DDR Dry-Fit T-Shirt",
+      "Souvenir Race Bib",
+      "Participation E-Certificate",
+      "Post-Run Refreshments & Zumba",
+      "Lucky Draw Entry",
     ],
   },
 ];
@@ -159,64 +157,57 @@ export const ROUTE_DATA: Record<
     elevationPoints: string;
   }
 > = {
-  "5k": {
-    title: "5K Fun Run Green Boulevard Loop",
+  half: {
+    title: "21.097 KM Half Marathon Championship Course",
     pathDesc:
-      "DDA Sports Complex Sec-10 → Sector 6 Market Boulevard → Sector 10 Central Park → Finish at Sports Complex Gate 2",
-    elevationGain: "+12m (Flat & Fast)",
-    waterStations: "KM 1.5, KM 3.2, Finish Line",
-    landmarks: ["Sector 10 Sports Complex", "Sector 6 Green Belt", "Sector 10 Metro Plaza"],
-    svgPath: "M 100 220 Q 190 100 320 140 T 470 215 Q 290 290 100 220",
-    elevationPoints: "0,80 100,76 200,70 300,74 400,68 500,75 600,80",
-  },
-  "10k": {
-    title: "10K Speed Circuit",
-    pathDesc:
-      "Sec-10 Sports Complex → Sec-6 Main Rd → Sec-11 Metro Chowk → Sec-9 Ashirwad Chowk → Sec-10 Finish Arch",
-    elevationGain: "+24m (100% Paved Asphalt)",
-    waterStations: "KM 2.0, KM 4.5, KM 7.0, KM 9.0",
+      "Max Hospital Sec-10 → Sec-6/7 Avenue → Sec-20/21 Metro Corridor → Golf Course Road → Sec-12 City Centre → Max Hospital Sec-10 Finish",
+    elevationGain: "+42m (Flat & Fast PB Course)",
+    waterStations: "Every 2.5 KM + Max Healthcare Medical Stations",
     landmarks: [
-      "Sector 10 Sports Complex",
+      "Max Hospital Sector 10 (Start/Finish)",
+      "Dwarka Sector 10 Metro",
+      "Bharat Vandana Park Perimeter",
+      "Golf Course Road Boulevard",
+    ],
+    svgPath:
+      "M 65 215 C 95 55, 300 40, 535 90 C 685 125, 675 285, 500 295 C 315 310, 115 285, 65 215",
+    elevationPoints: "0,85 80,74 180,60 280,68 380,48 480,64 600,84",
+  },
+  "10.5k": {
+    title: "10.5 KM Quarter Marathon Speed Circuit",
+    pathDesc:
+      "Max Hospital Sec-10 → Sec-6 Main Rd → Sec-11 Metro Chowk → Sec-9 Ashirwad Chowk → Max Hospital Sec-10 Finish Gantry",
+    elevationGain: "+22m (100% Paved Asphalt)",
+    waterStations: "KM 2.0, KM 4.5, KM 7.5, KM 9.5 & Finish",
+    landmarks: [
+      "Max Hospital Sector 10",
       "Ashirwad Chowk",
-      "Sector 11 Metro Station",
-      "District Court Boulevard",
+      "Sector 11 Metro Boulevard",
+      "Sector 10 Sports Complex Road",
     ],
     svgPath:
       "M 85 215 C 130 75, 340 65, 500 135 C 585 185, 480 295, 300 275 C 165 265, 95 245, 85 215",
     elevationPoints: "0,82 100,72 200,62 300,68 400,58 500,70 600,82",
   },
-  half: {
-    title: "21.1K Half Marathon Championship Course",
+  "5k": {
+    title: "5 KM Run Boulevard Loop",
     pathDesc:
-      "Sec-10 Sports Complex → Sec-6/7 → Sec-20/21 Metro Terminal → Golf Course Road Stretch → Sec-12 City Centre → Sec-10 Finish",
-    elevationGain: "+48m (PB Friendly Course)",
-    waterStations: "Every 2.5 KM + Electrolytes & Sponge Stations",
-    landmarks: [
-      "DDA Sports Complex",
-      "Dwarka City Centre",
-      "Sector 21 Pacific Mall",
-      "Bharat Vandana Park Perimeter",
-    ],
-    svgPath:
-      "M 70 215 C 100 55, 300 40, 535 90 C 685 125, 675 285, 500 295 C 315 310, 115 285, 70 215",
-    elevationPoints: "0,85 80,74 180,60 280,68 380,48 480,64 600,84",
+      "Max Hospital Sec-10 → Sector 6 Market Boulevard → Sector 10 Central Park Avenue → Max Hospital Sec-10 Finish",
+    elevationGain: "+12m (Flat & Fast)",
+    waterStations: "KM 1.5, KM 3.5 & Finish Arena",
+    landmarks: ["Max Hospital Sector 10", "Sector 6 Green Belt", "Sector 10 Metro Plaza"],
+    svgPath: "M 100 220 Q 190 100 320 140 T 470 215 Q 290 290 100 220",
+    elevationPoints: "0,80 100,76 200,70 300,74 400,68 500,75 600,80",
   },
-  full: {
-    title: "42.2K Full Marathon Two-Loop Championship",
+  "3k": {
+    title: "3 KM Family & Beginners Fun Run Loop",
     pathDesc:
-      "Two Championship Loops covering Sector 10, Bharat Vandana Park Avenue, Golf Course Road, Sector 21, and Sector 12",
-    elevationGain: "+92m (Certified Flat Asphalt)",
-    waterStations: "15 Hydration + 4 Energy Gel & Salt Stations",
-    landmarks: [
-      "Sector 10 Main Arena",
-      "Bharat Vandana Park",
-      "Dwarka Expressway Link",
-      "Sector 21 Hub",
-      "Vegas Mall Avenue",
-    ],
-    svgPath:
-      "M 60 215 C 80 35, 340 20, 585 70 C 720 110, 710 305, 520 310 C 315 315, 100 295, 60 215",
-    elevationPoints: "0,86 75,65 160,52 250,75 340,46 430,60 520,50 600,85",
+      "Max Hospital Sec-10 → Sector 10 Main Avenue → U-Turn at Sector 10 Central Park → Max Hospital Sec-10 Finish Arch",
+    elevationGain: "+6m (Super Flat & Safe)",
+    waterStations: "KM 1.5 & Finish Line Refreshments",
+    landmarks: ["Max Hospital Sector 10", "Sector 10 Central Park", "DDR Finish Carnival"],
+    svgPath: "M 110 215 Q 180 130 280 160 T 360 215 Q 240 265 110 215",
+    elevationPoints: "0,80 150,77 300,75 450,77 600,80",
   },
 };
 
@@ -233,27 +224,9 @@ export interface RunnerResult {
 
 export const INITIAL_RESULTS: RunnerResult[] = [
   {
-    bib: "42014",
-    name: "Arjun Singh Rathore",
-    category: "Full Marathon (42.2 KM)",
-    gender: "Male",
-    netTime: "02:38:14",
-    pace: "3:45 /km",
-    rank: 1,
-  },
-  {
-    bib: "42089",
-    name: "Meera Nair",
-    category: "Full Marathon (42.2 KM)",
-    gender: "Female",
-    netTime: "02:56:42",
-    pace: "4:11 /km",
-    rank: 2,
-  },
-  {
     bib: "21104",
     name: "Vikramaditya Sharma",
-    category: "Half Marathon (21.1 KM)",
+    category: "Half Marathon (21.097 KM)",
     gender: "Male",
     netTime: "01:12:09",
     pace: "3:25 /km",
@@ -262,7 +235,7 @@ export const INITIAL_RESULTS: RunnerResult[] = [
   {
     bib: "21256",
     name: "Priyanka Deshmukh",
-    category: "Half Marathon (21.1 KM)",
+    category: "Half Marathon (21.097 KM)",
     gender: "Female",
     netTime: "01:21:33",
     pace: "3:52 /km",
@@ -271,28 +244,37 @@ export const INITIAL_RESULTS: RunnerResult[] = [
   {
     bib: "10412",
     name: "Rohan Malhotra",
-    category: "10K Challenge",
+    category: "10.5 KM Challenge",
     gender: "Male",
-    netTime: "00:33:48",
-    pace: "3:22 /km",
+    netTime: "00:36:18",
+    pace: "3:27 /km",
     rank: 1,
   },
   {
     bib: "10881",
     name: "Ananya Verma",
-    category: "10K Challenge",
+    category: "10.5 KM Challenge",
     gender: "Female",
-    netTime: "00:38:15",
-    pace: "3:49 /km",
+    netTime: "00:41:05",
+    pace: "3:54 /km",
     rank: 2,
   },
   {
     bib: "50219",
     name: "Kabir Khanna",
-    category: "5K Fun Run / Walk",
+    category: "5 KM Run",
     gender: "Male",
-    netTime: "00:21:10",
-    pace: "4:14 /km",
+    netTime: "00:19:40",
+    pace: "3:56 /km",
+    rank: 1,
+  },
+  {
+    bib: "30115",
+    name: "Aarav & Neha Gupta",
+    category: "3 KM Fun Run / Walk",
+    gender: "Family",
+    netTime: "00:16:20",
+    pace: "5:26 /km",
     rank: 1,
   },
 ];

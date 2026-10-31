@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { RACE_CATEGORIES, RaceCategory, RunnerResult } from "../data/raceData";
+import { RACE_CATEGORIES, RaceCategory, RunnerResult, START_VENUE } from "../data/raceData";
 
 interface RegistrationModalProps {
   initialCategory: RaceCategory;
@@ -16,8 +16,8 @@ export default function RegistrationModal({
 }: RegistrationModalProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [category, setCategory] = useState<RaceCategory>(initialCategory);
-  const [couponCode, setCouponCode] = useState("");
-  const [discountApplied, setDiscountApplied] = useState(false);
+  const [couponCode, setCouponCode] = useState("DDR50");
+  const [discountApplied, setDiscountApplied] = useState(true); // 50% OFF till 30-Nov-2026 auto-applied
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "netbanking">("upi");
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [confirmedBib, setConfirmedBib] = useState<{
@@ -40,6 +40,7 @@ export default function RegistrationModal({
     mobile: "",
     dob: "",
     gender: "Male",
+    bloodGroup: "O+",
     tshirtSize: "M",
     emergencyName: "",
     emergencyPhone: "",
@@ -99,30 +100,21 @@ export default function RegistrationModal({
     }
   };
 
-  const applyCoupon = () => {
-    if (couponCode.trim().toUpperCase() === "DWARKA2027") {
-      setDiscountApplied(true);
-    } else {
-      alert("Try code DWARKA2027 for a 10% Early Bird discount!");
-    }
-  };
-
-  const baseFee = category.fee;
-  const discountAmount = discountApplied ? Math.round(baseFee * 0.1) : 0;
-  const platformFee = 29;
-  const totalPayable = baseFee - discountAmount + platformFee;
+  const originalFee = category.originalFee;
+  const discountAmount = discountApplied ? Math.round(originalFee * 0.5) : 0;
+  const totalPayable = originalFee - discountAmount;
 
   const handleSimulatedPayment = () => {
     setIsProcessingPayment(true);
     setTimeout(() => {
       const prefix =
-        category.id === "full"
-          ? "42"
-          : category.id === "half"
+        category.id === "half"
           ? "21"
-          : category.id === "10k"
+          : category.id === "10.5k"
           ? "10"
-          : "50";
+          : category.id === "5k"
+          ? "50"
+          : "30";
       const generatedBib = prefix + Math.floor(100 + Math.random() * 899);
       const txnId = "pay_DDR27_" + Math.random().toString(36).substring(2, 9).toUpperCase();
 
@@ -146,28 +138,28 @@ export default function RegistrationModal({
         name: formData.fullName,
         category: category.name,
         gender: formData.gender,
-        netTime: "Registered (2027)",
-        pace: "Bib Assigned",
+        netTime: "Registered (14 Feb 2027)",
+        pace: "Lucky Draw Eligible",
         isNew: true,
       });
     }, 1000);
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-navy-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-navy-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
       <div className="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-200 my-auto max-h-[92vh] flex flex-col">
         {/* Modal Header */}
         <div className="bg-navy-900 text-white px-6 py-5 flex items-center justify-between shrink-0">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-coral-500 text-[11px] font-bold uppercase tracking-wider">
-                Delhi Dwarka Run 2027
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500 text-navy-950 text-[11px] font-display font-black uppercase tracking-wider">
+                50% OFF Till 30-Nov-2026
               </span>
               <span className="text-xs text-slate-300">Step {step} of 3</span>
             </div>
             <h3 className="font-display font-extrabold text-lg sm:text-xl mt-1">
-              {step === 1 && "Runner Registration & Kit Details"}
-              {step === 2 && "Order Summary & Razorpay Checkout"}
+              {step === 1 && "Runner Registration & Live Bib Preview"}
+              {step === 2 && "50% Discount Summary & Razorpay Checkout"}
               {step === 3 && "Registration Confirmed & Official E-Bib"}
             </h3>
           </div>
@@ -193,7 +185,7 @@ export default function RegistrationModal({
             <form onSubmit={handleProceedToPayment} className="space-y-5" noValidate>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                  Select Race Category *
+                  Select Race Category (50% Discount Applied Till 30-Nov-2026) *
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {RACE_CATEGORIES.map((cat) => (
@@ -207,17 +199,35 @@ export default function RegistrationModal({
                           : "border-slate-200 hover:border-slate-300 bg-slate-50"
                       }`}
                     >
-                      <div className="font-display font-black text-base text-navy-900">
+                      <div className="font-athletic font-bold text-2xl leading-none text-navy-900">
                         {cat.distance}
                       </div>
-                      <div className="text-[11px] font-medium text-slate-600 truncate">
-                        {cat.name.split(" (")[0]}
+                      <div className="text-[11px] font-medium text-slate-400 line-through mt-1">
+                        ₹{cat.originalFee}
                       </div>
-                      <div className="font-display font-bold text-xs text-coral-600 mt-1">
+                      <div className="font-display font-black text-sm text-emerald-600">
                         ₹{cat.fee}
                       </div>
                     </button>
                   ))}
+                </div>
+              </div>
+
+              {/* Live Dynamic Bib Preview Strip */}
+              <div className="bg-gradient-to-r from-navy-950 via-navy-900 to-navy-800 rounded-2xl p-4 text-white flex items-center justify-between border border-coral-500/40">
+                <div>
+                  <div className="text-[10px] font-display font-bold uppercase text-volt">
+                    DDR 4th Edition • 14th Feb 2027 • {START_VENUE}
+                  </div>
+                  <div className="font-display font-black text-lg uppercase tracking-wide text-white mt-0.5">
+                    {formData.fullName ? formData.fullName : "YOUR NAME ON BIB"}
+                  </div>
+                  <div className="text-[11px] text-slate-300">
+                    {category.name} • Tee Size: {formData.tshirtSize} • 🎁 Lucky Draw Included
+                  </div>
+                </div>
+                <div className="text-right bg-white text-navy-950 px-3.5 py-2 rounded-xl font-athletic font-bold text-2xl leading-none shrink-0">
+                  {category.distance}
                 </div>
               </div>
 
@@ -372,8 +382,9 @@ export default function RegistrationModal({
                   />
                   <span className="text-xs text-slate-700 leading-relaxed">
                     <strong>Medical &amp; Fitness Declaration:</strong> I declare that I am
-                    physically fit and have trained sufficiently to participate in the{" "}
-                    <strong>{category.name}</strong> at Delhi Dwarka Run 2027.
+                    physically fit and trained to participate in the{" "}
+                    <strong>{category.name}</strong> starting at{" "}
+                    <strong>Max Hospital, Sector 10, Dwarka, New Delhi</strong> on 14th Feb 2027.
                   </span>
                 </label>
                 {errors.medicalDeclaration && (
@@ -395,7 +406,7 @@ export default function RegistrationModal({
                   type="submit"
                   className="bg-coral-500 hover:bg-coral-600 text-white font-display font-bold text-sm px-7 py-3.5 rounded-xl shadow-glow transition-all"
                 >
-                  Continue to Summary &amp; Payment →
+                  Continue to Summary &amp; Payment (₹{category.fee}) →
                 </button>
               </div>
             </form>
@@ -407,11 +418,14 @@ export default function RegistrationModal({
                 <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                   <div>
                     <span className="text-xs font-bold uppercase text-coral-600">
-                      Selected Category
+                      Selected Category • 14th Feb 2027
                     </span>
                     <h4 className="font-display font-extrabold text-lg text-navy-900">
                       {category.name}
                     </h4>
+                    <p className="text-xs text-slate-500">
+                      Starting Point: {START_VENUE}
+                    </p>
                   </div>
                   <button
                     onClick={() => setStep(1)}
@@ -444,38 +458,36 @@ export default function RegistrationModal({
                   type="text"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Promo Code (Try DWARKA2027)"
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-sm uppercase font-mono"
+                  placeholder="Promo Code (DDR50 - 50% OFF till 30-Nov-2026)"
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-emerald-400 bg-emerald-50/40 text-sm uppercase font-mono font-bold text-emerald-800"
                 />
                 <button
                   type="button"
-                  onClick={applyCoupon}
-                  className="px-5 py-2.5 rounded-xl bg-navy-900 text-white font-display font-bold text-xs uppercase tracking-wider hover:bg-navy-800"
+                  onClick={() => setDiscountApplied(true)}
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-display font-bold text-xs uppercase tracking-wider"
                 >
-                  {discountApplied ? "Applied ✓" : "Apply"}
+                  50% Applied ✓
                 </button>
               </div>
 
               <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2.5 text-sm">
                 <div className="flex justify-between text-slate-600">
-                  <span>{category.name} Entry Fee</span>
-                  <span className="font-semibold text-navy-900">₹{baseFee}.00</span>
+                  <span>{category.name} Regular Fee</span>
+                  <span className="font-semibold text-slate-400 line-through">
+                    ₹{originalFee}.00
+                  </span>
                 </div>
                 {discountApplied && (
-                  <div className="flex justify-between text-emerald-600 font-medium">
-                    <span>Early Bird Discount (DWARKA2027 - 10%)</span>
+                  <div className="flex justify-between text-emerald-600 font-bold">
+                    <span>50% Early Bird Discount (Valid till 30-Nov-2026)</span>
                     <span>- ₹{discountAmount}.00</span>
                   </div>
                 )}
-                <div className="flex justify-between text-slate-500 text-xs">
-                  <span>Timing Portal &amp; Convenience Fee</span>
-                  <span>₹{platformFee}.00</span>
-                </div>
                 <div className="border-t border-slate-200 pt-3 flex justify-between items-baseline">
                   <span className="font-display font-bold text-navy-900 text-base">
-                    Total Payable
+                    Net Payable (50% OFF)
                   </span>
-                  <span className="font-display font-black text-2xl text-coral-600">
+                  <span className="font-display font-black text-2xl text-emerald-600">
                     ₹{totalPayable}.00
                   </span>
                 </div>
@@ -529,14 +541,14 @@ export default function RegistrationModal({
                   Payment Successful • {confirmedBib.txnId}
                 </span>
                 <h4 className="font-display font-black text-2xl text-navy-900 mt-2">
-                  See You at the Starting Line, {confirmedBib.name}!
+                  See You at Max Hospital Sector 10, {confirmedBib.name}!
                 </h4>
               </div>
 
               <div className="bg-gradient-to-br from-navy-900 via-navy-800 to-navy-950 text-white rounded-3xl p-6 max-w-md mx-auto border-2 border-coral-500 shadow-2xl text-left">
                 <div className="flex items-center justify-between border-b border-white/15 pb-3">
-                  <div className="font-display font-black text-sm tracking-wider text-coral-400">
-                    DELHI DWARKA RUN 2027
+                  <div className="font-display font-black text-xs tracking-wider text-coral-400">
+                    4TH DWARKA HALF MARATHON • 14 FEB 2027
                   </div>
                   <span className="px-2.5 py-1 rounded bg-white text-navy-900 font-display font-black text-xs">
                     {confirmedBib.distance}
@@ -549,7 +561,7 @@ export default function RegistrationModal({
                   <div className="font-display font-black text-5xl tracking-wider text-white mt-1">
                     #{confirmedBib.bib}
                   </div>
-                  <div className="text-sm font-display font-bold text-coral-400 mt-1 uppercase">
+                  <div className="text-sm font-display font-bold text-volt mt-1 uppercase">
                     {confirmedBib.name}
                   </div>
                 </div>
@@ -563,7 +575,7 @@ export default function RegistrationModal({
                     <span className="font-bold">Size {confirmedBib.tshirtSize}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block">Paid</span>
+                    <span className="text-slate-400 block">Paid (50% Off)</span>
                     <span className="font-bold text-emerald-400">₹{confirmedBib.amountPaid}</span>
                   </div>
                 </div>
