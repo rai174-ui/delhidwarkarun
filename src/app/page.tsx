@@ -13,6 +13,7 @@ import RegistrationModal from "../components/RegistrationModal";
 
 export default function DelhiDwarkaRunPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [heroBgVideo, setHeroBgVideo] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<RaceCategory>(
     RACE_CATEGORIES[1]
   );
@@ -22,6 +23,11 @@ export default function DelhiDwarkaRunPage() {
   const [resultsCategoryFilter, setResultsCategoryFilter] = useState("All");
   const [registrations, setRegistrations] = useState<RunnerResult[]>([]);
   const [contactSubmitted, setContactSubmitted] = useState(false);
+
+  // Target Pace Calculator state
+  const [calcDist, setCalcDist] = useState(21.0975);
+  const [calcHours, setCalcHours] = useState(1);
+  const [calcMins, setCalcMins] = useState(55);
 
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -50,6 +56,24 @@ export default function DelhiDwarkaRunPage() {
     return () => clearInterval(timer);
   }, []);
 
+  const paceResult = useMemo(() => {
+    const totalMinutes = Number(calcHours) * 60 + Number(calcMins);
+    if (totalMinutes <= 0 || calcDist <= 0)
+      return { pace: "0:00", speed: "0.0", corral: "Wave C" };
+    const minPerKm = totalMinutes / calcDist;
+    const pMins = Math.floor(minPerKm);
+    const pSecs = Math.round((minPerKm - pMins) * 60);
+    const speedKmh = ((calcDist / totalMinutes) * 60).toFixed(1);
+    let corral = "Wave C (Open Pacer)";
+    if (minPerKm < 4.5) corral = "Wave A (Elite / Sub-4:30 Pace)";
+    else if (minPerKm < 5.8) corral = "Wave B (Fast Club / Pacer Bus)";
+    return {
+      pace: `${pMins}:${String(pSecs === 60 ? 59 : pSecs).padStart(2, "0")}`,
+      speed: speedKmh,
+      corral,
+    };
+  }, [calcDist, calcHours, calcMins]);
+
   const handleOpenRegister = (categoryObj?: RaceCategory) => {
     if (categoryObj) {
       setSelectedCategory(categoryObj);
@@ -71,8 +95,14 @@ export default function DelhiDwarkaRunPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Top Promo Banner */}
+      <div className="bg-gradient-to-r from-coral-600 via-coral-500 to-orange-500 text-white py-2 px-4 text-center text-xs font-display font-extrabold uppercase tracking-wider">
+        ⚡ DELHI DWARKA RUN 2027 • SUNDAY, FEB 21, 2027 • ₹10,00,000+ PRIZE POOL • CODE:{" "}
+        <u className="text-navy-950">DWARKA2027</u> (10% OFF)
+      </div>
+
       {/* Sticky Header / Navbar */}
-      <header className="sticky top-0 z-40 bg-navy-900/95 backdrop-blur-md border-b border-white/10 text-white">
+      <header className="sticky top-0 z-40 bg-navy-950/90 backdrop-blur-xl border-b border-white/10 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <a href="#home" className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-coral-500 to-orange-600 flex items-center justify-center shadow-glow font-display font-black">
@@ -80,31 +110,34 @@ export default function DelhiDwarkaRunPage() {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-display font-black text-lg sm:text-xl tracking-tight text-white">
+                <span className="font-display font-black italic text-lg sm:text-xl tracking-tight text-white">
                   DELHI DWARKA
                 </span>
-                <span className="font-display font-black text-lg sm:text-xl tracking-tight text-coral-500">
+                <span className="font-display font-black italic text-lg sm:text-xl tracking-tight text-coral-500">
                   RUN 2027
                 </span>
               </div>
               <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 -mt-1">
-                2027 Championship Edition • New Delhi
+                Official Marathon Series • New Delhi
               </div>
             </div>
           </a>
 
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-200">
+          <nav className="hidden md:flex items-center gap-7 text-xs font-display font-bold uppercase tracking-wider text-slate-200">
             <a href="#home" className="hover:text-coral-400 transition-colors">
               Home
             </a>
             <a href="#categories" className="hover:text-coral-400 transition-colors">
               Categories
             </a>
+            <a href="#race-kit" className="hover:text-coral-400 transition-colors">
+              Medal &amp; Kit
+            </a>
             <a href="#route-map" className="hover:text-coral-400 transition-colors">
               Route Map
             </a>
             <a href="#about" className="hover:text-coral-400 transition-colors">
-              About
+              Highlights
             </a>
             <a href="#results" className="hover:text-coral-400 transition-colors">
               Results
@@ -117,9 +150,9 @@ export default function DelhiDwarkaRunPage() {
           <div className="hidden md:flex items-center">
             <button
               onClick={() => handleOpenRegister()}
-              className="bg-coral-500 hover:bg-coral-600 text-white font-display font-bold text-sm px-6 py-3 rounded-xl shadow-glow transition-all"
+              className="bg-gradient-to-r from-coral-500 to-orange-600 text-white font-display font-black uppercase tracking-wider text-xs px-6 py-3.5 rounded-xl shadow-glow transition-all"
             >
-              Register Now
+              Register Now →
             </button>
           </div>
 
@@ -134,18 +167,18 @@ export default function DelhiDwarkaRunPage() {
 
         {mobileMenuOpen && (
           <div className="md:hidden bg-navy-950 border-b border-white/10 px-4 pt-3 pb-6 space-y-3">
-            <div className="grid grid-cols-2 gap-2 text-sm font-medium">
+            <div className="grid grid-cols-2 gap-2 text-xs font-display font-bold uppercase">
               <a href="#home" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2">
                 Home
               </a>
               <a href="#categories" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2">
                 Categories
               </a>
+              <a href="#race-kit" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2">
+                Medal &amp; Kit
+              </a>
               <a href="#route-map" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2">
                 Route Map
-              </a>
-              <a href="#about" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2">
-                About
               </a>
               <a href="#results" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2">
                 Results
@@ -167,29 +200,46 @@ export default function DelhiDwarkaRunPage() {
         )}
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section with Custom Sunrise Runners Photography */}
       <section id="home" className="relative bg-navy-950 text-white overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          {heroBgVideo ? (
+            <video autoPlay muted loop playsInline className="w-full h-full object-cover opacity-45">
+              <source src="/DDR%20Dwarka%20Half%20Marathon%202026.m4v" type="video/mp4" />
+            </video>
+          ) : (
+            <img
+              src="/assets/hero-runners.jpg"
+              alt="Delhi Dwarka Run 2027 Sunrise Runners"
+              className="w-full h-full object-cover opacity-50"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/45" />
+        </div>
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20 lg:pt-20 lg:pb-28">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15">
-                <span className="text-xs font-bold uppercase tracking-wider text-coral-400">
-                  Sunday, February 21, 2027
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="px-3.5 py-1.5 rounded-full bg-coral-500/20 border border-coral-500/40 text-xs font-display font-extrabold uppercase tracking-wider text-coral-400">
+                  Sunday, February 21, 2027 • Dwarka Sec-10 Sports Complex
                 </span>
-                <span className="text-white/30">•</span>
-                <span className="text-xs font-medium text-slate-200">
-                  Dwarka Sector 10 Sports Complex, New Delhi
-                </span>
+                <button
+                  onClick={() => setHeroBgVideo(!heroBgVideo)}
+                  className="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold"
+                >
+                  {heroBgVideo ? "📸 Switch to Photo View" : "🎥 Play Live Race Video BG"}
+                </button>
               </div>
 
-              <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tight">
+              <h1 className="font-display font-black italic text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight uppercase">
                 Conquer the Asphalt:{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral-400 via-coral-500 to-amber-400">
                   Delhi Dwarka Run 2027
                 </span>
               </h1>
 
-              <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
+              <p className="text-base sm:text-lg text-slate-200 max-w-2xl leading-relaxed">
                 Experience New Delhi&apos;s fastest, flattest championship course across the wide
                 tree-lined avenues of Dwarka. Join 12,000+ runners across 42.2K, 21.1K, 10K, and 5K
                 categories.
@@ -220,7 +270,7 @@ export default function DelhiDwarkaRunPage() {
               <div className="pt-4">
                 <button
                   onClick={() => handleOpenRegister()}
-                  className="bg-coral-500 hover:bg-coral-600 text-white font-display font-extrabold text-base sm:text-lg px-8 py-4 rounded-2xl shadow-glow transition-all"
+                  className="bg-coral-500 hover:bg-coral-600 text-white font-display font-extrabold uppercase tracking-wider text-sm sm:text-base px-8 py-4 rounded-2xl shadow-glow transition-all"
                 >
                   Register Your Spot →
                 </button>
@@ -229,9 +279,9 @@ export default function DelhiDwarkaRunPage() {
 
             {/* Right Interactive Selector */}
             <div className="lg:col-span-5">
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-3">
-                <h2 className="font-display font-extrabold text-xl text-white mb-2">
-                  Choose Your Distance
+              <div className="bg-navy-900/85 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-3">
+                <h2 className="font-display font-extrabold text-xl text-white uppercase mb-2">
+                  Select Your Distance
                 </h2>
                 {RACE_CATEGORIES.map((cat) => {
                   const isSelected = selectedCategory.id === cat.id;
@@ -242,7 +292,7 @@ export default function DelhiDwarkaRunPage() {
                       className={`cursor-pointer rounded-2xl p-4 transition-all border ${
                         isSelected
                           ? "bg-white text-navy-900 border-coral-500 shadow-lg"
-                          : "bg-navy-900/70 text-white border-white/10 hover:bg-navy-800/80"
+                          : "bg-navy-950/70 text-white border-white/10 hover:bg-navy-800/80"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -253,7 +303,7 @@ export default function DelhiDwarkaRunPage() {
                               isSelected ? "text-slate-600" : "text-slate-300"
                             }`}
                           >
-                            Start: {cat.startTime} • {cat.tagline}
+                            Start: {cat.startTime} • {cat.prizePool}
                           </p>
                         </div>
                         <div className="font-display font-black text-lg text-coral-500">
@@ -265,9 +315,9 @@ export default function DelhiDwarkaRunPage() {
                 })}
                 <button
                   onClick={() => handleOpenRegister(selectedCategory)}
-                  className="w-full bg-coral-500 hover:bg-coral-600 text-white font-display font-bold py-4 rounded-xl shadow-glow mt-3"
+                  className="w-full bg-coral-500 hover:bg-coral-600 text-white font-display font-bold uppercase tracking-wider py-4 rounded-xl shadow-glow mt-3"
                 >
-                  Register for {selectedCategory.name} (₹{selectedCategory.fee})
+                  Lock {selectedCategory.distance} Spot — ₹{selectedCategory.fee}
                 </button>
               </div>
             </div>
@@ -279,7 +329,7 @@ export default function DelhiDwarkaRunPage() {
       <section id="categories" className="py-20 bg-slate-50 asphalt-pattern">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-14">
-            <h2 className="font-display font-black text-3xl sm:text-4xl text-navy-900">
+            <h2 className="font-display font-black italic text-3xl sm:text-5xl text-navy-900 uppercase">
               2027 Race Categories
             </h2>
             <p className="text-slate-600 mt-3">
@@ -294,16 +344,27 @@ export default function DelhiDwarkaRunPage() {
                 className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-card flex flex-col justify-between"
               >
                 <div>
-                  <div className={`bg-gradient-to-r ${cat.color} p-6 text-white`}>
-                    <div className="font-display font-black text-4xl">{cat.distance}</div>
-                    <h3 className="font-display font-bold text-lg mt-1">{cat.name}</h3>
-                    <p className="text-xs text-white/85 mt-1">{cat.tagline}</p>
+                  <div className="relative h-44 bg-navy-950 overflow-hidden">
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      className="w-full h-full object-cover opacity-60"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
+                    <div className="absolute bottom-3 left-5 text-white">
+                      <div className="font-display font-black text-3xl">{cat.distance}</div>
+                      <h3 className="font-display font-bold text-base">{cat.name}</h3>
+                    </div>
                   </div>
                   <div className="p-6 space-y-4">
                     <p className="text-sm text-slate-600">{cat.description}</p>
                     <div className="text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 flex justify-between">
-                      <span>Start: <strong>{cat.startTime}</strong></span>
-                      <span>Cut-off: <strong>{cat.cutoffTime}</strong></span>
+                      <span>
+                        Start: <strong>{cat.startTime}</strong>
+                      </span>
+                      <span>
+                        Cut-off: <strong>{cat.cutoffTime}</strong>
+                      </span>
                     </div>
                     <ul className="space-y-1.5 text-xs text-slate-700">
                       {cat.perks.map((perk, idx) => (
@@ -314,20 +375,102 @@ export default function DelhiDwarkaRunPage() {
                 </div>
                 <div className="p-6 pt-0">
                   <div className="flex items-baseline justify-between mb-3">
-                    <span className="text-xs text-slate-400">Entry Fee</span>
+                    <span className="text-xs text-slate-400">Early Bird Fee</span>
                     <span className="font-display font-black text-2xl text-navy-900">
                       ₹{cat.fee}
                     </span>
                   </div>
                   <button
                     onClick={() => handleOpenRegister(cat)}
-                    className="w-full py-3.5 px-5 rounded-xl bg-navy-900 hover:bg-coral-500 text-white font-display font-bold text-sm transition-colors"
+                    className="w-full py-3.5 px-5 rounded-xl bg-navy-900 hover:bg-coral-500 text-white font-display font-bold text-xs uppercase tracking-wider transition-colors"
                   >
-                    Register for {cat.distance}
+                    Register for {cat.distance} →
                   </button>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Target Pace Calculator */}
+          <div className="mt-14 bg-navy-950 rounded-3xl p-6 sm:p-8 text-white grid lg:grid-cols-12 gap-6 items-center">
+            <div className="lg:col-span-5">
+              <span className="text-xs font-display font-bold uppercase text-coral-400">
+                ⏱️ Interactive Pace Calculator
+              </span>
+              <h3 className="font-display font-black text-2xl uppercase mt-1">
+                Calculate Your Target Split &amp; Wave
+              </h3>
+            </div>
+            <div className="lg:col-span-4 grid grid-cols-3 gap-3">
+              <select
+                value={calcDist}
+                onChange={(e) => setCalcDist(Number(e.target.value))}
+                className="bg-navy-900 border border-white/20 rounded-xl px-3 py-2.5 text-xs font-bold"
+              >
+                <option value={5}>5 KM</option>
+                <option value={10}>10 KM</option>
+                <option value={21.0975}>21.1 KM</option>
+                <option value={42.195}>42.2 KM</option>
+              </select>
+              <input
+                type="number"
+                min={0}
+                max={6}
+                value={calcHours}
+                onChange={(e) => setCalcHours(Number(e.target.value))}
+                className="bg-navy-900 border border-white/20 rounded-xl px-3 py-2.5 text-xs font-bold"
+              />
+              <input
+                type="number"
+                min={0}
+                max={59}
+                value={calcMins}
+                onChange={(e) => setCalcMins(Number(e.target.value))}
+                className="bg-navy-900 border border-white/20 rounded-xl px-3 py-2.5 text-xs font-bold"
+              />
+            </div>
+            <div className="lg:col-span-3 bg-white/10 rounded-2xl p-4 flex justify-between items-center">
+              <div>
+                <div className="text-[10px] uppercase text-coral-400 font-bold">Required Pace</div>
+                <div className="font-display font-black text-2xl">{paceResult.pace} /km</div>
+                <div className="text-[11px] text-slate-300">{paceResult.corral}</div>
+              </div>
+              <div className="text-right">
+                <div className="text-[10px] text-slate-400">Speed</div>
+                <div className="font-display font-bold">{paceResult.speed} km/h</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Official Race Kit & Medal Section */}
+      <section id="race-kit" className="py-20 bg-navy-950 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7">
+            <img
+              src="/assets/race-kit-2027.jpg"
+              alt="Delhi Dwarka Run 2027 Finisher Medal and Kit"
+              className="rounded-3xl border border-white/15 shadow-2xl w-full object-cover"
+            />
+          </div>
+          <div className="lg:col-span-5 space-y-4">
+            <span className="text-xs font-display font-bold uppercase text-coral-400">
+              🏅 Official 2027 Runner Gear
+            </span>
+            <h2 className="font-display font-black italic text-3xl sm:text-4xl uppercase">
+              3D Finisher Medal, AeroMesh Jersey &amp; Mylaps RFID Bib
+            </h2>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              Every participant receives our sweat-wicking AeroMesh running jersey, official race
+              bib, and heavyweight die-cast finisher medal at the Finish Line Festival.
+            </p>
+            <button
+              onClick={() => handleOpenRegister()}
+              className="bg-coral-500 hover:bg-coral-600 text-white font-display font-black uppercase text-xs px-7 py-4 rounded-xl shadow-glow"
+            >
+              Claim Your 2027 Kit →
+            </button>
           </div>
         </div>
       </section>
@@ -336,11 +479,12 @@ export default function DelhiDwarkaRunPage() {
       <section id="route-map" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-10">
-            <h2 className="font-display font-black text-3xl sm:text-4xl text-navy-900">
-              Event Details &amp; Interactive Route Map
+            <h2 className="font-display font-black italic text-3xl sm:text-4xl text-navy-900 uppercase">
+              Interactive Route &amp; Elevation Map
             </h2>
             <p className="text-slate-600 mt-2">
-              Start &amp; Finish Point: <strong>DDA Sports Complex, Sector 10, Dwarka, New Delhi</strong>
+              Start &amp; Finish Point:{" "}
+              <strong>DDA Sports Complex, Sector 10, Dwarka, New Delhi</strong>
             </p>
             <div className="inline-flex flex-wrap justify-center gap-2 bg-slate-100 p-1.5 rounded-2xl mt-6">
               {(["5k", "10k", "half", "full"] as const).map((tab) => (
@@ -383,7 +527,7 @@ export default function DelhiDwarkaRunPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
-              <h2 className="font-display font-black text-3xl text-navy-900">
+              <h2 className="font-display font-black italic text-3xl text-navy-900 uppercase">
                 Results &amp; Registered Runners
               </h2>
               <p className="text-sm text-slate-600">
