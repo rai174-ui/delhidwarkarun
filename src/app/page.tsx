@@ -115,6 +115,18 @@ export default function DelhiDwarkaRunPage() {
     return () => clearInterval(timer);
   }, []);
 
+  // Load saved registrations from backend database on mount
+  useEffect(() => {
+    fetch("/api/registrations?mode=public")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data?.registrations)) {
+          setRegistrations(data.registrations);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const paceResult = useMemo(() => {
     const totalMinutes = Number(calcHours) * 60 + Number(calcMins);
     if (totalMinutes <= 0 || calcDist <= 0)
@@ -154,8 +166,8 @@ export default function DelhiDwarkaRunPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* HIGH-ENERGY TICKER MARQUEE */}
-      <div className="bg-gradient-to-r from-coral-600 via-coral-500 to-orange-500 text-white py-2 overflow-hidden border-b border-white/15">
+      {/* HIGH-ENERGY TICKER MARQUEE — MATCHING DDR LOGO PALETTE */}
+      <div className="bg-gradient-to-r from-[#0284C7] via-coral-500 to-[#F26522] text-white py-2 overflow-hidden border-b border-[#C5D887]/30">
         <div className="animate-marquee flex items-center gap-10 text-xs font-display font-extrabold uppercase tracking-wider">
           {[1, 2].map((loop) => (
             <React.Fragment key={loop}>
@@ -168,59 +180,61 @@ export default function DelhiDwarkaRunPage() {
               <span>📅 EVENT DATE: 14-Feb-2027</span>
               <span>📍 STARTING POINT: MAX HOSPITAL, SECTOR 10, DWARKA, NEW DELHI</span>
               <span>🏃‍♂️ 21.097 KM @ ₹1100 • 10.5 KM @ ₹1000 • 5 KM @ ₹900 • 3 KM @ ₹800</span>
-              <span>🎁 LUCKY DRAW: WIN EXCITING PRIZES &amp; MANY MORE!</span>
+              <span>📞 CONTACT: +91 99712 99631 • padam@amigoconnect.com</span>
             </React.Fragment>
           ))}
         </div>
       </div>
 
-      {/* STICKY PRO ATHLETIC NAVBAR */}
-      <header className="sticky top-0 z-40 bg-navy-950/90 backdrop-blur-xl border-b border-white/10 text-white">
+      {/* STICKY PRO ATHLETIC NAVBAR WITH OFFICIAL DDR LOGO */}
+      <header className="sticky top-0 z-40 bg-navy-950/95 backdrop-blur-xl border-b-2 border-[#29ABE2]/30 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <a href="#home" className="flex items-center gap-3.5 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-coral-500 via-orange-500 to-amber-500 flex items-center justify-center shadow-glow group-hover:rotate-3 transition-transform relative">
-              <span className="font-athletic font-bold text-2xl tracking-wider text-white leading-none pt-1">
-                DDR
-              </span>
-              <span className="absolute -bottom-1 -right-1 bg-volt text-navy-950 text-[9px] font-display font-black px-1.5 py-0.2 rounded">
-                4th
-              </span>
+            <div className="w-14 h-14 rounded-2xl bg-[#C5D887] p-1 flex items-center justify-center shadow-glow border-2 border-[#F26522] group-hover:scale-105 transition-transform relative overflow-hidden shrink-0">
+              <img
+                src="/assets/ddr-logo.png"
+                alt="Delhi Dwarka Runners (DDR) Official Logo"
+                className="w-full h-full object-contain rounded-xl"
+              />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-display font-black italic text-lg sm:text-xl tracking-tight text-white">
+                <span className="font-display font-black italic text-lg sm:text-xl tracking-tight text-[#29ABE2]">
                   DELHI DWARKA
                 </span>
                 <span className="font-display font-black italic text-lg sm:text-xl tracking-tight text-coral-500">
-                  RUN 2027
+                  RUNNERS
+                </span>
+                <span className="hidden sm:inline-block ml-1 px-2 py-0.5 rounded bg-[#C5D887] text-navy-950 font-display font-black text-[10px] uppercase">
+                  2027
                 </span>
               </div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
-                4th Edition Dwarka Half Marathon • Health Partner: Max Healthcare
+              <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#C5D887]">
+                4th Edition Dwarka Half Marathon • 14-Feb-2027
               </div>
             </div>
           </a>
 
           <nav className="hidden lg:flex items-center gap-7 text-xs font-display font-bold uppercase tracking-wider text-slate-200">
-            <a href="#home" className="hover:text-coral-400 transition-colors">
+            <a href="#home" className="hover:text-[#29ABE2] transition-colors">
               Home
             </a>
             <a href="#categories" className="hover:text-coral-400 transition-colors">
               Categories (50% Off)
             </a>
-            <a href="#race-kit" className="hover:text-coral-400 transition-colors">
-              Race Kit &amp; Poster
+            <a href="#race-kit" className="hover:text-[#C5D887] transition-colors">
+              Race Kit
             </a>
-            <a href="#route-map" className="hover:text-coral-400 transition-colors">
+            <a href="#route-map" className="hover:text-[#29ABE2] transition-colors">
               Route Map
             </a>
             <a href="#about" className="hover:text-coral-400 transition-colors">
               Highlights
             </a>
-            <a href="#results" className="hover:text-coral-400 transition-colors">
+            <a href="#results" className="hover:text-[#C5D887] transition-colors">
               Results
             </a>
-            <a href="#contact" className="hover:text-coral-400 transition-colors">
+            <a href="#contact" className="hover:text-[#29ABE2] transition-colors">
               Contact
             </a>
           </nav>
@@ -228,7 +242,7 @@ export default function DelhiDwarkaRunPage() {
           <div className="hidden md:flex items-center gap-3">
             <button
               onClick={() => handleOpenRegister()}
-              className="bg-gradient-to-r from-coral-500 to-orange-600 text-white font-display font-black uppercase tracking-wider text-xs px-6 py-3.5 rounded-xl shadow-glow hover:shadow-glow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
+              className="bg-gradient-to-r from-coral-500 via-[#F26522] to-[#29ABE2] text-white font-display font-black uppercase tracking-wider text-xs px-6 py-3.5 rounded-xl shadow-glow hover:shadow-glow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
             >
               <span>Register @ 50% Off</span>
               <span>→</span>
@@ -254,7 +268,7 @@ export default function DelhiDwarkaRunPage() {
                 Categories
               </a>
               <a href="#race-kit" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-lg bg-white/5">
-                Poster &amp; Kit
+                Race Kit
               </a>
               <a href="#route-map" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-lg bg-white/5">
                 Route Map
@@ -262,8 +276,8 @@ export default function DelhiDwarkaRunPage() {
               <a href="#about" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-lg bg-white/5">
                 Highlights
               </a>
-              <a href="#results" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-lg bg-white/5">
-                Results
+              <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-lg bg-white/5">
+                Contact
               </a>
             </div>
             <button
@@ -279,7 +293,7 @@ export default function DelhiDwarkaRunPage() {
         )}
       </header>
 
-      {/* HERO SECTION — INSPIRED BY OFFICIAL POSTER */}
+      {/* HERO SECTION — STYLED AFTER DDR POLYGON LOGO & MARATHON THEME */}
       <section id="home" className="relative bg-navy-950 text-white overflow-hidden min-h-[88vh] flex items-center">
         <div className="absolute inset-0 z-0">
           {heroBgVideo ? (
@@ -299,7 +313,7 @@ export default function DelhiDwarkaRunPage() {
               className="w-full h-full object-cover object-center opacity-50 scale-105 transition-transform duration-1000"
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/45" />
+          <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/85 to-[#0284C7]/25" />
           <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-navy-950/60" />
           <div className="absolute -bottom-8 left-4 select-none pointer-events-none hidden lg:block">
             <span className="font-display font-black italic text-[130px] leading-none text-outline uppercase tracking-tighter">
@@ -311,16 +325,27 @@ export default function DelhiDwarkaRunPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20 w-full">
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             <div className="lg:col-span-7 space-y-6">
-              {/* Top Partner & Event Date Pills */}
+              {/* Official DDR Logo Crest + Partner & Event Date Pills */}
               <div className="flex flex-wrap items-center gap-3">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-coral-500/20 border border-coral-500/40 backdrop-blur-md">
+                <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-2xl bg-[#C5D887]/20 border border-[#C5D887]/60 backdrop-blur-md">
+                  <img
+                    src="/assets/ddr-logo.png"
+                    alt="DDR Logo"
+                    className="w-7 h-7 rounded-lg object-contain bg-[#C5D887] p-0.5"
+                  />
+                  <span className="text-xs font-display font-black uppercase tracking-wider text-[#C5D887]">
+                    DELHI DWARKA RUNNERS
+                  </span>
+                </div>
+
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-coral-500/20 border border-coral-500/50 backdrop-blur-md">
                   <span className="w-2 h-2 rounded-full bg-volt animate-ping" />
                   <span className="text-xs font-display font-extrabold uppercase tracking-wider text-volt">
                     EVENT DATE: 14-Feb-2027
                   </span>
                 </div>
 
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/20 border border-sky-400/40 backdrop-blur-md text-xs font-display font-bold text-sky-200">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#29ABE2]/20 border border-[#29ABE2]/50 backdrop-blur-md text-xs font-display font-bold text-[#7DD3FC]">
                   🏥 Health Partner: MAX Healthcare
                 </div>
 
@@ -333,33 +358,33 @@ export default function DelhiDwarkaRunPage() {
               </div>
 
               <div className="space-y-2.5">
-                <div className="text-xs sm:text-sm font-display font-black uppercase tracking-[0.2em] text-volt">
+                <div className="text-xs sm:text-sm font-display font-black uppercase tracking-[0.2em] text-[#C5D887]">
                   📍 STARTING POINT: MAX HOSPITAL, SECTOR 10, DWARKA, NEW DELHI
                 </div>
                 <h1 className="font-display font-black italic text-4xl sm:text-5xl lg:text-[58px] leading-[1.04] tracking-tight uppercase">
                   4th Edition of Dwarka Half Marathon:{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral-400 via-orange-500 to-amber-300 block sm:inline">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#29ABE2] via-coral-500 to-[#C5D887] block sm:inline">
                     Delhi Dwarka Run 2027
                   </span>
                 </h1>
               </div>
 
-              {/* Gold Poster Banner Quote */}
-              <div className="inline-block bg-navy-900/90 border-2 border-amber-400/80 rounded-2xl px-5 py-3 shadow-lg">
-                <p className="font-display font-extrabold text-xs sm:text-sm uppercase tracking-wider text-amber-300">
+              {/* Sage-Lime & Cyan-Blue Logo Styled Quote Banner */}
+              <div className="inline-block bg-navy-900/90 border-2 border-[#C5D887]/80 rounded-2xl px-5 py-3 shadow-lg">
+                <p className="font-display font-extrabold text-xs sm:text-sm uppercase tracking-wider text-[#C5D887]">
                   ★ Be a Part of the Biggest Running Event of Dwarka. Create Lifetime Memories. ★
                 </p>
               </div>
 
-              {/* Poster Dual Promo Badges: 50% Discount + Lucky Draw */}
+              {/* Dual Promo Badges: 50% Discount + Lucky Draw */}
               <div className="grid sm:grid-cols-2 gap-4 max-w-xl">
-                <div className="bg-gradient-to-br from-blue-900/90 to-navy-900 border-2 border-volt rounded-2xl p-4 flex items-center gap-3.5 shadow-xl">
-                  <div className="w-14 h-14 rounded-2xl bg-volt text-navy-950 font-athletic font-bold text-3xl flex flex-col items-center justify-center leading-none shrink-0">
+                <div className="bg-gradient-to-br from-[#0369A1]/90 to-navy-900 border-2 border-[#29ABE2] rounded-2xl p-4 flex items-center gap-3.5 shadow-xl">
+                  <div className="w-14 h-14 rounded-2xl bg-[#C5D887] text-navy-950 font-athletic font-bold text-3xl flex flex-col items-center justify-center leading-none shrink-0">
                     <span>50%</span>
                     <span className="text-[10px] font-display font-black">OFF</span>
                   </div>
                   <div>
-                    <div className="font-display font-black text-sm uppercase text-volt">
+                    <div className="font-display font-black text-sm uppercase text-[#C5D887]">
                       50% Discount Till 30-Nov-2026!
                     </div>
                     <div className="text-xs text-slate-200 mt-0.5">
@@ -368,15 +393,19 @@ export default function DelhiDwarkaRunPage() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-emerald-900/90 to-teal-950 border-2 border-amber-400 rounded-2xl p-4 flex items-center gap-3.5 shadow-xl">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-400 text-navy-950 text-2xl flex items-center justify-center shrink-0">
-                    🎁
+                <div className="bg-gradient-to-br from-coral-600/90 to-navy-900 border-2 border-[#C5D887] rounded-2xl p-4 flex items-center gap-3.5 shadow-xl">
+                  <div className="w-14 h-14 rounded-2xl bg-white/95 p-1 flex items-center justify-center shrink-0">
+                    <img
+                      src="/assets/ddr-logo.png"
+                      alt="DDR Logo"
+                      className="w-full h-full object-contain rounded-xl"
+                    />
                   </div>
                   <div>
-                    <div className="font-display font-black text-sm uppercase text-amber-300">
+                    <div className="font-display font-black text-sm uppercase text-[#C5D887]">
                       🎉 Lucky Draw Included!
                     </div>
-                    <div className="text-xs text-slate-200 mt-0.5">
+                    <div className="text-xs text-slate-100 mt-0.5">
                       Win Exciting Prizes &amp; Many More on Race Day!
                     </div>
                   </div>
@@ -403,17 +432,17 @@ export default function DelhiDwarkaRunPage() {
                     return (
                       <div
                         key={item.label}
-                        className="relative bg-navy-900/85 border border-white/15 rounded-2xl p-3 sm:p-4 text-center backdrop-blur-xl shadow-2xl overflow-hidden"
+                        className="relative bg-navy-900/85 border border-[#29ABE2]/35 rounded-2xl p-3 sm:p-4 text-center backdrop-blur-xl shadow-2xl overflow-hidden"
                       >
                         <div className="font-athletic font-bold text-4xl sm:text-5xl text-white leading-none tracking-wide tabular-nums">
                           {String(item.value).padStart(2, "0")}
                         </div>
-                        <div className="text-[10px] sm:text-[11px] font-display font-extrabold uppercase tracking-widest text-coral-400 mt-1">
+                        <div className="text-[10px] sm:text-[11px] font-display font-extrabold uppercase tracking-widest text-[#29ABE2] mt-1">
                           {item.label}
                         </div>
                         <div className="w-full bg-white/10 h-1 rounded-full mt-2.5 overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-coral-500 to-volt h-full transition-all duration-500"
+                            className="bg-gradient-to-r from-[#29ABE2] via-coral-500 to-[#C5D887] h-full transition-all duration-500"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -427,7 +456,7 @@ export default function DelhiDwarkaRunPage() {
               <div className="pt-2 flex flex-wrap items-center gap-4">
                 <button
                   onClick={() => handleOpenRegister()}
-                  className="bg-gradient-to-r from-coral-500 via-orange-500 to-amber-500 hover:from-coral-600 hover:to-orange-600 text-white font-display font-black uppercase tracking-wider text-sm sm:text-base px-8 py-4 rounded-2xl shadow-glow-lg hover:scale-[1.02] transition-all flex items-center gap-3"
+                  className="bg-gradient-to-r from-coral-500 via-[#F26522] to-[#29ABE2] hover:from-coral-600 hover:to-[#0284C7] text-white font-display font-black uppercase tracking-wider text-sm sm:text-base px-8 py-4 rounded-2xl shadow-glow-lg hover:scale-[1.02] transition-all flex items-center gap-3"
                 >
                   <span>Register Your Spot (50% OFF)</span>
                   <span className="bg-black/25 px-2.5 py-1 rounded-lg text-xs">From ₹800</span>
@@ -435,9 +464,9 @@ export default function DelhiDwarkaRunPage() {
 
                 <button
                   onClick={() => setVideoModalOpen(true)}
-                  className="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-display font-bold text-sm px-6 py-4 rounded-2xl backdrop-blur-md transition-all flex items-center gap-3 group"
+                  className="bg-white/10 hover:bg-white/20 border border-[#29ABE2]/40 text-white font-display font-bold text-sm px-6 py-4 rounded-2xl backdrop-blur-md transition-all flex items-center gap-3 group"
                 >
-                  <span className="w-9 h-9 rounded-xl bg-coral-500 group-hover:scale-110 transition-transform flex items-center justify-center shadow">
+                  <span className="w-9 h-9 rounded-xl bg-[#29ABE2] group-hover:scale-110 transition-transform flex items-center justify-center shadow">
                     ▶
                   </span>
                   <div className="text-left">
@@ -450,19 +479,19 @@ export default function DelhiDwarkaRunPage() {
               </div>
             </div>
 
-            {/* Right 5 Cols: Poster-Styled Category Pricing Stack */}
+            {/* Right 5 Cols: Category Pricing Stack Matching DDR Logo Theme */}
             <div className="lg:col-span-5">
-              <div className="bg-navy-900/90 backdrop-blur-2xl border-2 border-white/20 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden">
+              <div className="bg-navy-900/90 backdrop-blur-2xl border-2 border-[#29ABE2]/40 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden">
                 <div className="flex items-center justify-between mb-5">
                   <div>
-                    <span className="text-[11px] font-display font-black uppercase tracking-widest text-volt">
+                    <span className="text-[11px] font-display font-black uppercase tracking-widest text-[#C5D887]">
                       ⚡ 50% OFF TILL 30-NOV-2026
                     </span>
                     <h2 className="font-display font-black text-xl text-white uppercase tracking-tight">
                       Choose Your Race Category
                     </h2>
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-bold">
+                  <span className="px-3 py-1 rounded-full bg-[#29ABE2]/20 border border-[#29ABE2]/50 text-[#7DD3FC] text-[11px] font-bold">
                     14-Feb-2027
                   </span>
                 </div>
@@ -476,8 +505,8 @@ export default function DelhiDwarkaRunPage() {
                         onClick={() => setSelectedCategory(cat)}
                         className={`cursor-pointer rounded-2xl p-4 transition-all border-2 ${
                           isSelected
-                            ? "bg-navy-950 text-white border-volt shadow-xl scale-[1.01]"
-                            : "bg-navy-950/75 text-white border-white/10 hover:border-white/30"
+                            ? "bg-navy-950 text-white border-[#C5D887] shadow-xl scale-[1.01]"
+                            : "bg-navy-950/75 text-white border-white/10 hover:border-[#29ABE2]/50"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-3">
@@ -499,7 +528,7 @@ export default function DelhiDwarkaRunPage() {
                             <div className="text-xs sm:text-sm font-display font-bold text-slate-400 line-through">
                               RS. {cat.originalFee}
                             </div>
-                            <div className="font-display font-black text-xl sm:text-2xl text-emerald-400">
+                            <div className="font-display font-black text-xl sm:text-2xl text-[#C5D887]">
                               RS. {cat.fee}
                             </div>
                           </div>
@@ -511,7 +540,7 @@ export default function DelhiDwarkaRunPage() {
 
                 <button
                   onClick={() => handleOpenRegister(selectedCategory)}
-                  className="mt-5 w-full bg-gradient-to-r from-coral-500 to-orange-600 hover:from-coral-600 hover:to-orange-700 text-white font-display font-black uppercase tracking-wider text-sm py-4 rounded-2xl shadow-glow transition-all flex items-center justify-center gap-2"
+                  className="mt-5 w-full bg-gradient-to-r from-coral-500 via-[#F26522] to-[#29ABE2] hover:from-coral-600 hover:to-[#0284C7] text-white font-display font-black uppercase tracking-wider text-sm py-4 rounded-2xl shadow-glow transition-all flex items-center justify-center gap-2"
                 >
                   <span>
                     Register {selectedCategory.distance} @ RS. {selectedCategory.fee}
@@ -529,7 +558,7 @@ export default function DelhiDwarkaRunPage() {
       </section>
 
       {/* OFFICIAL ACCREDITATIONS & PARTNERS RIBBON */}
-      <section className="bg-navy-900 border-y border-white/10 py-6 text-white">
+      <section className="bg-navy-900 border-y border-[#29ABE2]/25 py-6 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-center text-center">
             {[
@@ -538,19 +567,19 @@ export default function DelhiDwarkaRunPage() {
               { tag: "STARTING POINT", title: "Max Hospital, Sec-10", sub: "Dwarka, New Delhi" },
               { tag: "EVENT DATE", title: "14-Feb-2027", sub: "Sunday Morning Flag-Off" },
               { tag: "EARLY BIRD OFFER", title: "Flat 50% Discount", sub: "Valid till 30-Nov-2026" },
-              { tag: "SPECIAL ATTRACTION", title: "Lucky Draw Prizes", sub: "For All Participants" },
+              { tag: "OFFICIAL HELPDESK", title: "+91 99712 99631", sub: "padam@amigoconnect.com" },
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="bg-white/5 border border-white/10 rounded-2xl p-3.5 hover:border-coral-500/50 transition-colors"
+                className="bg-white/5 border border-white/10 rounded-2xl p-3.5 hover:border-[#29ABE2]/60 transition-colors"
               >
-                <div className="text-[9px] font-display font-extrabold uppercase tracking-widest text-coral-400">
+                <div className="text-[9px] font-display font-extrabold uppercase tracking-widest text-[#29ABE2]">
                   {item.tag}
                 </div>
                 <div className="font-display font-black text-sm text-white mt-0.5">
                   {item.title}
                 </div>
-                <div className="text-[11px] text-slate-400">{item.sub}</div>
+                <div className="text-[11px] text-[#C5D887]">{item.sub}</div>
               </div>
             ))}
           </div>
@@ -1267,18 +1296,23 @@ export default function DelhiDwarkaRunPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-5 space-y-5">
-              <span className="inline-block px-3.5 py-1 rounded-full bg-coral-500/10 text-coral-600 font-display font-black text-xs uppercase tracking-widest">
-                Delhi Dwarka Runners (DDR) Helpdesk
-              </span>
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#29ABE2]/15 text-[#0284C7] font-display font-black text-xs uppercase tracking-widest">
+                <img
+                  src="/assets/ddr-logo.png"
+                  alt="DDR Logo"
+                  className="w-6 h-6 rounded object-contain"
+                />
+                <span>Delhi Dwarka Runners (DDR) Helpdesk</span>
+              </div>
               <h2 className="font-display font-black italic text-3xl text-navy-950 uppercase">
                 Get in Touch With the Organizing Team
               </h2>
               <p className="text-slate-600 text-sm leading-relaxed">
                 Planning a corporate group entry, RWA bulk registration, or sponsorship at the 4th
-                Edition of Dwarka Half Marathon? Reach out to Delhi Dwarka Runners.
+                Edition of Dwarka Half Marathon? Reach out directly to our organizing team.
               </p>
               <div className="space-y-3 text-sm pt-2">
-                <div className="bg-white p-4 rounded-2xl border border-slate-200">
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                   <div className="font-display font-bold text-navy-950">
                     📍 Starting &amp; Finishing Point
                   </div>
@@ -1286,13 +1320,27 @@ export default function DelhiDwarkaRunPage() {
                     Max Hospital, Sector 10, Dwarka, New Delhi – 110075
                   </div>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-slate-200">
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                   <div className="font-display font-bold text-navy-950">
-                    ✉️ Official Support &amp; Bulk Entries
+                    ✉️ Official Contact Email ID
                   </div>
-                  <div className="text-coral-600 font-semibold text-xs mt-0.5">
-                    support@delhidwarkarun.in • groups@delhidwarkarun.in
+                  <a
+                    href="mailto:padam@amigoconnect.com"
+                    className="text-coral-600 hover:text-[#0284C7] font-bold text-sm mt-0.5 inline-block underline"
+                  >
+                    padam@amigoconnect.com
+                  </a>
+                </div>
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                  <div className="font-display font-bold text-navy-950">
+                    📞 Official Helpline / WhatsApp Mobile
                   </div>
+                  <a
+                    href="tel:+919971299631"
+                    className="text-[#0284C7] hover:text-coral-600 font-bold text-sm mt-0.5 inline-block"
+                  >
+                    +91 99712 99631
+                  </a>
                 </div>
               </div>
             </div>
@@ -1307,7 +1355,8 @@ export default function DelhiDwarkaRunPage() {
                     <div className="text-3xl">✅</div>
                     <div className="font-display font-bold text-emerald-900">Message Received!</div>
                     <p className="text-xs text-emerald-700">
-                      Our Delhi Dwarka Runners team will get back to you within 24 hours.
+                      Our Delhi Dwarka Runners team (padam@amigoconnect.com / +91 99712 99631) will
+                      get back to you shortly.
                     </p>
                   </div>
                 ) : (
@@ -1354,7 +1403,7 @@ export default function DelhiDwarkaRunPage() {
                     />
                     <button
                       type="submit"
-                      className="bg-navy-950 hover:bg-coral-500 text-white font-display font-black uppercase tracking-wider text-xs px-7 py-4 rounded-xl transition-colors"
+                      className="bg-gradient-to-r from-coral-500 to-[#29ABE2] hover:from-coral-600 hover:to-[#0284C7] text-white font-display font-black uppercase tracking-wider text-xs px-7 py-4 rounded-xl transition-all shadow-glow"
                     >
                       Send Message →
                     </button>
@@ -1367,36 +1416,57 @@ export default function DelhiDwarkaRunPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-navy-950 text-slate-400 py-14 border-t border-white/10">
+      <footer className="bg-navy-950 text-slate-400 py-14 border-t-2 border-[#29ABE2]/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-coral-500 text-white font-athletic font-bold text-xl flex items-center justify-center pt-0.5">
-              DDR
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-[#C5D887] p-1 flex items-center justify-center border border-[#F26522] shrink-0">
+              <img
+                src="/assets/ddr-logo.png"
+                alt="Delhi Dwarka Runners Logo"
+                className="w-full h-full object-contain rounded-xl"
+              />
             </div>
             <div>
               <div className="font-display font-black text-white text-sm uppercase">
-                DELHI DWARKA RUN 2027 • 4TH EDITION DWARKA HALF MARATHON
+                <span className="text-[#29ABE2]">DELHI DWARKA</span>{" "}
+                <span className="text-coral-500">RUNNERS</span> • 4TH EDITION DWARKA HALF MARATHON
               </div>
-              <div>
-                Starting Point: Max Hospital, Sector 10, Dwarka, New Delhi • support@delhidwarkarun.in
+              <div className="text-slate-300 mt-0.5">
+                Starting Point: Max Hospital, Sector 10, Dwarka, New Delhi
+              </div>
+              <div className="text-[#C5D887] font-semibold mt-0.5">
+                ✉️{" "}
+                <a href="mailto:padam@amigoconnect.com" className="hover:underline">
+                  padam@amigoconnect.com
+                </a>{" "}
+                • 📞{" "}
+                <a href="tel:+919971299631" className="hover:underline">
+                  +91 99712 99631
+                </a>
               </div>
             </div>
           </div>
           <div className="flex flex-wrap gap-5 font-semibold text-slate-300">
-            <a href="#home" className="hover:text-coral-400">
+            <a href="#home" className="hover:text-[#29ABE2]">
               Home
             </a>
             <a href="#categories" className="hover:text-coral-400">
               Categories
             </a>
-            <a href="#race-kit" className="hover:text-coral-400">
-              Poster &amp; Kit
+            <a href="#race-kit" className="hover:text-[#C5D887]">
+              Race Kit
             </a>
-            <a href="#route-map" className="hover:text-coral-400">
+            <a href="#route-map" className="hover:text-[#29ABE2]">
               Route Map
             </a>
             <a href="#results" className="hover:text-coral-400">
               Results
+            </a>
+            <a
+              href="/admin"
+              className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-coral-500 text-[#C5D887] hover:text-white font-display font-bold transition-colors"
+            >
+              🔒 Organizer Portal (Export Registrations)
             </a>
           </div>
           <div>© 2026–2027 Delhi Dwarka Runners (DDR). All rights reserved.</div>

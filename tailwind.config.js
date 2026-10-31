@@ -10,17 +10,28 @@ module.exports = {
     extend: {
       colors: {
         navy: {
-          950: "#040814",
-          900: "#0A1128",
-          800: "#101B3B",
-          700: "#1B2B5E",
+          950: "#061320",
+          900: "#0B1D30",
+          800: "#112B45",
+          700: "#1B3F63",
         },
         coral: {
-          400: "#FF7849",
-          500: "#FF5722",
-          600: "#E64A19",
+          400: "#FF7D45",
+          500: "#F26522",
+          600: "#D95316",
         },
-        volt: "#CCFF00",
+        ddrblue: {
+          400: "#38BDF8",
+          500: "#29ABE2",
+          600: "#0284C7",
+        },
+        sage: {
+          100: "#F3F8E2",
+          200: "#E4F0BE",
+          300: "#C5D887",
+          400: "#B2CB64",
+        },
+        volt: "#C5D887",
         charcoal: "#0F172A",
       },
       fontFamily: {
@@ -29,9 +40,10 @@ module.exports = {
         athletic: ["Teko", "Montserrat", "sans-serif"],
       },
       boxShadow: {
-        glow: "0 12px 35px -5px rgba(255, 87, 34, 0.55)",
-        "glow-lg": "0 20px 50px -10px rgba(255, 87, 34, 0.65)",
-        card: "0 25px 50px -12px rgba(10, 17, 40, 0.12)",
+        glow: "0 12px 35px -5px rgba(242, 101, 34, 0.55)",
+        "glow-lg": "0 20px 50px -10px rgba(242, 101, 34, 0.65)",
+        "glow-blue": "0 12px 35px -5px rgba(41, 171, 226, 0.45)",
+        card: "0 25px 50px -12px rgba(6, 19, 32, 0.12)",
       },
     },
   },

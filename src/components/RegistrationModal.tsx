@@ -111,41 +111,102 @@ export default function RegistrationModal({
   const discountAmount = discountApplied ? Math.round(originalFee * 0.5) : 0;
   const totalPayable = originalFee - discountAmount;
 
-  const finalizeRegistration = (paymentId: string) => {
-    const prefix =
-      category.id === "half"
-        ? "21"
-        : category.id === "10.5k"
-        ? "10"
-        : category.id === "5k"
-        ? "50"
-        : "30";
-    const generatedBib = prefix + Math.floor(100 + Math.random() * 899);
+  const finalizeRegistration = async (
+    paymentId: string,
+    orderId: string = "",
+    mode: string = "razorpay"
+  ) => {
+    try {
+      const payload = {
+        fullName: formData.fullName,
+        email: formData.email,
+        mobile: formData.mobile,
+        dob: formData.dob,
+        gender: formData.gender,
+        bloodGroup: formData.bloodGroup,
+        tshirtSize: formData.tshirtSize,
+        emergencyName: formData.emergencyName,
+        emergencyPhone: formData.emergencyPhone,
+        categoryId: category.id,
+        categoryName: category.name,
+        distance: category.distance,
+        startTime: category.startTime,
+        originalFee,
+        discountAmount,
+        amountPaid: totalPayable,
+        couponCode: discountApplied ? couponCode || "DDR50" : "",
+        paymentId,
+        orderId,
+        paymentMode: mode,
+      };
 
-    const confirmedObj = {
-      bib: generatedBib,
-      txnId: paymentId,
-      name: formData.fullName,
-      category: category.name,
-      distance: category.distance,
-      startTime: category.startTime,
-      gender: formData.gender,
-      tshirtSize: formData.tshirtSize,
-      amountPaid: totalPayable,
-    };
+      const saveRes = await fetch("/api/registrations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    setConfirmedBib(confirmedObj);
-    setIsProcessingPayment(false);
-    setStep(3);
-    onSuccessRegister({
-      bib: generatedBib,
-      name: formData.fullName,
-      category: category.name,
-      gender: formData.gender,
-      netTime: "Registered (14-Feb-2027)",
-      pace: "Lucky Draw Eligible",
-      isNew: true,
-    });
+      const saveData = await saveRes.json();
+      const savedRecord = saveData?.registration;
+
+      const prefix =
+        category.id === "half"
+          ? "21"
+          : category.id === "10.5k"
+          ? "10"
+          : category.id === "5k"
+          ? "50"
+          : "30";
+      const assignedBib =
+        savedRecord?.bib || prefix + Math.floor(100 + Math.random() * 899);
+
+      // Also store a local browser backup copy
+      if (typeof window !== "undefined") {
+        try {
+          const existingRaw = localStorage.getItem("ddr2027_registrations_backup");
+          const existingList = existingRaw ? JSON.parse(existingRaw) : [];
+          const backupEntry = savedRecord || {
+            id: `reg_${Date.now()}`,
+            bib: assignedBib,
+            registeredAt: new Date().toISOString(),
+            ...payload,
+            paymentStatus: "PAID",
+          };
+          localStorage.setItem(
+            "ddr2027_registrations_backup",
+            JSON.stringify([backupEntry, ...existingList])
+          );
+        } catch {}
+      }
+
+      const confirmedObj = {
+        bib: assignedBib,
+        txnId: paymentId,
+        name: formData.fullName,
+        category: category.name,
+        distance: category.distance,
+        startTime: category.startTime,
+        gender: formData.gender,
+        tshirtSize: formData.tshirtSize,
+        amountPaid: totalPayable,
+      };
+
+      setConfirmedBib(confirmedObj);
+      setIsProcessingPayment(false);
+      setStep(3);
+      onSuccessRegister({
+        bib: assignedBib,
+        name: formData.fullName,
+        category: category.name,
+        gender: formData.gender,
+        netTime: "Registered (14-Feb-2027)",
+        pace: "Lucky Draw Eligible",
+        isNew: true,
+      });
+    } catch (err: any) {
+      setPaymentError(err?.message || "Failed to save registration record.");
+      setIsProcessingPayment(false);
+    }
   };
 
   const handleRazorpayCheckout = async () => {
@@ -221,7 +282,11 @@ export default function RegistrationModal({
                 setIsProcessingPayment(false);
                 return;
               }
-              finalizeRegistration(response.razorpay_payment_id);
+              await finalizeRegistration(
+                response.razorpay_payment_id,
+                response.razorpay_order_id || orderData.orderId || "",
+                "razorpay_live"
+              );
             } catch (err: any) {
               setPaymentError(err?.message || "Error verifying payment.");
               setIsProcessingPayment(false);
@@ -241,10 +306,10 @@ export default function RegistrationModal({
       }
 
       // 3. Fallback simulated checkout when RAZORPAY_KEY_ID is not yet added in Railway Variables
-      setTimeout(() => {
+      setTimeout(async () => {
         const mockTxnId =
           "pay_DDR27_" + Math.random().toString(36).substring(2, 9).toUpperCase();
-        finalizeRegistration(mockTxnId);
+        await finalizeRegistration(mockTxnId, "", paymentMethod);
       }, 900);
     } catch (err: any) {
       setPaymentError(err?.message || "Payment initialization failed.");
@@ -256,21 +321,28 @@ export default function RegistrationModal({
     <div className="fixed inset-0 z-50 bg-navy-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
       <div className="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-200 my-auto max-h-[92vh] flex flex-col">
         {/* Modal Header */}
-        <div className="bg-navy-900 text-white px-6 py-5 flex items-center justify-between shrink-0">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500 text-navy-950 text-[11px] font-display font-black uppercase tracking-wider">
-                50% OFF Till 30-Nov-2026
-              </span>
-              <span className="text-xs text-slate-300">
-                Event Date: 14-Feb-2027 • Step {step} of 3
-              </span>
+        <div className="bg-navy-900 text-white px-6 py-5 flex items-center justify-between shrink-0 border-b border-[#29ABE2]/30">
+          <div className="flex items-center gap-3.5">
+            <img
+              src="/assets/ddr-logo.png"
+              alt="DDR Logo"
+              className="w-12 h-12 rounded-xl bg-[#C5D887] p-1 object-contain border border-[#F26522] shrink-0"
+            />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#C5D887] text-navy-950 text-[11px] font-display font-black uppercase tracking-wider">
+                  50% OFF Till 30-Nov-2026
+                </span>
+                <span className="text-xs text-slate-300">
+                  Event Date: 14-Feb-2027 • Step {step} of 3
+                </span>
+              </div>
+              <h3 className="font-display font-extrabold text-lg sm:text-xl mt-1">
+                {step === 1 && "Runner Registration & Live Bib Preview"}
+                {step === 2 && "50% Discount Summary & Razorpay Checkout"}
+                {step === 3 && "Registration Confirmed & Official E-Bib"}
+              </h3>
             </div>
-            <h3 className="font-display font-extrabold text-lg sm:text-xl mt-1">
-              {step === 1 && "Runner Registration & Live Bib Preview"}
-              {step === 2 && "50% Discount Summary & Razorpay Checkout"}
-              {step === 3 && "Registration Confirmed & Official E-Bib"}
-            </h3>
           </div>
           <button
             onClick={onClose}
@@ -284,7 +356,7 @@ export default function RegistrationModal({
         {/* Progress Bar */}
         <div className="bg-slate-100 h-1.5 w-full shrink-0">
           <div
-            className="bg-coral-500 h-full transition-all duration-300"
+            className="bg-gradient-to-r from-[#29ABE2] via-coral-500 to-[#C5D887] h-full transition-all duration-300"
             style={{ width: `${(step / 3) * 100}%` }}
           />
         </div>
@@ -323,9 +395,9 @@ export default function RegistrationModal({
               </div>
 
               {/* Live Dynamic Bib Preview Strip */}
-              <div className="bg-gradient-to-r from-navy-950 via-navy-900 to-navy-800 rounded-2xl p-4 text-white flex items-center justify-between border border-coral-500/40">
+              <div className="bg-gradient-to-r from-navy-950 via-navy-900 to-[#0284C7]/60 rounded-2xl p-4 text-white flex items-center justify-between border border-[#29ABE2]/50">
                 <div>
-                  <div className="text-[10px] font-display font-bold uppercase text-volt">
+                  <div className="text-[10px] font-display font-bold uppercase text-[#C5D887]">
                     DDR 4th Edition • 14-Feb-2027 • {START_VENUE}
                   </div>
                   <div className="font-display font-black text-lg uppercase tracking-wide text-white mt-0.5">
@@ -335,7 +407,7 @@ export default function RegistrationModal({
                     {category.name} • Tee Size: {formData.tshirtSize} • 🎁 Lucky Draw Included
                   </div>
                 </div>
-                <div className="text-right bg-white text-navy-950 px-3.5 py-2 rounded-xl font-athletic font-bold text-2xl leading-none shrink-0">
+                <div className="text-right bg-[#C5D887] text-navy-950 px-3.5 py-2 rounded-xl font-athletic font-bold text-2xl leading-none shrink-0">
                   {category.distance}
                 </div>
               </div>
