@@ -1,0 +1,587 @@
+"use client";
+
+import React, { useState } from "react";
+import { RACE_CATEGORIES, RaceCategory, RunnerResult } from "../data/raceData";
+
+interface RegistrationModalProps {
+  initialCategory: RaceCategory;
+  onClose: () => void;
+  onSuccessRegister: (entry: RunnerResult) => void;
+}
+
+export default function RegistrationModal({
+  initialCategory,
+  onClose,
+  onSuccessRegister,
+}: RegistrationModalProps) {
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [category, setCategory] = useState<RaceCategory>(initialCategory);
+  const [couponCode, setCouponCode] = useState("");
+  const [discountApplied, setDiscountApplied] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "netbanking">("upi");
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [confirmedBib, setConfirmedBib] = useState<{
+    bib: string;
+    txnId: string;
+    name: string;
+    category: string;
+    distance: string;
+    startTime: string;
+    gender: string;
+    tshirtSize: string;
+    amountPaid: number;
+  } | null>(null);
+
+  const [errors, setErrors] = useState<Record<string, string | null>>({});
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    mobile: "",
+    dob: "",
+    gender: "Male",
+    tshirtSize: "M",
+    emergencyName: "",
+    emergencyPhone: "",
+    medicalDeclaration: false,
+  });
+
+  const handleChange = (field: string, value: string | boolean) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: null }));
+    }
+  };
+
+  const validateStep1 = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.fullName || formData.fullName.trim().length < 3) {
+      newErrors.fullName = "Please enter your full name (minimum 3 characters).";
+    }
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address.";
+    }
+    if (!formData.mobile || !/^[6-9]\d{9}$/.test(formData.mobile.replace(/\D/g, "").slice(-10))) {
+      newErrors.mobile = "Enter a valid 10-digit Indian mobile number.";
+    }
+    if (!formData.dob) {
+      newErrors.dob = "Please select your Date of Birth.";
+    }
+    if (!formData.emergencyName || formData.emergencyName.trim().length < 2) {
+      newErrors.emergencyName = "Emergency contact name is required.";
+    }
+    if (
+      !formData.emergencyPhone ||
+      !/^[6-9]\d{9}$/.test(formData.emergencyPhone.replace(/\D/g, "").slice(-10))
+    ) {
+      newErrors.emergencyPhone = "Enter a valid 10-digit emergency contact number.";
+    }
+    if (
+      formData.mobile &&
+      formData.emergencyPhone &&
+      formData.mobile.replace(/\D/g, "").slice(-10) ===
+        formData.emergencyPhone.replace(/\D/g, "").slice(-10)
+    ) {
+      newErrors.emergencyPhone = "Emergency number must differ from runner's mobile number.";
+    }
+    if (!formData.medicalDeclaration) {
+      newErrors.medicalDeclaration =
+        "You must accept the medical & fitness declaration to participate.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleProceedToPayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateStep1()) {
+      setStep(2);
+    }
+  };
+
+  const applyCoupon = () => {
+    if (couponCode.trim().toUpperCase() === "DWARKA2027") {
+      setDiscountApplied(true);
+    } else {
+      alert("Try code DWARKA2027 for a 10% Early Bird discount!");
+    }
+  };
+
+  const baseFee = category.fee;
+  const discountAmount = discountApplied ? Math.round(baseFee * 0.1) : 0;
+  const platformFee = 29;
+  const totalPayable = baseFee - discountAmount + platformFee;
+
+  const handleSimulatedPayment = () => {
+    setIsProcessingPayment(true);
+    setTimeout(() => {
+      const prefix =
+        category.id === "full"
+          ? "42"
+          : category.id === "half"
+          ? "21"
+          : category.id === "10k"
+          ? "10"
+          : "50";
+      const generatedBib = prefix + Math.floor(100 + Math.random() * 899);
+      const txnId = "pay_DDR27_" + Math.random().toString(36).substring(2, 9).toUpperCase();
+
+      const confirmedObj = {
+        bib: generatedBib,
+        txnId,
+        name: formData.fullName,
+        category: category.name,
+        distance: category.distance,
+        startTime: category.startTime,
+        gender: formData.gender,
+        tshirtSize: formData.tshirtSize,
+        amountPaid: totalPayable,
+      };
+
+      setConfirmedBib(confirmedObj);
+      setIsProcessingPayment(false);
+      setStep(3);
+      onSuccessRegister({
+        bib: generatedBib,
+        name: formData.fullName,
+        category: category.name,
+        gender: formData.gender,
+        netTime: "Registered (2027)",
+        pace: "Bib Assigned",
+        isNew: true,
+      });
+    }, 1000);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-navy-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+      <div className="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-200 my-auto max-h-[92vh] flex flex-col">
+        {/* Modal Header */}
+        <div className="bg-navy-900 text-white px-6 py-5 flex items-center justify-between shrink-0">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-coral-500 text-[11px] font-bold uppercase tracking-wider">
+                Delhi Dwarka Run 2027
+              </span>
+              <span className="text-xs text-slate-300">Step {step} of 3</span>
+            </div>
+            <h3 className="font-display font-extrabold text-lg sm:text-xl mt-1">
+              {step === 1 && "Runner Registration & Kit Details"}
+              {step === 2 && "Order Summary & Razorpay Checkout"}
+              {step === 3 && "Registration Confirmed & Official E-Bib"}
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"
+            aria-label="Close modal"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="bg-slate-100 h-1.5 w-full shrink-0">
+          <div
+            className="bg-coral-500 h-full transition-all duration-300"
+            style={{ width: `${(step / 3) * 100}%` }}
+          />
+        </div>
+
+        <div className="p-6 sm:p-7 overflow-y-auto space-y-6">
+          {step === 1 && (
+            <form onSubmit={handleProceedToPayment} className="space-y-5" noValidate>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                  Select Race Category *
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {RACE_CATEGORIES.map((cat) => (
+                    <button
+                      type="button"
+                      key={cat.id}
+                      onClick={() => setCategory(cat)}
+                      className={`p-3 rounded-2xl border text-left transition-all ${
+                        category.id === cat.id
+                          ? "border-coral-500 bg-coral-500/10 ring-2 ring-coral-500/20"
+                          : "border-slate-200 hover:border-slate-300 bg-slate-50"
+                      }`}
+                    >
+                      <div className="font-display font-black text-base text-navy-900">
+                        {cat.distance}
+                      </div>
+                      <div className="text-[11px] font-medium text-slate-600 truncate">
+                        {cat.name.split(" (")[0]}
+                      </div>
+                      <div className="font-display font-bold text-xs text-coral-600 mt-1">
+                        ₹{cat.fee}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    Full Name (as on ID) *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.fullName}
+                    onChange={(e) => handleChange("fullName", e.target.value)}
+                    placeholder="e.g. Siddharth Kapoor"
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-coral-500 ${
+                      errors.fullName ? "border-red-500 bg-red-50" : "border-slate-300"
+                    }`}
+                  />
+                  {errors.fullName && (
+                    <p className="text-xs text-red-600 mt-1">{errors.fullName}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    placeholder="runner@example.com"
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-coral-500 ${
+                      errors.email ? "border-red-500 bg-red-50" : "border-slate-300"
+                    }`}
+                  />
+                  {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    Mobile Number (WhatsApp) *
+                  </label>
+                  <input
+                    type="tel"
+                    value={formData.mobile}
+                    onChange={(e) => handleChange("mobile", e.target.value)}
+                    placeholder="9876543210"
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-coral-500 ${
+                      errors.mobile ? "border-red-500 bg-red-50" : "border-slate-300"
+                    }`}
+                  />
+                  {errors.mobile && <p className="text-xs text-red-600 mt-1">{errors.mobile}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    Date of Birth *
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.dob}
+                    onChange={(e) => handleChange("dob", e.target.value)}
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-coral-500 ${
+                      errors.dob ? "border-red-500 bg-red-50" : "border-slate-300"
+                    }`}
+                  />
+                  {errors.dob && <p className="text-xs text-red-600 mt-1">{errors.dob}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    Gender *
+                  </label>
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => handleChange("gender", e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-coral-500"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Non-Binary / Other">Non-Binary / Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    Dry-Fit T-Shirt Size *
+                  </label>
+                  <select
+                    value={formData.tshirtSize}
+                    onChange={(e) => handleChange("tshirtSize", e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-coral-500"
+                  >
+                    <option value="S">Small (S - Chest 38&quot;)</option>
+                    <option value="M">Medium (M - Chest 40&quot;)</option>
+                    <option value="L">Large (L - Chest 42&quot;)</option>
+                    <option value="XL">X-Large (XL - Chest 44&quot;)</option>
+                    <option value="XXL">XX-Large (XXL - Chest 46&quot;)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    Emergency Contact Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.emergencyName}
+                    onChange={(e) => handleChange("emergencyName", e.target.value)}
+                    placeholder="Spouse / Parent / Friend"
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-coral-500 ${
+                      errors.emergencyName ? "border-red-500 bg-red-50" : "border-slate-300"
+                    }`}
+                  />
+                  {errors.emergencyName && (
+                    <p className="text-xs text-red-600 mt-1">{errors.emergencyName}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-600 mb-1">
+                    Emergency Contact Number *
+                  </label>
+                  <input
+                    type="tel"
+                    value={formData.emergencyPhone}
+                    onChange={(e) => handleChange("emergencyPhone", e.target.value)}
+                    placeholder="9811122233"
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-coral-500 ${
+                      errors.emergencyPhone ? "border-red-500 bg-red-50" : "border-slate-300"
+                    }`}
+                  />
+                  {errors.emergencyPhone && (
+                    <p className="text-xs text-red-600 mt-1">{errors.emergencyPhone}</p>
+                  )}
+                </div>
+              </div>
+
+              <div
+                className={`p-4 rounded-2xl border ${
+                  errors.medicalDeclaration
+                    ? "border-red-500 bg-red-50"
+                    : "border-slate-200 bg-slate-50"
+                }`}
+              >
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.medicalDeclaration}
+                    onChange={(e) => handleChange("medicalDeclaration", e.target.checked)}
+                    className="mt-1 w-4 h-4 accent-coral-500 rounded"
+                  />
+                  <span className="text-xs text-slate-700 leading-relaxed">
+                    <strong>Medical &amp; Fitness Declaration:</strong> I declare that I am
+                    physically fit and have trained sufficiently to participate in the{" "}
+                    <strong>{category.name}</strong> at Delhi Dwarka Run 2027.
+                  </span>
+                </label>
+                {errors.medicalDeclaration && (
+                  <p className="text-xs text-red-600 mt-1.5 font-medium">
+                    {errors.medicalDeclaration}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-5 py-3 rounded-xl border border-slate-300 text-slate-600 font-semibold text-sm hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-coral-500 hover:bg-coral-600 text-white font-display font-bold text-sm px-7 py-3.5 rounded-xl shadow-glow transition-all"
+                >
+                  Continue to Summary &amp; Payment →
+                </button>
+              </div>
+            </form>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-6">
+              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                  <div>
+                    <span className="text-xs font-bold uppercase text-coral-600">
+                      Selected Category
+                    </span>
+                    <h4 className="font-display font-extrabold text-lg text-navy-900">
+                      {category.name}
+                    </h4>
+                  </div>
+                  <button
+                    onClick={() => setStep(1)}
+                    className="text-xs font-bold text-coral-600 underline"
+                  >
+                    Edit Details
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-400 block">Runner Name</span>
+                    <span className="font-semibold text-navy-900">{formData.fullName}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block">Mobile</span>
+                    <span className="font-semibold text-navy-900">{formData.mobile}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block">T-Shirt Size &amp; Gender</span>
+                    <span className="font-semibold text-navy-900">
+                      Size {formData.tshirtSize} • {formData.gender}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Promo Code (Try DWARKA2027)"
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-sm uppercase font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={applyCoupon}
+                  className="px-5 py-2.5 rounded-xl bg-navy-900 text-white font-display font-bold text-xs uppercase tracking-wider hover:bg-navy-800"
+                >
+                  {discountApplied ? "Applied ✓" : "Apply"}
+                </button>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2.5 text-sm">
+                <div className="flex justify-between text-slate-600">
+                  <span>{category.name} Entry Fee</span>
+                  <span className="font-semibold text-navy-900">₹{baseFee}.00</span>
+                </div>
+                {discountApplied && (
+                  <div className="flex justify-between text-emerald-600 font-medium">
+                    <span>Early Bird Discount (DWARKA2027 - 10%)</span>
+                    <span>- ₹{discountAmount}.00</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-slate-500 text-xs">
+                  <span>Timing Portal &amp; Convenience Fee</span>
+                  <span>₹{platformFee}.00</span>
+                </div>
+                <div className="border-t border-slate-200 pt-3 flex justify-between items-baseline">
+                  <span className="font-display font-bold text-navy-900 text-base">
+                    Total Payable
+                  </span>
+                  <span className="font-display font-black text-2xl text-coral-600">
+                    ₹{totalPayable}.00
+                  </span>
+                </div>
+              </div>
+
+              <div className="border-2 border-indigo-600/20 bg-indigo-50/40 rounded-2xl p-5 space-y-4">
+                <div className="grid grid-cols-3 gap-2.5 text-xs font-semibold">
+                  {(
+                    [
+                      { id: "upi", label: "⚡ UPI / GPay" },
+                      { id: "card", label: "💳 Card" },
+                      { id: "netbanking", label: "🏦 NetBanking" },
+                    ] as const
+                  ).map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setPaymentMethod(m.id)}
+                      className={`p-3 rounded-xl border text-center transition-all ${
+                        paymentMethod === m.id
+                          ? "border-indigo-600 bg-white text-indigo-700 shadow-sm"
+                          : "border-slate-200 bg-white/60 text-slate-600"
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  disabled={isProcessingPayment}
+                  onClick={handleSimulatedPayment}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-display font-extrabold text-base py-4 rounded-xl shadow-lg transition-all"
+                >
+                  {isProcessingPayment
+                    ? "Verifying Payment & Assigning Bib..."
+                    : `Pay ₹${totalPayable} & Confirm Registration`}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && confirmedBib && (
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl">
+                🎉
+              </div>
+              <div>
+                <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs uppercase">
+                  Payment Successful • {confirmedBib.txnId}
+                </span>
+                <h4 className="font-display font-black text-2xl text-navy-900 mt-2">
+                  See You at the Starting Line, {confirmedBib.name}!
+                </h4>
+              </div>
+
+              <div className="bg-gradient-to-br from-navy-900 via-navy-800 to-navy-950 text-white rounded-3xl p-6 max-w-md mx-auto border-2 border-coral-500 shadow-2xl text-left">
+                <div className="flex items-center justify-between border-b border-white/15 pb-3">
+                  <div className="font-display font-black text-sm tracking-wider text-coral-400">
+                    DELHI DWARKA RUN 2027
+                  </div>
+                  <span className="px-2.5 py-1 rounded bg-white text-navy-900 font-display font-black text-xs">
+                    {confirmedBib.distance}
+                  </span>
+                </div>
+                <div className="py-5 text-center border-b border-white/15">
+                  <div className="text-xs uppercase tracking-widest text-slate-400">
+                    Official Runner Bib Number
+                  </div>
+                  <div className="font-display font-black text-5xl tracking-wider text-white mt-1">
+                    #{confirmedBib.bib}
+                  </div>
+                  <div className="text-sm font-display font-bold text-coral-400 mt-1 uppercase">
+                    {confirmedBib.name}
+                  </div>
+                </div>
+                <div className="pt-4 grid grid-cols-3 gap-2 text-xs">
+                  <div>
+                    <span className="text-slate-400 block">Flag-Off</span>
+                    <span className="font-bold">{confirmedBib.startTime}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block">Tee Size</span>
+                    <span className="font-bold">Size {confirmedBib.tshirtSize}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block">Paid</span>
+                    <span className="font-bold text-emerald-400">₹{confirmedBib.amountPaid}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-7 py-3 rounded-xl bg-coral-500 hover:bg-coral-600 text-white font-display font-bold text-sm shadow-glow"
+                >
+                  Done &amp; View Leaderboard
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

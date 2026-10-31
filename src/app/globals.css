@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap');
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: #1E293B;
+  background-color: #FFFFFF;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(6, 11, 25, 0.92) 0%,
+    rgba(10, 17, 40, 0.85) 55%,
+    rgba(27, 42, 89, 0.78) 100%
+  );
+}
+
+.asphalt-pattern {
+  background-image: radial-gradient(rgba(255, 87, 34, 0.14) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
