@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import {
-  getAllRegistrations,
+  syncAndGetRegistrations,
   saveRegistration,
   convertRegistrationsToCSV,
 } from "../../../lib/registrationStore";
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     const passcode = searchParams.get("passcode") || "";
 
     const expectedPasscode = process.env.ADMIN_PASSCODE || "DDR2027ADMIN";
-    const allRecords = getAllRegistrations();
+    const { records: allRecords } = await syncAndGetRegistrations();
 
     // Admin mode or CSV export requires passcode
     if (mode === "admin" || format === "csv") {
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const saved = saveRegistration({
+    const saved = await saveRegistration({
       fullName: body.fullName,
       email: body.email,
       mobile: body.mobile,
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
       }).catch((err) => console.error("Webhook forwarding error:", err));
     }
 
-    // Send official HTML Confirmation & E-Bib email to the registered runner (and copy to organizer)
+    // Send official HTML Confirmation & E-Bib email to the registered runner and to padam@amigoconnect.com
     const emailConfirmation = await sendRegistrationConfirmationEmail(saved);
 
     return NextResponse.json({

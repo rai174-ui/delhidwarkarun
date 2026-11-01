@@ -177,9 +177,16 @@ export default function RegistrationModal({
           ? "10"
           : category.id === "5k"
           ? "50"
+          : category.id === "test1"
+          ? "90"
           : "30";
-      const assignedBib =
-        savedRecord?.bib || prefix + Math.floor(100 + Math.random() * 899);
+
+      let assignedBib = savedRecord?.bib || "";
+      if (!assignedBib && typeof window !== "undefined") {
+        const lastSeq = Number(localStorage.getItem("ddr2027_last_bib_seq") || "100") + 1;
+        localStorage.setItem("ddr2027_last_bib_seq", String(lastSeq));
+        assignedBib = `${prefix}${lastSeq}`;
+      }
 
       // Also store a local browser backup copy
       if (typeof window !== "undefined") {
@@ -248,9 +255,19 @@ export default function RegistrationModal({
           receipt: `ddr27_${Date.now()}`,
           categoryId: category.id,
           categoryName: category.name,
+          distance: category.distance,
+          startTime: category.startTime,
           runnerName: formData.fullName,
           email: formData.email,
           mobile: formData.mobile,
+          dob: formData.dob,
+          gender: formData.gender,
+          bloodGroup: formData.bloodGroup,
+          tshirtSize: formData.tshirtSize,
+          emergencyName: formData.emergencyName,
+          emergencyPhone: formData.emergencyPhone,
+          originalFee,
+          discountAmount,
         }),
       });
 
@@ -288,10 +305,21 @@ export default function RegistrationModal({
           contact: formData.mobile,
         },
         notes: {
-          category: category.name,
+          categoryId: category.id,
+          categoryName: category.name,
+          distance: category.distance,
+          startTime: category.startTime,
+          fullName: formData.fullName,
+          email: formData.email,
+          mobile: formData.mobile,
+          dob: formData.dob,
+          gender: formData.gender,
+          bloodGroup: formData.bloodGroup,
           tshirtSize: formData.tshirtSize,
-          eventDate: "14-Feb-2027",
-          startingPoint: START_VENUE,
+          emergencyName: formData.emergencyName,
+          emergencyPhone: formData.emergencyPhone,
+          originalFee: String(originalFee),
+          discountAmount: String(discountAmount),
         },
         theme: {
           color: "#F26522",
