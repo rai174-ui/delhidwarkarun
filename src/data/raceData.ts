@@ -1,5 +1,5 @@
 export interface RaceCategory {
-  id: "half" | "10.5k" | "5k" | "3k";
+  id: "half" | "10.5k" | "5k" | "3k" | "test1";
   name: string;
   distance: string;
   numericKm: number;
@@ -143,6 +143,32 @@ export const RACE_CATEGORIES: RaceCategory[] = [
       "Lucky Draw Entry",
     ],
   },
+  {
+    id: "test1",
+    name: "Gateway Test Payment (₹1)",
+    distance: "TEST ₹1",
+    numericKm: 1,
+    tagline: "Temporary ₹1 Live Payment Gateway Test",
+    description:
+      "Temporary ₹1 test category to verify live Razorpay payment gateway, order creation, signature verification, and E-Bib generation. Will be removed after testing.",
+    startTime: "06:45 AM",
+    cutoffTime: "Test Mode",
+    minAge: "All",
+    originalFee: 2,
+    fee: 1,
+    timed: false,
+    slotsFilled: 10,
+    prizePool: "Gateway Verification Test",
+    color: "from-amber-500 via-orange-500 to-red-500",
+    badge: "TEMP ₹1 TEST",
+    image: "/assets/finish-line.jpg",
+    hydrationPoints: 1,
+    perks: [
+      "Live Razorpay ₹1.00 (100 Paise) Checkout Test",
+      "Instant Signature Verification Check",
+      "Live E-Bib & Database Record Verification",
+    ],
+  },
 ];
 
 export const ROUTE_DATA: Record<
@@ -214,6 +240,15 @@ export const ROUTE_DATA: Record<
       "Welcomhotel By ITC Hotels, Dwarka",
       "U-Turn for 3 KM (Near Muthoot Finance Gold Loan)",
     ],
+    svgPath: "M 110 215 Q 180 130 280 160 T 360 215 Q 240 265 110 215",
+    elevationPoints: "0,80 150,77 300,75 450,77 600,80",
+  },
+  test1: {
+    title: "Temporary ₹1 Gateway Test Route",
+    pathDesc: "START / FINISH at Max Super Speciality Hospital Dwarka (Sector 10)",
+    elevationGain: "Flat",
+    waterStations: "Start & Finish",
+    landmarks: ["Max Super Speciality Hospital Dwarka (START / FINISH)"],
     svgPath: "M 110 215 Q 180 130 280 160 T 360 215 Q 240 265 110 215",
     elevationPoints: "0,80 150,77 300,75 450,77 600,80",
   },

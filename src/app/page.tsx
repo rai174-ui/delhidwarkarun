@@ -306,7 +306,16 @@ export default function DelhiDwarkaRunPage() {
               </a>
             </nav>
 
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-2.5">
+              <button
+                onClick={() => {
+                  const testCat = RACE_CATEGORIES.find((c) => c.id === "test1");
+                  handleOpenRegister(testCat);
+                }}
+                className="bg-amber-500 hover:bg-amber-600 text-white font-display font-black uppercase tracking-wider text-xs px-4 py-3.5 rounded-xl shadow-md hover:scale-[1.02] transition-all flex items-center gap-1.5"
+              >
+                <span>🧪 Test ₹1</span>
+              </button>
               <button
                 onClick={() => handleOpenRegister()}
                 className="bg-gradient-to-r from-coral-500 via-[#F26522] to-[#0284C7] text-white font-display font-black uppercase tracking-wider text-xs px-6 py-3.5 rounded-xl shadow-glow hover:shadow-glow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
