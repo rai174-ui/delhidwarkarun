@@ -5,6 +5,11 @@ export const metadata = {
   title: "4th Edition Dwarka Half Marathon | Delhi Dwarka Run 2027",
   description:
     "4th Edition of Dwarka Half Marathon (Delhi Dwarka Run 2027) on 14-Feb-2027. Starting Point: Max Hospital, Sector 10, Dwarka, New Delhi. Register for 21.097 KM, 10.5 KM, 5 KM, or 3 KM with 50% Discount till 30-Nov-2026!",
+  icons: {
+    icon: "/assets/ddr-logo.png?v=3",
+    shortcut: "/assets/ddr-logo.png?v=3",
+    apple: "/assets/ddr-logo.png?v=3",
+  },
 };
 
 export default function RootLayout({
@@ -15,7 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <link rel="icon" href="/assets/ddr-logo.png" type="image/png" />
+        <link rel="icon" href="/assets/ddr-logo.png?v=3" type="image/png" />
+        <link rel="shortcut icon" href="/assets/ddr-logo.png?v=3" type="image/png" />
+        <link rel="apple-touch-icon" href="/assets/ddr-logo.png?v=3" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

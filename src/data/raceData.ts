@@ -158,54 +158,62 @@ export const ROUTE_DATA: Record<
   }
 > = {
   half: {
-    title: "21.097 KM Half Marathon Championship Course",
+    title: "21.097 KM Half Marathon Official Course (2 Loops to Kakrola U-Turn)",
     pathDesc:
-      "Max Hospital Sec-10 → Sec-6/7 Avenue → Sec-20/21 Metro Corridor → Golf Course Road → Sec-12 City Centre → Max Hospital Sec-10 Finish",
+      "START at Max Super Speciality Hospital Dwarka (Sec-10) → Welcomhotel By ITC Hotels → Golf Course Rd → Venkateshwar Hospital → Sector 17 Dwarka → U-Turn at Kakrola (10.5 & 21.1 KM Turnaround) → Return to Max Hospital Sec-10 FINISH",
     elevationGain: "+42m (Flat & Fast PB Course)",
-    waterStations: "Every 2.5 KM + Max Healthcare Medical Stations",
+    waterStations: "Every 2.5 KM + Max Healthcare & Venkateshwar Hospital Corridor",
     landmarks: [
-      "Max Hospital Sector 10 (Start/Finish)",
-      "Dwarka Sector 10 Metro",
-      "Bharat Vandana Park Perimeter",
-      "Golf Course Road Boulevard",
+      "Max Super Speciality Hospital Dwarka (START / FINISH)",
+      "Welcomhotel By ITC Hotels, Dwarka",
+      "Venkateshwar Hospital & Sector 17 Dwarka",
+      "Kakrola U-Turn Point (for 10.5 & 21.1 KM)",
     ],
     svgPath:
       "M 65 215 C 95 55, 300 40, 535 90 C 685 125, 675 285, 500 295 C 315 310, 115 285, 65 215",
     elevationPoints: "0,85 80,74 180,60 280,68 380,48 480,64 600,84",
   },
   "10.5k": {
-    title: "10.5 KM Quarter Marathon Speed Circuit",
+    title: "10.5 KM Official Course (Turnaround at Kakrola U-Turn)",
     pathDesc:
-      "Max Hospital Sec-10 → Sec-6 Main Rd → Sec-11 Metro Chowk → Sec-9 Ashirwad Chowk → Max Hospital Sec-10 Finish Gantry",
+      "START at Max Super Speciality Hospital Dwarka (Sec-10) → Welcomhotel By ITC Hotels → Golf Course Rd → Venkateshwar Hospital → Sector 17 Dwarka → U-Turn for 10.5 & 21.1 KM at Kakrola → Return to Max Hospital Sec-10 FINISH",
     elevationGain: "+22m (100% Paved Asphalt)",
     waterStations: "KM 2.0, KM 4.5, KM 7.5, KM 9.5 & Finish",
     landmarks: [
-      "Max Hospital Sector 10",
-      "Ashirwad Chowk",
-      "Sector 11 Metro Boulevard",
-      "Sector 10 Sports Complex Road",
+      "Max Super Speciality Hospital Dwarka (START / FINISH)",
+      "Welcomhotel By ITC Hotels, Dwarka",
+      "Venkateshwar Hospital (Sector 18A / 12)",
+      "Kakrola U-Turn Point (for 10.5 & 21.1 KM)",
     ],
     svgPath:
       "M 85 215 C 130 75, 340 65, 500 135 C 585 185, 480 295, 300 275 C 165 265, 95 245, 85 215",
     elevationPoints: "0,82 100,72 200,62 300,68 400,58 500,70 600,82",
   },
   "5k": {
-    title: "5 KM Run Boulevard Loop",
+    title: "5 KM Run Official Course (Golf Course Rd U-Turn)",
     pathDesc:
-      "Max Hospital Sec-10 → Sector 6 Market Boulevard → Sector 10 Central Park Avenue → Max Hospital Sec-10 Finish",
+      "START at Max Super Speciality Hospital Dwarka (Sec-10) → Welcomhotel By ITC Hotels → Muthoot Finance Gold Loan → U-Turn for 5 KM on Golf Course Rd → Return to Max Hospital Sec-10 FINISH",
     elevationGain: "+12m (Flat & Fast)",
     waterStations: "KM 1.5, KM 3.5 & Finish Arena",
-    landmarks: ["Max Hospital Sector 10", "Sector 6 Green Belt", "Sector 10 Metro Plaza"],
+    landmarks: [
+      "Max Super Speciality Hospital Dwarka (START / FINISH)",
+      "Welcomhotel By ITC Hotels, Dwarka",
+      "U-Turn for 5 KM (Golf Course Rd)",
+    ],
     svgPath: "M 100 220 Q 190 100 320 140 T 470 215 Q 290 290 100 220",
     elevationPoints: "0,80 100,76 200,70 300,74 400,68 500,75 600,80",
   },
   "3k": {
-    title: "3 KM Family & Beginners Fun Run Loop",
+    title: "3 KM Fun Run Official Course (Muthoot Finance U-Turn)",
     pathDesc:
-      "Max Hospital Sec-10 → Sector 10 Main Avenue → U-Turn at Sector 10 Central Park → Max Hospital Sec-10 Finish Arch",
+      "START at Max Super Speciality Hospital Dwarka (Sec-10) → Welcomhotel By ITC Hotels → U-Turn for 3 KM near Muthoot Finance Gold Loan → Return to Max Hospital Sec-10 FINISH",
     elevationGain: "+6m (Super Flat & Safe)",
     waterStations: "KM 1.5 & Finish Line Refreshments",
-    landmarks: ["Max Hospital Sector 10", "Sector 10 Central Park", "DDR Finish Carnival"],
+    landmarks: [
+      "Max Super Speciality Hospital Dwarka (START / FINISH)",
+      "Welcomhotel By ITC Hotels, Dwarka",
+      "U-Turn for 3 KM (Near Muthoot Finance Gold Loan)",
+    ],
     svgPath: "M 110 215 Q 180 130 280 160 T 360 215 Q 240 265 110 215",
     elevationPoints: "0,80 150,77 300,75 450,77 600,80",
   },

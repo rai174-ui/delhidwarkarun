@@ -16,26 +16,26 @@ import { ABOUT_EVENT_CONTENT, DISCLAIMER_TEXT } from "../data/legalData";
 const KIT_HOTSPOTS = [
   {
     id: "jersey",
-    title: "130 GSM AeroMesh DDR Race Jersey",
-    desc: "Laser-perforated sweat-wicking fabric in signature Deep Navy with Neon Coral speed stripes and official Delhi Dwarka Runners branding.",
-    spec: "UV-40+ Protection • Anti-Chafe Flatlock Seams",
+    title: "Official DDR Neon Lime & Orange Dry-Fit Event Tee",
+    desc: "Breathable sweat-wicking athletic race jersey in signature DDR Neon Lime with vibrant Tangerine-Orange sleeves, front DDR runner crest, and polygon runners on the back.",
+    spec: "UV-40+ Protection • Front & Back Official DDR Print",
+  },
+  {
+    id: "certificate",
+    title: "Official Finisher & Chip-Time Certificates",
+    desc: "Verified Finisher & Chip-Timing Certificates signed by B S Rawat (Secretary, DDR) and Sudershan Kumar (President, DDR Dwarka Half Marathon) for all finishers.",
+    spec: "Official Timing & Finisher Recognition • Downloadable HD",
   },
   {
     id: "medal",
-    title: "3D Zinc-Alloy Finisher Medal (4th Edition)",
-    desc: "Heavyweight antique gold & navy enamel medallion for all finishers across 21.097 KM, 10.5 KM, 5 KM, and 3 KM categories.",
-    spec: "All Finishers • Free Time Engraving at Finish Tent",
-  },
-  {
-    id: "bib",
-    title: "Official RFID Timing Bib & Lucky Draw Coupon",
-    desc: "Tear-proof, sweat-resistant race bib with RFID timing transponder and tear-off stub for the Race Day Lucky Draw.",
+    title: "3D Zinc-Alloy Finisher Medal & RFID Timing Bib",
+    desc: "Heavyweight commemorative 4th Edition medallion and tear-proof RFID timing bib with tear-off stub for the Race Day Lucky Draw.",
     spec: "🎉 Win Exciting Prizes in the Official Lucky Draw!",
   },
   {
     id: "hydration",
     title: "Max Healthcare Support & Post-Run Breakfast",
-    desc: "Full medical coverage by Health Partner Max Hospital Sector 10, hydration stations along the route, and hot post-run breakfast.",
+    desc: "Full medical coverage by Health Partner Max Super Speciality Hospital Sector 10, hydration stations along the route, and hot post-run breakfast.",
     spec: "Starting Point: Max Hospital, Sector 10, Dwarka",
   },
 ];
@@ -78,6 +78,10 @@ export default function DelhiDwarkaRunPage() {
   const [activeRouteTab, setActiveRouteTab] = useState<RaceCategory["id"]>("half");
   const [activeHotspot, setActiveHotspot] = useState(KIT_HOTSPOTS[0]);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<{
+    src: string;
+    title: string;
+  } | null>(null);
   const [resultsQuery, setResultsQuery] = useState("");
   const [resultsCategoryFilter, setResultsCategoryFilter] = useState("All");
   const [registrations, setRegistrations] = useState<RunnerResult[]>([]);
@@ -193,7 +197,7 @@ export default function DelhiDwarkaRunPage() {
           <a href="#home" className="flex items-center gap-3.5 group">
             <div className="h-14 px-2.5 rounded-2xl bg-[#C5D887] flex items-center justify-center shadow-glow border-2 border-[#F26522] group-hover:scale-105 transition-transform relative overflow-hidden shrink-0">
               <img
-                src="/assets/ddr-logo.png"
+                src="/assets/ddr-logo.png?v=3"
                 alt="Delhi Dwarka Runners (DDR) Official Logo"
                 className="h-11 w-auto object-contain"
               />
@@ -330,9 +334,9 @@ export default function DelhiDwarkaRunPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-2xl bg-[#C5D887]/20 border border-[#C5D887]/60 backdrop-blur-md">
                   <img
-                    src="/assets/ddr-logo.png"
+                    src="/assets/ddr-logo.png?v=3"
                     alt="DDR Logo"
-                    className="w-7 h-7 rounded-lg object-contain bg-[#C5D887] p-0.5"
+                    className="h-7 w-auto rounded-lg object-contain bg-[#C5D887] px-1 py-0.5"
                   />
                   <span className="text-xs font-display font-black uppercase tracking-wider text-[#C5D887]">
                     DELHI DWARKA RUNNERS
@@ -395,11 +399,11 @@ export default function DelhiDwarkaRunPage() {
                 </div>
 
                 <div className="bg-gradient-to-br from-coral-600/90 to-navy-900 border-2 border-[#C5D887] rounded-2xl p-4 flex items-center gap-3.5 shadow-xl">
-                  <div className="w-14 h-14 rounded-2xl bg-white/95 p-1 flex items-center justify-center shrink-0">
+                  <div className="h-14 px-2 rounded-2xl bg-[#C5D887] flex items-center justify-center shrink-0">
                     <img
-                      src="/assets/ddr-logo.png"
+                      src="/assets/ddr-logo.png?v=3"
                       alt="DDR Logo"
-                      className="w-full h-full object-contain rounded-xl"
+                      className="h-10 w-auto object-contain"
                     />
                   </div>
                   <div>
@@ -830,48 +834,66 @@ export default function DelhiDwarkaRunPage() {
         </div>
       </section>
 
-      {/* OFFICIAL 2027 RACE KIT & MEDAL STUDIO SHOWCASE */}
+      {/* OFFICIAL 2027 EVENT TEE, FINISHER CERTIFICATES & RACE KIT SHOWCASE */}
       <section id="race-kit" className="py-24 bg-navy-950 text-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="inline-block px-3.5 py-1 rounded-full bg-coral-500/20 text-coral-400 font-display font-black text-xs uppercase tracking-widest mb-3">
-              🏅 4th Edition Official Runner Gear
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="inline-block px-3.5 py-1 rounded-full bg-[#C5D887]/20 text-[#C5D887] font-display font-black text-xs uppercase tracking-widest mb-3">
+              👕 Official Event Tee &amp; Finisher Certificates
             </span>
             <h2 className="font-display font-black italic text-3xl sm:text-5xl uppercase tracking-tight">
-              Crafted for Champions: Your Finisher Kit
+              Official Event Tee, Certificates &amp; Race Kit
             </h2>
             <p className="text-slate-300 mt-3 text-sm sm:text-base">
               Organized by <strong>Delhi Dwarka Runners (DDR)</strong> with Health Partner{" "}
               <strong>Max Healthcare</strong>. Starting from{" "}
-              <strong>Max Hospital, Sector 10, Dwarka, New Delhi</strong> on{" "}
+              <strong>Max Super Speciality Hospital, Sector 10, Dwarka, New Delhi</strong> on{" "}
               <strong>14-Feb-2027</strong>.
             </p>
           </div>
 
           <div className="grid lg:grid-cols-12 gap-10 items-center">
-            {/* Left 7 Cols: Race Kit Studio Photo */}
+            {/* Left 7 Cols: Official Event Tee (Front & Back View) */}
             <div className="lg:col-span-7">
-              <div className="relative rounded-3xl overflow-hidden border-2 border-white/15 shadow-2xl group">
+              <div
+                onClick={() =>
+                  setLightboxImage({
+                    src: "/assets/event-tee-2027.png",
+                    title: "Official DDR Event Tee (Front & Back View)",
+                  })
+                }
+                className="relative rounded-3xl overflow-hidden border-2 border-[#C5D887]/40 bg-white p-6 sm:p-8 shadow-2xl group cursor-pointer"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <span className="px-3 py-1 rounded-full bg-navy-950 text-[#C5D887] font-display font-black text-[11px] uppercase tracking-wider">
+                    👕 Official DDR Dry-Fit Event Tee (Front &amp; Back)
+                  </span>
+                  <span className="text-xs font-bold text-coral-600">
+                    🔍 Click to Enlarge
+                  </span>
+                </div>
                 <img
-                  src="/assets/race-kit-2027.jpg"
-                  alt="Delhi Dwarka Run 2027 Official Finisher Medal, Dry-Fit Jersey and Bib"
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                  src="/assets/event-tee-2027.png"
+                  alt="Delhi Dwarka Run 2027 Official Event T-Shirt Front and Back View"
+                  className="w-full h-auto object-contain max-h-[420px] mx-auto group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-transparent to-transparent" />
-                <div className="absolute bottom-5 left-5 right-5 flex flex-wrap items-center justify-between gap-3">
+                <div className="mt-4 pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <span className="px-2.5 py-1 rounded bg-coral-500 text-white font-display font-black text-[10px] uppercase tracking-wider">
-                      Included With Every Entry
-                    </span>
-                    <h3 className="font-display font-black text-lg sm:text-xl text-white mt-1">
-                      DDR Dry-Fit Tee + 3D Medal + RFID Bib + Lucky Draw
+                    <h3 className="font-display font-black text-base sm:text-lg text-navy-950">
+                      Signature Neon Lime &amp; Tangerine-Orange DDR Race Jersey
                     </h3>
+                    <p className="text-xs text-slate-600">
+                      Included with every registration across 21.097 KM, 10.5 KM, 5 KM &amp; 3 KM
+                    </p>
                   </div>
                   <button
-                    onClick={() => handleOpenRegister()}
-                    className="bg-volt text-navy-950 hover:bg-white font-display font-black text-xs uppercase px-4 py-2.5 rounded-xl transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenRegister();
+                    }}
+                    className="bg-gradient-to-r from-coral-500 to-[#29ABE2] text-white font-display font-black text-xs uppercase px-5 py-3 rounded-xl shadow-glow transition-transform hover:scale-105"
                   >
-                    Book @ 50% Off →
+                    Book Your Size @ 50% Off →
                   </button>
                 </div>
               </div>
@@ -904,7 +926,7 @@ export default function DelhiDwarkaRunPage() {
                     <p className="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
                       {item.desc}
                     </p>
-                    <div className="mt-2.5 inline-block px-2.5 py-1 rounded bg-black/30 text-[11px] font-mono text-volt">
+                    <div className="mt-2.5 inline-block px-2.5 py-1 rounded bg-black/30 text-[11px] font-mono text-[#C5D887]">
                       {item.spec}
                     </div>
                   </div>
@@ -912,19 +934,81 @@ export default function DelhiDwarkaRunPage() {
               })}
             </div>
           </div>
+
+          {/* OFFICIAL FINISHER CERTIFICATES SHOWCASE (IMAGES 3 & 4) */}
+          <div className="bg-navy-900/90 border border-[#29ABE2]/30 rounded-3xl p-6 sm:p-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+              <div>
+                <span className="text-xs font-display font-black uppercase tracking-widest text-[#C5D887]">
+                  📜 Official DDR Finisher Recognition
+                </span>
+                <h3 className="font-display font-black italic text-2xl sm:text-3xl text-white uppercase mt-1">
+                  Official Finisher &amp; Chip-Time Certificates
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-md">
+                Every finisher receives an official DDR Certificate signed by{" "}
+                <strong className="text-white">B S Rawat (Secretary)</strong> and{" "}
+                <strong className="text-white">Sudershan Kumar (President)</strong>. Click any
+                certificate below to preview in full size.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-12 gap-8 items-center">
+              <div
+                onClick={() =>
+                  setLightboxImage({
+                    src: "/assets/certificate-1.png",
+                    title: "Official DDR Finisher Certificate (Landscape Edition)",
+                  })
+                }
+                className="md:col-span-7 bg-white rounded-2xl p-3 sm:p-4 border-2 border-[#C5D887]/50 shadow-xl cursor-pointer group overflow-hidden"
+              >
+                <img
+                  src="/assets/certificate-1.png"
+                  alt="Official DDR Half Marathon Finisher Certificate"
+                  className="w-full h-auto max-h-[380px] object-contain mx-auto rounded-xl group-hover:scale-[1.02] transition-transform duration-500"
+                />
+                <div className="flex items-center justify-between pt-3 px-1 text-xs font-display font-bold text-navy-950">
+                  <span>🏅 Official DDR Finisher Certificate</span>
+                  <span className="text-coral-600">🔍 Click to Zoom</span>
+                </div>
+              </div>
+
+              <div
+                onClick={() =>
+                  setLightboxImage({
+                    src: "/assets/certificate-2.png",
+                    title: "Official DDR Half Marathon Chip-Time Finisher Certificate",
+                  })
+                }
+                className="md:col-span-5 bg-white rounded-2xl p-3 sm:p-4 border-2 border-[#29ABE2]/50 shadow-xl cursor-pointer group overflow-hidden"
+              >
+                <img
+                  src="/assets/certificate-2.png"
+                  alt="Official DDR Half Marathon Chip-Time Certificate"
+                  className="w-full h-auto max-h-[380px] object-contain mx-auto rounded-xl group-hover:scale-[1.02] transition-transform duration-500"
+                />
+                <div className="flex items-center justify-between pt-3 px-1 text-xs font-display font-bold text-navy-950">
+                  <span>⏱️ Official Chip-Time Finisher Certificate</span>
+                  <span className="text-[#0284C7]">🔍 Click to Zoom</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* INTERACTIVE TELEMETRY ROUTE MAP & ELEVATION PROFILE */}
+      {/* OFFICIAL ROUTE MAP SECTION (IMAGE 1) */}
       <section id="route-map" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div>
               <span className="inline-block px-3.5 py-1 rounded-full bg-navy-900/10 text-navy-900 font-display font-black text-xs uppercase tracking-widest mb-2">
-                📍 Starting Point: {START_VENUE}
+                📍 Start &amp; Finish: Max Super Speciality Hospital, Sector 10, Dwarka
               </span>
               <h2 className="font-display font-black italic text-3xl sm:text-5xl text-navy-950 uppercase tracking-tight">
-                Interactive Route &amp; Elevation Map
+                Official Race Route &amp; U-Turn Map
               </h2>
             </div>
 
@@ -953,126 +1037,117 @@ export default function DelhiDwarkaRunPage() {
           </div>
 
           <div className="grid lg:grid-cols-12 gap-8 items-stretch">
-            <div className="lg:col-span-7 bg-navy-950 rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-navy-800 flex flex-col justify-between dark-telemetry-grid">
+            {/* Left 7 Cols: Official Route Map Image (Image 1) */}
+            <div className="lg:col-span-7 bg-navy-950 rounded-3xl p-5 sm:p-7 text-white shadow-2xl border border-navy-800 flex flex-col justify-between">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <div>
-                  <span className="text-[11px] uppercase tracking-widest text-volt font-display font-extrabold">
-                    GPS Course Map • Start/Finish: Max Hospital Sector 10
+                  <span className="text-[11px] uppercase tracking-widest text-[#C5D887] font-display font-extrabold">
+                    Official Course Map • Start/Finish: Max Super Speciality Hospital Dwarka
                   </span>
-                  <h3 className="font-display font-black text-xl text-white">
+                  <h3 className="font-display font-black text-lg sm:text-xl text-white">
                     {ROUTE_DATA[activeRouteTab].title}
                   </h3>
                 </div>
-                <div className="flex items-center gap-3 text-xs">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-coral-500" /> Course
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-sky-400" /> Hydration
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-volt" /> Max Hospital Sec-10
-                  </span>
-                </div>
+                <button
+                  onClick={() =>
+                    setLightboxImage({
+                      src: "/assets/route-map-official.png",
+                      title: "Official DDR Race Route Map (3 KM, 5 KM, 10.5 KM & 21.1 KM U-Turns)",
+                    })
+                  }
+                  className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-display font-bold text-[#C5D887] transition-colors"
+                >
+                  🔍 View Full Map
+                </button>
               </div>
 
-              <div className="bg-navy-900/90 rounded-2xl border border-white/10 p-4">
-                <svg viewBox="0 0 750 320" className="w-full h-auto">
-                  <text x="90" y="38" fill="rgba(255,255,255,0.3)" fontSize="11" fontWeight="800">
-                    SECTOR 6 &amp; 7 BOULEVARD
-                  </text>
-                  <text x="320" y="38" fill="rgba(255,255,255,0.3)" fontSize="11" fontWeight="800">
-                    BHARAT VANDANA PARK AVE
-                  </text>
-                  <text x="530" y="38" fill="rgba(255,255,255,0.3)" fontSize="11" fontWeight="800">
-                    GOLF COURSE RD / SEC 21
-                  </text>
-                  <text x="280" y="305" fill="rgba(255,255,255,0.3)" fontSize="11" fontWeight="800">
-                    SECTOR 10 &amp; 11 METRO CORRIDOR
-                  </text>
-
-                  <path
-                    d={ROUTE_DATA[activeRouteTab].svgPath}
-                    fill="none"
-                    stroke="rgba(255, 87, 34, 0.25)"
-                    strokeWidth="18"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d={ROUTE_DATA[activeRouteTab].svgPath}
-                    fill="none"
-                    stroke="#FF5722"
-                    strokeWidth="5"
-                    strokeDasharray="12 8"
-                    strokeLinecap="round"
-                    className="route-animated"
-                  />
-
-                  <circle cx="220" cy="95" r="7" fill="#38BDF8" />
-                  <text x="195" y="78" fill="#BAE6FD" fontSize="10" fontWeight="700">
-                    💧 Hydration 1
-                  </text>
-
-                  <circle cx="480" cy="105" r="7" fill="#38BDF8" />
-                  <text x="440" y="88" fill="#BAE6FD" fontSize="10" fontWeight="700">
-                    🏥 Max Medical &amp; Aid
-                  </text>
-
-                  <circle cx="380" cy="275" r="7" fill="#38BDF8" />
-                  <text x="350" y="293" fill="#BAE6FD" fontSize="10" fontWeight="700">
-                    💧 Hydration &amp; Energy
-                  </text>
-
-                  <circle cx="80" cy="215" r="12" fill="#CCFF00" />
-                  <circle cx="80" cy="215" r="5" fill="#040814" />
-                  <rect
-                    x="15"
-                    y="232"
-                    width="185"
-                    height="26"
-                    rx="6"
-                    fill="#040814"
-                    stroke="#CCFF00"
-                    strokeWidth="1.5"
-                  />
-                  <text x="24" y="249" fill="#CCFF00" fontSize="10" fontWeight="800">
-                    🏁 MAX HOSPITAL SEC-10 START
-                  </text>
-                </svg>
+              <div
+                onClick={() =>
+                  setLightboxImage({
+                    src: "/assets/route-map-official.png",
+                    title: "Official DDR Race Route Map (3 KM, 5 KM, 10.5 KM & 21.1 KM U-Turns)",
+                  })
+                }
+                className="bg-white rounded-2xl border-2 border-[#29ABE2]/40 p-2 overflow-hidden cursor-pointer group"
+              >
+                <img
+                  src="/assets/route-map-official.png"
+                  alt="Delhi Dwarka Run Official Route Map showing Start/Finish at Max Super Speciality Hospital Dwarka and U-Turns for 3 KM, 5 KM, 10.5 KM and 21.1 KM"
+                  className="w-full h-auto max-h-[540px] object-contain mx-auto rounded-xl group-hover:scale-[1.02] transition-transform duration-500"
+                />
               </div>
 
-              <div className="mt-4 bg-navy-900/80 rounded-2xl p-4 border border-white/10">
-                <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="font-display font-bold uppercase text-slate-400">
-                    Elevation Profile (Flat Dwarka Asphalt)
-                  </span>
-                  <span className="font-mono font-bold text-volt">
-                    {ROUTE_DATA[activeRouteTab].elevationGain}
-                  </span>
+              {/* Official U-Turn Key Strip */}
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                <div className="bg-navy-900/90 border border-white/10 rounded-xl p-3">
+                  <div className="text-[10px] font-display font-black uppercase text-coral-400">
+                    🏁 START / FINISH
+                  </div>
+                  <div className="font-bold text-white mt-0.5">
+                    Max Super Speciality Hospital
+                  </div>
+                  <div className="text-[10px] text-slate-400">Sector 10, Dwarka</div>
                 </div>
-                <svg viewBox="0 0 600 90" className="w-full h-14">
-                  <polyline
-                    fill="none"
-                    stroke="#FF5722"
-                    strokeWidth="3"
-                    points={ROUTE_DATA[activeRouteTab].elevationPoints}
-                  />
-                </svg>
+                <div className="bg-navy-900/90 border border-white/10 rounded-xl p-3">
+                  <div className="text-[10px] font-display font-black uppercase text-[#C5D887]">
+                    ↩️ 3 KM U-TURN
+                  </div>
+                  <div className="font-bold text-white mt-0.5">
+                    Muthoot Finance
+                  </div>
+                  <div className="text-[10px] text-slate-400">Golf Course Rd</div>
+                </div>
+                <div className="bg-navy-900/90 border border-white/10 rounded-xl p-3">
+                  <div className="text-[10px] font-display font-black uppercase text-[#29ABE2]">
+                    ↩️ 5 KM U-TURN
+                  </div>
+                  <div className="font-bold text-white mt-0.5">
+                    Golf Course Rd
+                  </div>
+                  <div className="text-[10px] text-slate-400">Before Canal Bridge</div>
+                </div>
+                <div className="bg-navy-900/90 border border-white/10 rounded-xl p-3">
+                  <div className="text-[10px] font-display font-black uppercase text-emerald-400">
+                    ↩️ 10.5 &amp; 21.1 KM
+                  </div>
+                  <div className="font-bold text-white mt-0.5">
+                    Kakrola Turnaround
+                  </div>
+                  <div className="text-[10px] text-slate-400">Via Venkateshwar Hosp.</div>
+                </div>
               </div>
             </div>
 
             <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
-              <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-7 space-y-5">
-                <div>
-                  <span className="text-xs font-display font-black uppercase text-coral-600">
-                    Course Turn-by-Turn
-                  </span>
-                  <h3 className="font-display font-extrabold text-xl text-navy-950 mt-1">
-                    {ROUTE_DATA[activeRouteTab].title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-                    {ROUTE_DATA[activeRouteTab].pathDesc}
-                  </p>
+              <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-7 space-y-5 h-full flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-xs font-display font-black uppercase text-coral-600">
+                      Course Turn-by-Turn &amp; Landmarks
+                    </span>
+                    <h3 className="font-display font-extrabold text-xl text-navy-950 mt-1">
+                      {ROUTE_DATA[activeRouteTab].title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+                      {ROUTE_DATA[activeRouteTab].pathDesc}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-display font-extrabold uppercase tracking-wider text-slate-400">
+                      Key Landmarks Along This Route
+                    </div>
+                    <ul className="space-y-1.5 text-xs text-navy-950 font-semibold">
+                      {ROUTE_DATA[activeRouteTab].landmarks.map((lm, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-full bg-coral-500/15 text-coral-600 flex items-center justify-center text-[10px] font-black shrink-0">
+                            {i + 1}
+                          </span>
+                          <span>{lm}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
 
                 <div>
@@ -1371,7 +1446,7 @@ export default function DelhiDwarkaRunPage() {
             <div className="lg:col-span-5 space-y-5">
               <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#29ABE2]/15 text-[#0284C7] font-display font-black text-xs uppercase tracking-widest">
                 <img
-                  src="/assets/ddr-logo.png"
+                  src="/assets/ddr-logo.png?v=3"
                   alt="DDR Logo"
                   className="w-6 h-6 rounded object-contain"
                 />
@@ -1495,7 +1570,7 @@ export default function DelhiDwarkaRunPage() {
             <div className="flex items-center gap-3.5">
               <div className="h-12 px-2.5 rounded-2xl bg-[#C5D887] flex items-center justify-center border border-[#F26522] shrink-0">
                 <img
-                  src="/assets/ddr-logo.png"
+                  src="/assets/ddr-logo.png?v=3"
                   alt="Delhi Dwarka Runners Logo"
                   className="h-10 w-auto object-contain"
                 />
@@ -1579,6 +1654,37 @@ export default function DelhiDwarkaRunPage() {
             <video controls autoPlay className="w-full aspect-video bg-black">
               <source src="/race-reel.mp4" type="video/mp4" />
             </video>
+          </div>
+        </div>
+      )}
+
+      {lightboxImage && (
+        <div
+          onClick={() => setLightboxImage(null)}
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-navy-950 border border-white/20 rounded-3xl max-w-5xl w-full overflow-hidden shadow-2xl"
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+              <h3 className="font-display font-bold text-white text-sm uppercase tracking-wider">
+                {lightboxImage.title}
+              </h3>
+              <button
+                onClick={() => setLightboxImage(null)}
+                className="text-white bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-4 bg-white flex items-center justify-center max-h-[82vh] overflow-auto">
+              <img
+                src={lightboxImage.src}
+                alt={lightboxImage.title}
+                className="max-w-full max-h-[76vh] object-contain rounded-xl"
+              />
+            </div>
           </div>
         </div>
       )}
