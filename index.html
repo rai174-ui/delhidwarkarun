@@ -113,6 +113,30 @@
     const RACE_DATE = new Date("2027-02-14T05:30:00+05:30");
     const START_VENUE = "Max Hospital, Sector 10, Dwarka, New Delhi";
 
+    const BG_SLIDESHOW_IMAGES = [
+      "./public/backgroundimage/11.jpg",
+      "./public/backgroundimage/14.jpg",
+      "./public/backgroundimage/26.jpg",
+      "./public/backgroundimage/00bac4d6-b8ba-40e3-b1bc-8b338d0ec4c1.jpg",
+      "./public/backgroundimage/c286610d-6f49-473a-a484-a79b739516b4.jpg",
+      "./public/backgroundimage/2.jpeg",
+      "./public/backgroundimage/13.jpg",
+      "./public/backgroundimage/15.jpg",
+      "./public/backgroundimage/16.jpg",
+      "./public/backgroundimage/17.jpg",
+      "./public/backgroundimage/18.jpg",
+      "./public/backgroundimage/19.jpg",
+      "./public/backgroundimage/20.jpg",
+      "./public/backgroundimage/22.jpg",
+      "./public/backgroundimage/23.jpg",
+      "./public/backgroundimage/24.jpg",
+      "./public/backgroundimage/25.jpg",
+      "./public/backgroundimage/27.jpg",
+      "./public/backgroundimage/28.jpg",
+      "./public/backgroundimage/29.jpg",
+      "./public/backgroundimage/3.jpeg"
+    ];
+
     const RACE_CATEGORIES = [
       {
         id: "half",
@@ -284,7 +308,15 @@
     function App() {
       const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
       const [heroBgVideo, setHeroBgVideo] = useState(false);
+      const [bgSlideIndex, setBgSlideIndex] = useState(0);
       const [selectedCategory, setSelectedCategory] = useState(RACE_CATEGORIES[0]);
+
+      useEffect(() => {
+        const slideInterval = setInterval(() => {
+          setBgSlideIndex((prev) => (prev + 1) % BG_SLIDESHOW_IMAGES.length);
+        }, 4000);
+        return () => clearInterval(slideInterval);
+      }, []);
       const [isModalOpen, setIsModalOpen] = useState(false);
       const [activeRouteTab, setActiveRouteTab] = useState("half");
       const [activeHotspot, setActiveHotspot] = useState(KIT_HOTSPOTS[0]);
@@ -421,17 +453,17 @@
           </header>
 
           {/* HERO SECTION */}
-          <section id="home" className="relative bg-navy-950 text-white overflow-hidden min-h-[88vh] flex items-center">
+          <section id="home" className="relative bg-white text-navy-950 overflow-hidden min-h-[88vh] flex items-center">
             <div className="absolute inset-0 z-0">
               {heroBgVideo ? (
-                <video autoPlay muted loop playsInline className="w-full h-full object-cover opacity-45 scale-105">
+                <video autoPlay muted loop playsInline className="w-full h-full object-cover opacity-75 scale-105">
                   <source src="./DDR%20Dwarka%20Half%20Marathon%202026.m4v" type="video/mp4" />
                 </video>
               ) : (
-                <img src="./assets/hero-runners.jpg" alt="4th Edition Dwarka Half Marathon" className="w-full h-full object-cover object-center opacity-50 scale-105" />
+                <img src={BG_SLIDESHOW_IMAGES[bgSlideIndex]} alt="4th Edition Dwarka Half Marathon" className="w-full h-full object-cover object-center opacity-85 scale-105 transition-all duration-1000" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/45"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-navy-950/60"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/88 via-white/72 to-white/35"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-transparent to-white/45"></div>
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20 w-full">
