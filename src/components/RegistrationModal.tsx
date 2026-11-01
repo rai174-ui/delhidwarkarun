@@ -214,12 +214,15 @@ export default function RegistrationModal({
     setPaymentError(null);
 
     try {
-      // 1. Create order on backend API
-      const orderRes = await fetch("/api/razorpay/create-order", {
+      // 1. Create order on backend API (amount in paise)
+      const amountInPaise = Math.round(Number(totalPayable) * 100);
+      const orderRes = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: totalPayable,
+          amount: amountInPaise,
+          currency: "INR",
+          receipt: `ddr27_${Date.now()}`,
           categoryId: category.id,
           categoryName: category.name,
           runnerName: formData.fullName,
@@ -234,83 +237,89 @@ export default function RegistrationModal({
         throw new Error(orderData.error || "Could not initiate Razorpay order.");
       }
 
-      // 2. If Razorpay Key ID is configured on server/env, launch real Razorpay Checkout Modal
-      if (
-        (orderData.mode === "live_order" || orderData.mode === "client_key") &&
-        orderData.keyId &&
-        typeof window !== "undefined" &&
-        window.Razorpay
-      ) {
-        const options: any = {
-          key: orderData.keyId,
-          amount: orderData.amount,
-          currency: orderData.currency || "INR",
-          name: "Delhi Dwarka Run 2027",
-          description: `4th Edition Dwarka Half Marathon — ${category.name}`,
-          order_id: orderData.orderId || undefined,
-          prefill: {
-            name: formData.fullName,
-            email: formData.email,
-            contact: formData.mobile,
-          },
-          notes: {
-            category: category.name,
-            tshirtSize: formData.tshirtSize,
-            eventDate: "14-Feb-2027",
-            startingPoint: START_VENUE,
-          },
-          theme: {
-            color: "#FF5722",
-          },
-          modal: {
-            ondismiss: () => {
-              setIsProcessingPayment(false);
-            },
-          },
-          handler: async function (response: any) {
-            try {
-              const verifyRes = await fetch("/api/razorpay/verify-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(response),
-              });
-              const verifyData = await verifyRes.json();
-              if (!verifyRes.ok || !verifyData.verified) {
-                setPaymentError(
-                  verifyData.error || "Payment verification failed. Please contact support."
-                );
-                setIsProcessingPayment(false);
-                return;
-              }
-              await finalizeRegistration(
-                response.razorpay_payment_id,
-                response.razorpay_order_id || orderData.orderId || "",
-                "razorpay_live"
-              );
-            } catch (err: any) {
-              setPaymentError(err?.message || "Error verifying payment.");
-              setIsProcessingPayment(false);
-            }
-          },
-        };
+      const razorpayKeyId =
+        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || orderData.keyId;
+      const orderId = orderData.order_id || orderData.orderId;
 
-        const rzp = new window.Razorpay(options);
-        rzp.on("payment.failed", function (response: any) {
-          setPaymentError(
-            response?.error?.description || "Payment failed. Please try again."
-          );
-          setIsProcessingPayment(false);
-        });
-        rzp.open();
-        return;
+      if (!razorpayKeyId || !orderId) {
+        throw new Error("Missing Razorpay order ID or key configuration.");
       }
 
-      // 3. Fallback simulated checkout when RAZORPAY_KEY_ID is not yet added in Railway Variables
-      setTimeout(async () => {
-        const mockTxnId =
-          "pay_DDR27_" + Math.random().toString(36).substring(2, 9).toUpperCase();
-        await finalizeRegistration(mockTxnId, "", paymentMethod);
-      }, 900);
+      if (typeof window === "undefined" || !window.Razorpay) {
+        throw new Error(
+          "Razorpay Checkout SDK failed to load. Please check your internet connection."
+        );
+      }
+
+      // 2. Open Razorpay Standard Checkout modal with order_id
+      const options: any = {
+        key: razorpayKeyId,
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
+        name: "Delhi Dwarka Run 2027",
+        description: `4th Edition Dwarka Half Marathon — ${category.name}`,
+        order_id: orderId,
+        prefill: {
+          name: formData.fullName,
+          email: formData.email,
+          contact: formData.mobile,
+        },
+        notes: {
+          category: category.name,
+          tshirtSize: formData.tshirtSize,
+          eventDate: "14-Feb-2027",
+          startingPoint: START_VENUE,
+        },
+        theme: {
+          color: "#F26522",
+        },
+        modal: {
+          ondismiss: () => {
+            setPaymentError("Payment cancelled. You can click Pay again whenever you are ready.");
+            setIsProcessingPayment(false);
+          },
+        },
+        handler: async function (response: any) {
+          try {
+            // 3. Verify payment signature on backend
+            const verifyRes = await fetch("/api/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok || !verifyData.verified) {
+              setPaymentError(
+                verifyData.error ||
+                  "Payment signature verification failed. Please contact support."
+              );
+              setIsProcessingPayment(false);
+              return;
+            }
+            await finalizeRegistration(
+              response.razorpay_payment_id,
+              response.razorpay_order_id || orderId,
+              "razorpay_live"
+            );
+          } catch (err: any) {
+            setPaymentError(err?.message || "Error verifying payment.");
+            setIsProcessingPayment(false);
+          }
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (response: any) {
+        setPaymentError(
+          response?.error?.description || "Payment failed. Please try again."
+        );
+        setIsProcessingPayment(false);
+      });
+      rzp.open();
     } catch (err: any) {
       setPaymentError(err?.message || "Payment initialization failed.");
       setIsProcessingPayment(false);

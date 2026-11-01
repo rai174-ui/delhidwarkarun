@@ -10,42 +10,63 @@ export async function POST(request: Request) {
       razorpay_signature,
     } = body;
 
-    if (!razorpay_payment_id) {
+    // Missing fields: return 400
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.json(
-        { verified: false, error: "Missing razorpay_payment_id" },
+        {
+          verified: false,
+          success: false,
+          error:
+            "Missing required fields: razorpay_order_id, razorpay_payment_id, and razorpay_signature are required.",
+        },
         { status: 400 }
       );
     }
 
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keySecret) {
+      return NextResponse.json(
+        {
+          verified: false,
+          success: false,
+          error: "Server configuration error: missing RAZORPAY_KEY_SECRET.",
+        },
+        { status: 500 }
+      );
+    }
 
-    // Verify cryptographic signature when order_id, signature, and secret are present
-    if (keySecret && razorpay_order_id && razorpay_signature) {
-      const payload = `${razorpay_order_id}|${razorpay_payment_id}`;
-      const expectedSignature = crypto
-        .createHmac("sha256", keySecret)
-        .update(payload)
-        .digest("hex");
+    // Algorithm: HMAC-SHA256(order_id + "|" + payment_id, KEY_SECRET)
+    const payload = `${razorpay_order_id}|${razorpay_payment_id}`;
+    const generatedSignature = crypto
+      .createHmac("sha256", keySecret)
+      .update(payload)
+      .digest("hex");
 
-      if (expectedSignature !== razorpay_signature) {
-        return NextResponse.json(
-          {
-            verified: false,
-            error: "Invalid Razorpay payment signature verification failed.",
-          },
-          { status: 400 }
-        );
-      }
+    // Signature mismatch: return 400, do NOT mark as paid
+    if (generatedSignature !== razorpay_signature) {
+      return NextResponse.json(
+        {
+          verified: false,
+          success: false,
+          error: "Payment verification failed: invalid signature.",
+        },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({
       verified: true,
+      success: true,
       paymentId: razorpay_payment_id,
-      orderId: razorpay_order_id || null,
+      orderId: razorpay_order_id,
     });
   } catch (error: any) {
     return NextResponse.json(
-      { verified: false, error: error?.message || "Verification error" },
+      {
+        verified: false,
+        success: false,
+        error: error?.message || "Payment verification error.",
+      },
       { status: 500 }
     );
   }
