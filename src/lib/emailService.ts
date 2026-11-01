@@ -12,12 +12,13 @@ export interface EmailSendResult {
 }
 
 /**
- * Generates the official HTML Confirmation & E-Bib email for the Participant
+ * Generates the official HTML Confirmation & Registration Receipt email for the Participant
  */
 export function buildConfirmationEmailHtml(record: StoredRegistration): string {
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.delhidwarkarun.com";
   const logoUrl = `${siteUrl}/assets/ddr-logo.png`;
+  const regNo = record.registrationNumber || record.bib;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -35,7 +36,7 @@ export function buildConfirmationEmailHtml(record: StoredRegistration): string {
           <!-- Top Banner -->
           <tr>
             <td style="background:linear-gradient(90deg,#0284C7 0%,#F26522 100%);padding:12px 24px;text-align:center;color:#FFFFFF;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;">
-              🎉 Official Registration Confirmation &amp; E-Bib • 14-Feb-2027
+              🎉 Official Registration Confirmation &amp; Receipt • 14-Feb-2027
             </td>
           </tr>
 
@@ -67,22 +68,22 @@ export function buildConfirmationEmailHtml(record: StoredRegistration): string {
                 Dear ${record.fullName},
               </p>
               <p style="margin:0;font-size:14px;line-height:1.6;color:#334155;">
-                Congratulations! Your registration and payment for the <strong>4th Edition of Dwarka Half Marathon — Delhi Dwarka Run 2027</strong> have been confirmed. Below is your official <strong>Runner E-Bib &amp; Payment Receipt</strong>.
+                Congratulations! Your registration and payment for the <strong>4th Edition of Dwarka Half Marathon — Delhi Dwarka Run 2027</strong> have been confirmed. Below is your official <strong>Registration Number &amp; Payment Receipt</strong>.
               </p>
             </td>
           </tr>
 
-          <!-- Official E-Bib Card -->
+          <!-- Official Registration Number Card -->
           <tr>
             <td style="padding:12px 28px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:linear-gradient(135deg,#0B1D30 0%,#122B46 100%);border:3px solid #F26522;border-radius:18px;padding:22px;color:#FFFFFF;text-align:center;">
                 <tr>
                   <td>
                     <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#C5D887;">
-                      DELHI DWARKA RUNNERS • OFFICIAL E-BIB
+                      DELHI DWARKA RUNNERS • OFFICIAL REGISTRATION NUMBER
                     </div>
-                    <div style="font-size:44px;font-weight:900;letter-spacing:2px;color:#FFFFFF;margin:6px 0;">
-                      #${record.bib}
+                    <div style="font-size:42px;font-weight:900;letter-spacing:2px;color:#FFFFFF;margin:6px 0;">
+                      ${regNo}
                     </div>
                     <div style="display:inline-block;background-color:#F26522;color:#FFFFFF;font-size:12px;font-weight:800;padding:5px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;">
                       ${record.categoryName} (${record.distance})
@@ -92,6 +93,9 @@ export function buildConfirmationEmailHtml(record: StoredRegistration): string {
                     </div>
                     <div style="margin-top:4px;font-size:12px;color:#CBD5E1;">
                       Tee Size: <strong>${record.tshirtSize}</strong> &nbsp;|&nbsp; Gender: <strong>${record.gender}</strong> &nbsp;|&nbsp; Blood Group: <strong>${record.bloodGroup}</strong>
+                    </div>
+                    <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.15);font-size:11.5px;color:#38BDF8;font-weight:700;">
+                      ℹ️ Note: Official Race Bib # will be issued later by our 3rd-party timing agency prior to Race Day.
                     </div>
                   </td>
                 </tr>
@@ -107,7 +111,15 @@ export function buildConfirmationEmailHtml(record: StoredRegistration): string {
               </h3>
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:13px;">
                 <tr>
-                  <td style="padding:9px 12px;border-bottom:1px solid #E2E8F0;color:#64748B;width:42%;">Event Date &amp; Flag-Off</td>
+                  <td style="padding:9px 12px;border-bottom:1px solid #E2E8F0;color:#64748B;width:42%;">Registration Number</td>
+                  <td style="padding:9px 12px;border-bottom:1px solid #E2E8F0;font-family:monospace;font-weight:900;color:#F26522;font-size:14px;">${regNo}</td>
+                </tr>
+                <tr>
+                  <td style="padding:9px 12px;border-bottom:1px solid #E2E8F0;color:#64748B;">Official Bib # Status</td>
+                  <td style="padding:9px 12px;border-bottom:1px solid #E2E8F0;font-weight:700;color:#0284C7;">To be issued later by 3rd-party timing agency</td>
+                </tr>
+                <tr>
+                  <td style="padding:9px 12px;border-bottom:1px solid #E2E8F0;color:#64748B;">Event Date &amp; Flag-Off</td>
                   <td style="padding:9px 12px;border-bottom:1px solid #E2E8F0;font-weight:700;color:#0F172A;">Sunday, 14-Feb-2027 • ${record.startTime}</td>
                 </tr>
                 <tr>
@@ -150,11 +162,11 @@ export function buildConfirmationEmailHtml(record: StoredRegistration): string {
           <tr>
             <td style="padding:8px 28px 24px 28px;">
               <div style="background-color:#F8FAFC;border-left:4px solid #0284C7;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.6;color:#334155;">
-                <strong style="color:#0F172A;display:block;margin-bottom:4px;">📦 Bib &amp; Race Kit Distribution Expo:</strong>
+                <strong style="color:#0F172A;display:block;margin-bottom:4px;">📦 Race Kit &amp; Bib Distribution Expo:</strong>
                 • <strong>Dates:</strong> Friday, 12th Feb &amp; Saturday, 13th Feb 2027 (10:00 AM – 06:00 PM)<br/>
                 • <strong>Location:</strong> Sector 10, Dwarka, New Delhi<br/>
-                • Please carry this Confirmation Email / E-Bib (#${record.bib}) and a valid Government Photo ID to collect your Race Kit.<br/>
-                • 🎁 Your Bib #${record.bib} is automatically entered into the <strong>Race Day Lucky Draw</strong>!
+                • Please carry this Confirmation Email with your <strong>Registration Number (${regNo})</strong> and a valid Government Photo ID.<br/>
+                • <strong>Bib # Allocation:</strong> Your official Race Bib # will be issued later by our 3rd-party timing agency prior to Race Day.
               </div>
             </td>
           </tr>
@@ -192,12 +204,13 @@ export function buildConfirmationEmailHtml(record: StoredRegistration): string {
 export function buildOrganizerNotificationHtml(record: StoredRegistration): string {
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.delhidwarkarun.com";
+  const regNo = record.registrationNumber || record.bib;
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>New Registration Alert — Bib #${record.bib}</title>
+  <title>New Registration Alert — Reg No: ${regNo}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#F1F5F9;font-family:'Segoe UI',Arial,sans-serif;color:#0F172A;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#F1F5F9;padding:24px 12px;">
@@ -210,7 +223,7 @@ export function buildOrganizerNotificationHtml(record: StoredRegistration): stri
                 🔔 NEW RUNNER REGISTRATION RECEIVED • DELHI DWARKA RUN 2027
               </div>
               <h2 style="margin:6px 0 0 0;font-size:22px;color:#FFFFFF;">
-                Bib #${record.bib} — ${record.fullName}
+                Registration No: ${regNo} — ${record.fullName}
               </h2>
               <p style="margin:4px 0 0 0;font-size:13px;color:#38BDF8;font-weight:700;">
                 ${record.categoryName} (${record.distance}) • Paid: ₹${record.amountPaid}.00
@@ -221,8 +234,12 @@ export function buildOrganizerNotificationHtml(record: StoredRegistration): stri
             <td style="padding:20px 24px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:13px;">
                 <tr>
-                  <td style="padding:8px 10px;border-bottom:1px solid #E2E8F0;color:#64748B;width:40%;">Registration ID &amp; Bib</td>
-                  <td style="padding:8px 10px;border-bottom:1px solid #E2E8F0;font-weight:800;color:#0F172A;">#${record.bib} (${record.id})</td>
+                  <td style="padding:8px 10px;border-bottom:1px solid #E2E8F0;color:#64748B;width:40%;">Registration Number</td>
+                  <td style="padding:8px 10px;border-bottom:1px solid #E2E8F0;font-family:monospace;font-weight:900;color:#F26522;font-size:14px;">${regNo}</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 10px;border-bottom:1px solid #E2E8F0;color:#64748B;">Bib # Status</td>
+                  <td style="padding:8px 10px;border-bottom:1px solid #E2E8F0;font-weight:700;color:#0284C7;">To be issued later by 3rd-party agency</td>
                 </tr>
                 <tr>
                   <td style="padding:8px 10px;border-bottom:1px solid #E2E8F0;color:#64748B;">Runner Full Name</td>
@@ -308,13 +325,11 @@ async function sendViaResendWithFallback(
     return { ok: res.ok, status: res.status, data };
   };
 
-  // First try preferredFrom (e.g. RESEND_FROM or noreply@delhidwarkarun.com)
   const firstAttempt = await attemptSend(preferredFrom);
   if (firstAttempt.ok) {
     return { ok: true, id: firstAttempt.data?.id };
   }
 
-  // If custom domain is not verified yet in Resend (403 / domain_not_verified), fallback to onboarding@resend.dev
   const fallbackFrom = "Delhi Dwarka Run 2027 <onboarding@resend.dev>";
   if (preferredFrom !== fallbackFrom) {
     const secondAttempt = await attemptSend(fallbackFrom);
@@ -338,21 +353,22 @@ async function sendViaResendWithFallback(
 
 /**
  * Sends:
- * 1) Official Confirmation & E-Bib email to the registered participant (record.email)
+ * 1) Official Confirmation & Registration Number email to the registered participant (record.email)
  * 2) Complete Registration Information alert to padam@amigoconnect.com
  */
 export async function sendRegistrationConfirmationEmail(
   record: StoredRegistration
 ): Promise<EmailSendResult> {
-  const participantSubject = `Registration Confirmed (Bib #${record.bib}) — Delhi Dwarka Run 2027 (${record.categoryName})`;
-  const organizerSubject = `[New DDR 2027 Registration] Bib #${record.bib} — ${record.fullName} (${record.categoryName} • ₹${record.amountPaid})`;
+  const regNo = record.registrationNumber || record.bib;
+  const participantSubject = `Registration Confirmed (Reg No: ${regNo}) — Delhi Dwarka Run 2027 (${record.categoryName})`;
+  const organizerSubject = `[New DDR 2027 Registration] Reg No: ${regNo} — ${record.fullName} (${record.categoryName} • ₹${record.amountPaid})`;
 
   const participantHtml = buildConfirmationEmailHtml(record);
   const organizerHtml = buildOrganizerNotificationHtml(record);
   const organizerEmail =
     process.env.ORGANIZER_NOTIFICATION_EMAIL || "padam@amigoconnect.com";
 
-  // Option B: Resend HTTP API (checked first since enabled)
+  // Option B: Resend HTTP API
   const resendApiKey = process.env.RESEND_API_KEY;
   const resendFrom =
     process.env.RESEND_FROM ||
@@ -360,7 +376,6 @@ export async function sendRegistrationConfirmationEmail(
 
   if (resendApiKey) {
     try {
-      // 1. Send confirmation email to the Participant
       const participantRes = await sendViaResendWithFallback(
         resendApiKey,
         resendFrom,
@@ -370,7 +385,6 @@ export async function sendRegistrationConfirmationEmail(
         "padam@amigoconnect.com"
       );
 
-      // 2. Send full registration information email to padam@amigoconnect.com
       const organizerRes = await sendViaResendWithFallback(
         resendApiKey,
         resendFrom,

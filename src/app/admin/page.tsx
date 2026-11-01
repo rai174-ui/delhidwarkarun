@@ -60,7 +60,12 @@ export default function AdminRegistrationsPage() {
             const localList: FullRegistrationRecord[] = JSON.parse(localRaw);
             const existingIds = new Set(merged.map((r) => r.id));
             for (const item of localList) {
-              if (item && item.id && !existingIds.has(item.id)) {
+              if (
+                item &&
+                item.id &&
+                !existingIds.has(item.id) &&
+                String(item.bib || "").startsWith("0426-")
+              ) {
                 merged.push(item);
               }
             }
@@ -281,7 +286,7 @@ export default function AdminRegistrationsPage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search Name, Bib #, Mobile, Email, Payment ID..."
+                  placeholder="Search Name, Registration No (0426-...), Mobile, Email, Payment ID..."
                   className="px-4 py-2.5 rounded-xl border border-slate-300 text-sm flex-1 min-w-[240px]"
                 />
                 <select
@@ -323,7 +328,7 @@ export default function AdminRegistrationsPage() {
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className="bg-navy-950 text-white uppercase font-display tracking-wider">
-                      <th className="py-4 px-4">Bib #</th>
+                      <th className="py-4 px-4">Registration No.</th>
                       <th className="py-4 px-4">Date &amp; Time</th>
                       <th className="py-4 px-4">Full Name</th>
                       <th className="py-4 px-4">Category</th>
@@ -346,8 +351,8 @@ export default function AdminRegistrationsPage() {
                     ) : (
                       filteredRecords.map((r) => (
                         <tr key={r.id} className="hover:bg-slate-50">
-                          <td className="py-3.5 px-4 font-mono font-bold text-coral-600 text-sm">
-                            #{r.bib}
+                          <td className="py-3.5 px-4 font-mono font-bold text-coral-600 text-sm whitespace-nowrap">
+                            {r.bib}
                           </td>
                           <td className="py-3.5 px-4 font-mono text-slate-500 whitespace-nowrap">
                             {new Date(r.registeredAt).toLocaleString("en-IN")}

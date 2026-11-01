@@ -151,20 +151,13 @@ export default function RegistrationModal({
       const saveData = await saveRes.json();
       const savedRecord = saveData?.registration;
 
-      const prefix =
-        category.id === "half"
-          ? "21"
-          : category.id === "10.5k"
-          ? "10"
-          : category.id === "5k"
-          ? "50"
-          : "30";
-
-      let assignedBib = savedRecord?.bib || "";
+      let assignedBib =
+        savedRecord?.registrationNumber || savedRecord?.bib || "";
       if (!assignedBib && typeof window !== "undefined") {
-        const lastSeq = Number(localStorage.getItem("ddr2027_last_bib_seq") || "100") + 1;
-        localStorage.setItem("ddr2027_last_bib_seq", String(lastSeq));
-        assignedBib = `${prefix}${lastSeq}`;
+        const lastSeq =
+          Number(localStorage.getItem("ddr2027_last_reg_seq") || "0") + 1;
+        localStorage.setItem("ddr2027_last_reg_seq", String(lastSeq));
+        assignedBib = `0426-${String(lastSeq).padStart(4, "0")}`;
       }
 
       // Also store a local browser backup copy
@@ -377,9 +370,9 @@ export default function RegistrationModal({
                 </span>
               </div>
               <h3 className="font-display font-extrabold text-lg sm:text-xl mt-1">
-                {step === 1 && "Runner Registration & Live Bib Preview"}
+                {step === 1 && "Runner Registration & Details"}
                 {step === 2 && "50% Discount Summary & Razorpay Checkout"}
-                {step === 3 && "Registration Confirmed & Official E-Bib"}
+                {step === 3 && "Registration Confirmed & Official Receipt"}
               </h3>
             </div>
           </div>
@@ -808,12 +801,12 @@ export default function RegistrationModal({
                 <p className="text-xs text-slate-600 mt-1.5">
                   {confirmedBib.emailSent ? (
                     <span className="text-emerald-700 font-semibold">
-                      ✉️ Official Confirmation &amp; E-Bib email sent to{" "}
+                      ✉️ Official Confirmation Email sent to{" "}
                       <strong>{confirmedBib.email}</strong>
                     </span>
                   ) : (
                     <span>
-                      📄 Save or print your official E-Bib below (Registered email:{" "}
+                      📄 Save or print your official Registration Receipt below (Registered email:{" "}
                       <strong>{confirmedBib.email}</strong>)
                     </span>
                   )}
@@ -830,14 +823,17 @@ export default function RegistrationModal({
                   </span>
                 </div>
                 <div className="py-5 text-center border-b border-white/15">
-                  <div className="text-xs uppercase tracking-widest text-slate-400">
-                    Official Runner Bib Number
+                  <div className="text-xs uppercase tracking-widest text-[#C5D887] font-bold">
+                    Official Registration Number
                   </div>
-                  <div className="font-display font-black text-5xl tracking-wider text-white mt-1">
-                    #{confirmedBib.bib}
+                  <div className="font-display font-black text-4xl sm:text-5xl tracking-wider text-white mt-1">
+                    {confirmedBib.bib}
                   </div>
-                  <div className="text-sm font-display font-bold text-volt mt-1 uppercase">
+                  <div className="text-sm font-display font-bold text-volt mt-1.5 uppercase">
                     {confirmedBib.name}
+                  </div>
+                  <div className="text-[11px] text-sky-300 font-semibold mt-2">
+                    ℹ️ Official Bib # will be issued later by our 3rd-party timing agency
                   </div>
                 </div>
                 <div className="pt-4 grid grid-cols-3 gap-2 text-xs">
@@ -862,7 +858,7 @@ export default function RegistrationModal({
                   onClick={() => window.print()}
                   className="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-navy-900 border border-slate-300 font-display font-bold text-sm"
                 >
-                  🖨️ Print / Save E-Bib PDF
+                  🖨️ Print / Save Receipt PDF
                 </button>
                 <button
                   type="button"

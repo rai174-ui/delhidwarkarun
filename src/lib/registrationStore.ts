@@ -1,11 +1,11 @@
 import fs from "fs";
 import path from "path";
 import Razorpay from "razorpay";
-import { INITIAL_RESULTS } from "../data/raceData";
 
 export interface StoredRegistration {
   id: string;
-  bib: string;
+  bib: string; // Stores the official Registration Number (e.g. "0426-0001")
+  registrationNumber?: string; // Alias for bib ("0426-0001")
   registeredAt: string;
   fullName: string;
   email: string;
@@ -30,75 +30,65 @@ export interface StoredRegistration {
   paymentStatus: "PAID";
 }
 
-const RESERVED_BIBS = new Set(INITIAL_RESULTS.map((r) => String(r.bib).trim()));
+const REG_PREFIX = "0426-";
 
-export function getCategoryBibPrefix(categoryId: string): string {
-  switch (categoryId) {
-    case "half":
-      return "21";
-    case "10.5k":
-      return "10";
-    case "5k":
-      return "50";
-    case "3k":
-      return "30";
-    case "test1":
-      return "90";
-    default:
-      return "30";
-  }
+export function formatRegistrationNumber(seq: number): string {
+  const safeSeq = Math.max(1, Math.floor(seq));
+  return `${REG_PREFIX}${String(safeSeq).padStart(4, "0")}`;
 }
 
 /**
- * Extracts the sequential numeric suffix from a Bib string (e.g. "21105" -> 105, "90102" -> 102)
+ * Extracts the sequential numeric suffix from a Registration Number (e.g. "0426-0001" -> 1)
  */
-function extractBibSequence(bib: string): number {
-  const digits = String(bib || "").replace(/\D/g, "");
-  if (digits.length >= 5) {
-    const suffix = Number(digits.slice(2));
-    if (!Number.isNaN(suffix) && suffix > 0) return suffix;
+function extractRegistrationSequence(regNo: string): number {
+  const trimmed = String(regNo || "").trim();
+  const match = trimmed.match(/^0426-(\d+)$/);
+  if (match && match[1]) {
+    const parsed = parseInt(match[1], 10);
+    if (!Number.isNaN(parsed) && parsed > 0) {
+      return parsed;
+    }
   }
-  const num = Number(digits);
-  return !Number.isNaN(num) ? num : 100;
+  return 0;
 }
 
 /**
- * Allocates the next strictly incrementing, globally unique Bib number
+ * Allocates the next strictly incrementing, globally unique Registration Number
+ * starting from 0426-0001, 0426-0002, 0426-0003...
  */
-export function allocateNextUniqueBib(
-  categoryId: string,
+export function allocateNextRegistrationNumber(
   existingRecords: StoredRegistration[],
   minHistoricalCount: number = 0
 ): string {
-  const prefix = getCategoryBibPrefix(categoryId);
-  const usedBibs = new Set<string>(RESERVED_BIBS);
+  const usedRegNumbers = new Set<string>();
   const usedSequences = new Set<number>();
 
-  let maxSequence = 100;
+  let maxSequence = 0;
 
   for (const rec of existingRecords) {
-    if (rec.bib) {
-      const cleanBib = String(rec.bib).trim();
-      usedBibs.add(cleanBib);
-      const seq = extractBibSequence(cleanBib);
-      usedSequences.add(seq);
-      if (seq > maxSequence) {
-        maxSequence = seq;
+    const code = String(rec.registrationNumber || rec.bib || "").trim();
+    if (code) {
+      usedRegNumbers.add(code);
+      const seq = extractRegistrationSequence(code);
+      if (seq > 0) {
+        usedSequences.add(seq);
+        if (seq > maxSequence) {
+          maxSequence = seq;
+        }
       }
     }
   }
 
-  // Ensure sequence is strictly greater than maxSequence AND accounts for historical count
   let nextSeq =
-    Math.max(maxSequence, 100 + existingRecords.length, 100 + minHistoricalCount) + 1;
+    Math.max(maxSequence, existingRecords.length, minHistoricalCount) + 1;
 
-  let candidateBib = `${prefix}${nextSeq}`;
-  while (usedBibs.has(candidateBib) || usedSequences.has(nextSeq)) {
+  let candidate = formatRegistrationNumber(nextSeq);
+  while (usedRegNumbers.has(candidate) || usedSequences.has(nextSeq)) {
     nextSeq++;
-    candidateBib = `${prefix}${nextSeq}`;
+    candidate = formatRegistrationNumber(nextSeq);
   }
 
-  return candidateBib;
+  return candidate;
 }
 
 function getStoreFilePath(): string {
@@ -120,7 +110,13 @@ export function getAllRegistrations(): StoredRegistration[] {
     }
     const raw = fs.readFileSync(filePath, "utf-8");
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    // Filter out any legacy ₹1 test records that did not use the 0426-XXXX format
+    return parsed.filter(
+      (r) =>
+        r &&
+        (String(r.bib || "").startsWith(REG_PREFIX) || Number(r.amountPaid) > 1)
+    );
   } catch (err) {
     console.error("Error reading registrations store:", err);
     return [];
@@ -128,8 +124,8 @@ export function getAllRegistrations(): StoredRegistration[] {
 }
 
 /**
- * Syncs captured payments from Razorpay API so that even if the container restarts or redeploys,
- * all previous registrations and their sequential Bib numbers are preserved and never reused.
+ * Syncs official paid registrations from Razorpay API so that even if the container restarts or redeploys,
+ * all registrations and their sequential 0426-XXXX Registration Numbers are preserved and never reused.
  */
 export async function syncAndGetRegistrations(): Promise<{
   records: StoredRegistration[];
@@ -142,7 +138,10 @@ export async function syncAndGetRegistrations(): Promise<{
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
   if (!keyId || !keySecret) {
-    return { records: localRecords, razorpayHistoricalCount: localRecords.length };
+    return {
+      records: localRecords,
+      razorpayHistoricalCount: localRecords.length,
+    };
   }
 
   try {
@@ -156,10 +155,13 @@ export async function syncAndGetRegistrations(): Promise<{
       ? paymentsResp.items
       : [];
 
-    // Filter to captured/authorized payments on this Razorpay account, sorted oldest -> newest
+    // Exclude legacy ₹1 (100 paise) gateway test payments so real registrations start cleanly at 0426-0001
     const validPayments = items
       .filter(
-        (p) => p && (p.status === "captured" || p.status === "authorized")
+        (p) =>
+          p &&
+          (p.status === "captured" || p.status === "authorized") &&
+          Number(p.amount) > 100
       )
       .sort((a, b) => (Number(a.created_at) || 0) - (Number(b.created_at) || 0));
 
@@ -171,11 +173,23 @@ export async function syncAndGetRegistrations(): Promise<{
     }
 
     let changed = false;
-    // Reconstruct any missing registrations from Razorpay payment notes in chronological order
     const workingList = [...localRecords].sort(
       (a, b) =>
         new Date(a.registeredAt).getTime() - new Date(b.registeredAt).getTime()
     );
+
+    // Normalize any existing non-0426 records in chronological order
+    for (let i = 0; i < workingList.length; i++) {
+      if (!String(workingList[i].bib || "").startsWith(REG_PREFIX)) {
+        const regNo = allocateNextRegistrationNumber(
+          workingList.slice(0, i),
+          i
+        );
+        workingList[i].bib = regNo;
+        workingList[i].registrationNumber = regNo;
+        changed = true;
+      }
+    }
 
     for (let i = 0; i < validPayments.length; i++) {
       const p = validPayments[i];
@@ -184,22 +198,18 @@ export async function syncAndGetRegistrations(): Promise<{
       }
 
       const notes = p.notes || {};
-      const catId = notes.categoryId || (p.amount === 100 ? "test1" : "half");
+      const catId = notes.categoryId || "half";
       const catName =
-        notes.categoryName ||
-        notes.category ||
-        (p.amount === 100
-          ? "Gateway Test Payment (₹1)"
-          : "Half Marathon (21.097 KM)");
-      const dist =
-        notes.distance || (p.amount === 100 ? "TEST ₹1" : "21.097 KM");
+        notes.categoryName || notes.category || "Half Marathon (21.097 KM)";
+      const dist = notes.distance || "21.097 KM";
       const paidInr = Math.round((Number(p.amount) || 0) / 100);
 
-      const allocatedBib = allocateNextUniqueBib(catId, workingList, i);
+      const allocatedRegNo = allocateNextRegistrationNumber(workingList, i);
 
       const recovered: StoredRegistration = {
         id: `reg_${p.created_at || Date.now()}_${String(p.id).slice(-5)}`,
-        bib: allocatedBib,
+        bib: allocatedRegNo,
+        registrationNumber: allocatedRegNo,
         registeredAt: p.created_at
           ? new Date(Number(p.created_at) * 1000).toISOString()
           : new Date().toISOString(),
@@ -232,7 +242,6 @@ export async function syncAndGetRegistrations(): Promise<{
       changed = true;
     }
 
-    // Sort newest first for display/storage
     const newestFirst = [...workingList].sort(
       (a, b) =>
         new Date(b.registeredAt).getTime() - new Date(a.registeredAt).getTime()
@@ -256,7 +265,10 @@ export async function syncAndGetRegistrations(): Promise<{
     };
   } catch (err) {
     console.error("Razorpay sync warning (using local store):", err);
-    return { records: localRecords, razorpayHistoricalCount: localRecords.length };
+    return {
+      records: localRecords,
+      razorpayHistoricalCount: localRecords.length,
+    };
   }
 }
 
@@ -268,7 +280,7 @@ export async function saveRegistration(
   const { records: existing, razorpayHistoricalCount } =
     await syncAndGetRegistrations();
 
-  // 1. Idempotency check: if this paymentId already has an allocated Bib, update its runner details & return that exact Bib
+  // 1. Idempotency check: if this paymentId already has an allocated Registration Number, return it
   if (input.paymentId) {
     const existingIdx = existing.findIndex(
       (r) => r.paymentId === input.paymentId
@@ -303,16 +315,16 @@ export async function saveRegistration(
     }
   }
 
-  // 2. Strictly increment and allocate a 100% unique Bib number
-  const bib = allocateNextUniqueBib(
-    input.categoryId,
+  // 2. Strictly increment and allocate a unique Registration Number starting at 0426-0001
+  const registrationNumber = allocateNextRegistrationNumber(
     existing,
     razorpayHistoricalCount
   );
 
   const newRecord: StoredRegistration = {
     id: `reg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-    bib,
+    bib: registrationNumber,
+    registrationNumber,
     registeredAt: new Date().toISOString(),
     fullName: input.fullName,
     email: input.email,
@@ -348,8 +360,8 @@ export function convertRegistrationsToCSV(
   records: StoredRegistration[]
 ): string {
   const headers = [
-    "Registration ID",
-    "Bib Number",
+    "Registration Number",
+    "Bib Number Status",
     "Registration Date (UTC)",
     "Full Name",
     "Email",
@@ -380,8 +392,8 @@ export function convertRegistrationsToCSV(
 
   const rows = records.map((r) =>
     [
-      r.id,
-      r.bib,
+      r.registrationNumber || r.bib,
+      "To be issued by 3rd party timing partner",
       r.registeredAt,
       r.fullName,
       r.email,
