@@ -298,24 +298,15 @@ export default function DelhiDwarkaRunPage() {
               <a href="#about" className="hover:text-[#0284C7] transition-colors">
                 Highlights
               </a>
-              <a href="#results" className="hover:text-coral-600 transition-colors">
-                Results
+              <a href="#faq" className="hover:text-coral-600 transition-colors">
+                FAQs
               </a>
               <a href="#contact" className="hover:text-[#0284C7] transition-colors">
                 Contact
               </a>
             </nav>
 
-            <div className="hidden md:flex items-center gap-2.5">
-              <button
-                onClick={() => {
-                  const testCat = RACE_CATEGORIES.find((c) => c.id === "test1");
-                  handleOpenRegister(testCat);
-                }}
-                className="bg-amber-500 hover:bg-amber-600 text-white font-display font-black uppercase tracking-wider text-xs px-4 py-3.5 rounded-xl shadow-md hover:scale-[1.02] transition-all flex items-center gap-1.5"
-              >
-                <span>🧪 Test ₹1</span>
-              </button>
+            <div className="hidden md:flex items-center gap-3">
               <button
                 onClick={() => handleOpenRegister()}
                 className="bg-gradient-to-r from-coral-500 via-[#F26522] to-[#0284C7] text-white font-display font-black uppercase tracking-wider text-xs px-6 py-3.5 rounded-xl shadow-glow hover:shadow-glow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
@@ -1453,78 +1444,9 @@ export default function DelhiDwarkaRunPage() {
           </div>
         </section>
 
-        {/* RESULTS LEADERBOARD & FAQ SECTION (LIGHT TRANSLUCENT FOREGROUND) */}
-        <section id="results" className="py-20 bg-white/82 backdrop-blur-md border-t border-slate-200/80">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
-            <div>
-              <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 bg-white/95 p-6 rounded-3xl border border-slate-200 shadow-sm">
-                <div>
-                  <span className="inline-block px-3.5 py-1 rounded-full bg-coral-500/10 text-coral-600 font-display font-black text-xs uppercase tracking-widest mb-2">
-                    🏆 Hall of Fame &amp; Live 2027 Roster
-                  </span>
-                  <h2 className="font-display font-black italic text-3xl sm:text-4xl text-navy-950 uppercase">
-                    Official Results &amp; Confirmed Bibs
-                  </h2>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="text"
-                    value={resultsQuery}
-                    onChange={(e) => setResultsQuery(e.target.value)}
-                    placeholder="Search by Bib # or Runner Name..."
-                    className="px-4 py-3 rounded-xl border border-slate-300 text-sm min-w-[240px] bg-white"
-                  />
-                  <select
-                    value={resultsCategoryFilter}
-                    onChange={(e) => setResultsCategoryFilter(e.target.value)}
-                    className="px-4 py-3 rounded-xl border border-slate-300 text-sm font-semibold bg-white"
-                  >
-                    <option value="All">All Categories</option>
-                    {RACE_CATEGORIES.map((c) => (
-                      <option key={c.id} value={c.name}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="overflow-x-auto rounded-3xl border border-slate-200 shadow-card bg-white/95">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-gradient-to-r from-[#0284C7] to-navy-900 text-white text-xs uppercase tracking-wider font-display">
-                      <th className="py-4 px-5">Bib #</th>
-                      <th className="py-4 px-5">Runner Name</th>
-                      <th className="py-4 px-5">Category</th>
-                      <th className="py-4 px-5">Gender</th>
-                      <th className="py-4 px-5">Net Time / Status</th>
-                      <th className="py-4 px-5">Pace / Perks</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 text-sm bg-white/95">
-                    {filteredResults.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-sky-50/50 transition-colors">
-                        <td className="py-4 px-5 font-mono font-bold text-coral-600">#{row.bib}</td>
-                        <td className="py-4 px-5 font-bold text-navy-950">
-                          {row.name}
-                          {row.isNew && (
-                            <span className="ml-2 px-2 py-0.5 text-[10px] font-display font-black uppercase rounded bg-emerald-100 text-emerald-700">
-                              2027 Confirmed
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-4 px-5 font-medium text-slate-700">{row.category}</td>
-                        <td className="py-4 px-5 text-slate-500">{row.gender}</td>
-                        <td className="py-4 px-5 font-mono font-bold text-navy-950">{row.netTime}</td>
-                        <td className="py-4 px-5 font-mono text-slate-500">{row.pace}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
+        {/* FAQ SECTION (LIGHT TRANSLUCENT FOREGROUND) */}
+        <section id="faq" className="py-20 bg-white/82 backdrop-blur-md border-t border-slate-200/80">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-10">
                 <span className="text-xs font-display font-black uppercase tracking-widest text-coral-600">

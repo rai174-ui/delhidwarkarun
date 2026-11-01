@@ -113,25 +113,6 @@ export default function RegistrationModal({
   const totalPayable = discountApplied ? category.fee : originalFee;
   const discountAmount = originalFee - totalPayable;
 
-  const handleQuickTestRs1 = () => {
-    const testCat = RACE_CATEGORIES.find((c) => c.id === "test1") || RACE_CATEGORIES[0];
-    setCategory(testCat);
-    setFormData({
-      fullName: formData.fullName || "DDR Test Runner",
-      email: formData.email || "padam@amigoconnect.com",
-      mobile: formData.mobile || "9971299631",
-      dob: formData.dob || "1990-01-01",
-      gender: formData.gender || "Male",
-      bloodGroup: formData.bloodGroup || "O+",
-      tshirtSize: formData.tshirtSize || "L",
-      emergencyName: formData.emergencyName || "Emergency Contact",
-      emergencyPhone: formData.emergencyPhone || "9811122233",
-      medicalDeclaration: true,
-    });
-    setErrors({});
-    setStep(2);
-  };
-
   const finalizeRegistration = async (
     paymentId: string,
     orderId: string = "",
@@ -177,8 +158,6 @@ export default function RegistrationModal({
           ? "10"
           : category.id === "5k"
           ? "50"
-          : category.id === "test1"
-          ? "90"
           : "30";
 
       let assignedBib = savedRecord?.bib || "";
@@ -424,33 +403,11 @@ export default function RegistrationModal({
         <div className="p-6 sm:p-7 overflow-y-auto space-y-6">
           {step === 1 && (
             <form onSubmit={handleProceedToPayment} className="space-y-5" noValidate>
-              {/* Temporary Rs. 1 Payment Gateway Test Banner */}
-              <div className="bg-amber-50 border-2 border-amber-400 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <span className="text-[10px] font-display font-black uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500 text-white">
-                    TEMP GATEWAY TEST
-                  </span>
-                  <div className="font-display font-extrabold text-xs sm:text-sm text-navy-950 mt-1">
-                    Test Live Razorpay Gateway with ₹1.00
-                  </div>
-                  <p className="text-[11px] text-slate-600">
-                    Click to auto-fill test runner details &amp; jump straight to ₹1 Razorpay checkout.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleQuickTestRs1}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-coral-500 hover:from-amber-600 hover:to-coral-600 text-white font-display font-black text-xs uppercase tracking-wider shadow-md shrink-0"
-                >
-                  ⚡ Test ₹1 Payment Now →
-                </button>
-              </div>
-
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                   Select Race Category (50% Discount Applied Till 30-Nov-2026) *
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {RACE_CATEGORIES.map((cat) => (
                     <button
                       type="button"
@@ -459,8 +416,6 @@ export default function RegistrationModal({
                       className={`p-3 rounded-2xl border text-left transition-all ${
                         category.id === cat.id
                           ? "border-coral-500 bg-coral-500/10 ring-2 ring-coral-500/20"
-                          : cat.id === "test1"
-                          ? "border-amber-400 bg-amber-50/70 hover:border-amber-500"
                           : "border-slate-200 hover:border-slate-300 bg-slate-50"
                       }`}
                     >
@@ -914,7 +869,7 @@ export default function RegistrationModal({
                   onClick={onClose}
                   className="px-7 py-3 rounded-xl bg-coral-500 hover:bg-coral-600 text-white font-display font-bold text-sm shadow-glow"
                 >
-                  Done &amp; View Leaderboard
+                  Done &amp; Close
                 </button>
               </div>
             </div>
