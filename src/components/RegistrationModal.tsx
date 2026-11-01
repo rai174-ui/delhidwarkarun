@@ -335,7 +335,7 @@ export default function RegistrationModal({
             <img
               src="/assets/ddr-logo.png"
               alt="DDR Logo"
-              className="w-12 h-12 rounded-xl bg-[#C5D887] p-1 object-contain border border-[#F26522] shrink-0"
+              className="h-11 w-auto rounded-xl bg-[#C5D887] px-2 py-1 object-contain border border-[#F26522] shrink-0"
             />
             <div>
               <div className="flex items-center gap-2">
@@ -571,10 +571,29 @@ export default function RegistrationModal({
                     className="mt-1 w-4 h-4 accent-coral-500 rounded"
                   />
                   <span className="text-xs text-slate-700 leading-relaxed">
-                    <strong>Medical &amp; Fitness Declaration:</strong> I declare that I am
+                    <strong>Medical, Terms &amp; Privacy Declaration:</strong> I declare that I am
                     physically fit and trained to participate in the{" "}
                     <strong>{category.name}</strong> starting at{" "}
-                    <strong>Max Hospital, Sector 10, Dwarka, New Delhi</strong> on 14-Feb-2027.
+                    <strong>Max Hospital, Sector 10, Dwarka, New Delhi</strong> on 14-Feb-2027, and I
+                    have read and agree to the{" "}
+                    <a
+                      href="/terms-and-conditions"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-coral-600 underline font-bold"
+                    >
+                      Terms &amp; Conditions
+                    </a>{" "}
+                    and{" "}
+                    <a
+                      href="/privacy-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-coral-600 underline font-bold"
+                    >
+                      Privacy Policy
+                    </a>{" "}
+                    of AMIGO CONNECT.COM.
                   </span>
                 </label>
                 {errors.medicalDeclaration && (

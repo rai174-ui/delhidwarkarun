@@ -139,7 +139,7 @@ export default function AdminRegistrationsPage() {
             <img
               src="/assets/ddr-logo.png"
               alt="Delhi Dwarka Runners Logo"
-              className="w-12 h-12 rounded-xl bg-[#C5D887] p-1 object-contain border border-[#F26522] shrink-0"
+              className="h-11 w-auto rounded-xl bg-[#C5D887] px-2 py-1 object-contain border border-[#F26522] shrink-0"
             />
             <div>
               <h1 className="font-display font-black text-lg uppercase tracking-tight">

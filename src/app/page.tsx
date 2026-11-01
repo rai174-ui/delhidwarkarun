@@ -11,6 +11,7 @@ import {
   RunnerResult,
 } from "../data/raceData";
 import RegistrationModal from "../components/RegistrationModal";
+import { ABOUT_EVENT_CONTENT, DISCLAIMER_TEXT } from "../data/legalData";
 
 const KIT_HOTSPOTS = [
   {
@@ -190,11 +191,11 @@ export default function DelhiDwarkaRunPage() {
       <header className="sticky top-0 z-40 bg-navy-950/95 backdrop-blur-xl border-b-2 border-[#29ABE2]/30 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <a href="#home" className="flex items-center gap-3.5 group">
-            <div className="w-14 h-14 rounded-2xl bg-[#C5D887] p-1 flex items-center justify-center shadow-glow border-2 border-[#F26522] group-hover:scale-105 transition-transform relative overflow-hidden shrink-0">
+            <div className="h-14 px-2.5 rounded-2xl bg-[#C5D887] flex items-center justify-center shadow-glow border-2 border-[#F26522] group-hover:scale-105 transition-transform relative overflow-hidden shrink-0">
               <img
                 src="/assets/ddr-logo.png"
                 alt="Delhi Dwarka Runners (DDR) Official Logo"
-                className="w-full h-full object-contain rounded-xl"
+                className="h-11 w-auto object-contain"
               />
             </div>
             <div>
@@ -1180,6 +1181,78 @@ export default function DelhiDwarkaRunPage() {
               </div>
             </div>
           </div>
+
+          {/* ABOUT EVENT DETAILS: WHY PARTICIPATE, WHO SHOULD JOIN & EXPERIENCE */}
+          <div className="mt-14 grid lg:grid-cols-3 gap-6">
+            <div className="bg-navy-950/90 border border-white/15 rounded-3xl p-6 sm:p-7 space-y-4">
+              <span className="inline-block px-3 py-1 rounded-full bg-coral-500/20 text-coral-400 font-display font-black text-xs uppercase tracking-wider">
+                About The Event
+              </span>
+              <h3 className="font-display font-black text-xl text-white uppercase">
+                The DDR Marathon Experience
+              </h3>
+              <div className="space-y-2.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                {ABOUT_EVENT_CONTENT.intro.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+                {ABOUT_EVENT_CONTENT.experience.map((p, i) => (
+                  <p key={`exp-${i}`} className="text-slate-200 font-medium">
+                    {p}
+                  </p>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-navy-950/90 border border-white/15 rounded-3xl p-6 sm:p-7 space-y-4">
+              <span className="inline-block px-3 py-1 rounded-full bg-[#29ABE2]/20 text-[#29ABE2] font-display font-black text-xs uppercase tracking-wider">
+                Why Participate
+              </span>
+              <h3 className="font-display font-black text-xl text-white uppercase">
+                Why Run in Delhi Dwarka Run (DDR)
+              </h3>
+              <ul className="space-y-2.5 text-xs sm:text-sm text-slate-200">
+                {ABOUT_EVENT_CONTENT.whyParticipate.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-[#C5D887] text-navy-950 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                      ✓
+                    </span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-navy-950/90 border border-white/15 rounded-3xl p-6 sm:p-7 flex flex-col justify-between space-y-4">
+              <div className="space-y-4">
+                <span className="inline-block px-3 py-1 rounded-full bg-[#C5D887]/20 text-[#C5D887] font-display font-black text-xs uppercase tracking-wider">
+                  Who Should Join
+                </span>
+                <h3 className="font-display font-black text-xl text-white uppercase">
+                  Designed For Every Runner
+                </h3>
+                <ul className="space-y-2 text-xs sm:text-sm text-slate-200">
+                  {ABOUT_EVENT_CONTENT.whoShouldJoin.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2.5">
+                      <span className="text-coral-400 font-bold">★</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="pt-3 border-t border-white/10">
+                <div className="text-xs font-display font-bold text-[#C5D887] uppercase mb-2">
+                  Register Now — 50% Early Bird Offer LIVE
+                </div>
+                <button
+                  onClick={() => handleOpenRegister()}
+                  className="w-full bg-gradient-to-r from-coral-500 to-[#29ABE2] text-white font-display font-black uppercase text-xs py-3.5 rounded-xl shadow-glow"
+                >
+                  Secure Your Spot Today →
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1417,59 +1490,75 @@ export default function DelhiDwarkaRunPage() {
 
       {/* FOOTER */}
       <footer className="bg-navy-950 text-slate-400 py-14 border-t-2 border-[#29ABE2]/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#C5D887] p-1 flex items-center justify-center border border-[#F26522] shrink-0">
-              <img
-                src="/assets/ddr-logo.png"
-                alt="Delhi Dwarka Runners Logo"
-                className="w-full h-full object-contain rounded-xl"
-              />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-xs">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3.5">
+              <div className="h-12 px-2.5 rounded-2xl bg-[#C5D887] flex items-center justify-center border border-[#F26522] shrink-0">
+                <img
+                  src="/assets/ddr-logo.png"
+                  alt="Delhi Dwarka Runners Logo"
+                  className="h-10 w-auto object-contain"
+                />
+              </div>
+              <div>
+                <div className="font-display font-black text-white text-sm uppercase">
+                  <span className="text-[#29ABE2]">DELHI DWARKA</span>{" "}
+                  <span className="text-coral-500">RUNNERS</span> • 4TH EDITION DWARKA HALF MARATHON
+                </div>
+                <div className="text-slate-300 mt-0.5">
+                  Starting Point: Max Hospital, Sector 10, Dwarka, New Delhi • Operated by AMIGO CONNECT (AMIGOCONNECT.COM)
+                </div>
+                <div className="text-[#C5D887] font-semibold mt-0.5">
+                  ✉️{" "}
+                  <a href="mailto:padam@amigoconnect.com" className="hover:underline">
+                    padam@amigoconnect.com
+                  </a>{" "}
+                  • Grievance:{" "}
+                  <a href="mailto:grievance@amigoconnect.com" className="hover:underline">
+                    grievance@amigoconnect.com
+                  </a>{" "}
+                  • 📞{" "}
+                  <a href="tel:+919971299631" className="hover:underline">
+                    +91 99712 99631
+                  </a>
+                </div>
+              </div>
             </div>
-            <div>
-              <div className="font-display font-black text-white text-sm uppercase">
-                <span className="text-[#29ABE2]">DELHI DWARKA</span>{" "}
-                <span className="text-coral-500">RUNNERS</span> • 4TH EDITION DWARKA HALF MARATHON
-              </div>
-              <div className="text-slate-300 mt-0.5">
-                Starting Point: Max Hospital, Sector 10, Dwarka, New Delhi
-              </div>
-              <div className="text-[#C5D887] font-semibold mt-0.5">
-                ✉️{" "}
-                <a href="mailto:padam@amigoconnect.com" className="hover:underline">
-                  padam@amigoconnect.com
-                </a>{" "}
-                • 📞{" "}
-                <a href="tel:+919971299631" className="hover:underline">
-                  +91 99712 99631
-                </a>
-              </div>
+            <div className="flex flex-wrap gap-5 font-semibold text-slate-300 items-center">
+              <a href="#home" className="hover:text-[#29ABE2]">
+                Home
+              </a>
+              <a href="#categories" className="hover:text-coral-400">
+                Categories
+              </a>
+              <a href="#about" className="hover:text-[#C5D887]">
+                About Event
+              </a>
+              <a href="/terms-and-conditions" className="text-[#C5D887] hover:text-white underline font-bold">
+                Terms &amp; Conditions
+              </a>
+              <a href="/privacy-policy" className="text-[#C5D887] hover:text-white underline font-bold">
+                Privacy Policy
+              </a>
+              <a
+                href="/admin"
+                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-coral-500 text-[#C5D887] hover:text-white font-display font-bold transition-colors"
+              >
+                🔒 Organizer Portal (Export Registrations)
+              </a>
             </div>
           </div>
-          <div className="flex flex-wrap gap-5 font-semibold text-slate-300">
-            <a href="#home" className="hover:text-[#29ABE2]">
-              Home
-            </a>
-            <a href="#categories" className="hover:text-coral-400">
-              Categories
-            </a>
-            <a href="#race-kit" className="hover:text-[#C5D887]">
-              Race Kit
-            </a>
-            <a href="#route-map" className="hover:text-[#29ABE2]">
-              Route Map
-            </a>
-            <a href="#results" className="hover:text-coral-400">
-              Results
-            </a>
-            <a
-              href="/admin"
-              className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-coral-500 text-[#C5D887] hover:text-white font-display font-bold transition-colors"
-            >
-              🔒 Organizer Portal (Export Registrations)
-            </a>
+
+          <div className="border-t border-white/10 pt-6 space-y-2 text-[11px] text-slate-400 leading-relaxed">
+            <div className="font-display font-bold uppercase text-slate-300">Disclaimer</div>
+            {DISCLAIMER_TEXT.map((line, i) => (
+              <p key={i}>{line}</p>
+            ))}
+            <div className="pt-2 text-slate-500 flex flex-wrap justify-between gap-2">
+              <span>© 2026–2027 Delhi Dwarka Runners (DDR) &amp; AMIGO CONNECT (AMIGOCONNECT.COM). All rights reserved.</span>
+              <span>Grievance Officer: Padam Sharma (Director - Product &amp; New Community Initiatives) • grievance@amigoconnect.com</span>
+            </div>
           </div>
-          <div>© 2026–2027 Delhi Dwarka Runners (DDR). All rights reserved.</div>
         </div>
       </footer>
 
