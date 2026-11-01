@@ -4,6 +4,7 @@ import {
   saveRegistration,
   convertRegistrationsToCSV,
 } from "../../../lib/registrationStore";
+import { sendRegistrationConfirmationEmail } from "../../../lib/emailService";
 
 export const dynamic = "force-dynamic";
 
@@ -117,9 +118,13 @@ export async function POST(request: Request) {
       }).catch((err) => console.error("Webhook forwarding error:", err));
     }
 
+    // Send official HTML Confirmation & E-Bib email to the registered runner (and copy to organizer)
+    const emailConfirmation = await sendRegistrationConfirmationEmail(saved);
+
     return NextResponse.json({
       success: true,
       registration: saved,
+      emailConfirmation,
     });
   } catch (error: any) {
     return NextResponse.json(

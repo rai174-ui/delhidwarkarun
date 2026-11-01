@@ -37,6 +37,8 @@ export default function RegistrationModal({
     gender: string;
     tshirtSize: string;
     amountPaid: number;
+    email: string;
+    emailSent?: boolean;
   } | null>(null);
 
   const [errors, setErrors] = useState<Record<string, string | null>>({});
@@ -208,6 +210,8 @@ export default function RegistrationModal({
         gender: formData.gender,
         tshirtSize: formData.tshirtSize,
         amountPaid: totalPayable,
+        email: formData.email,
+        emailSent: Boolean(saveData?.emailConfirmation?.sent),
       };
 
       setConfirmedBib(confirmedObj);
@@ -818,6 +822,19 @@ export default function RegistrationModal({
                 <h4 className="font-display font-black text-2xl text-navy-900 mt-2">
                   See You at Max Hospital Sector 10, {confirmedBib.name}!
                 </h4>
+                <p className="text-xs text-slate-600 mt-1.5">
+                  {confirmedBib.emailSent ? (
+                    <span className="text-emerald-700 font-semibold">
+                      ✉️ Official Confirmation &amp; E-Bib email sent to{" "}
+                      <strong>{confirmedBib.email}</strong>
+                    </span>
+                  ) : (
+                    <span>
+                      📄 Save or print your official E-Bib below (Registered email:{" "}
+                      <strong>{confirmedBib.email}</strong>)
+                    </span>
+                  )}
+                </p>
               </div>
 
               <div className="bg-gradient-to-br from-navy-900 via-navy-800 to-navy-950 text-white rounded-3xl p-6 max-w-md mx-auto border-2 border-coral-500 shadow-2xl text-left">
@@ -856,7 +873,14 @@ export default function RegistrationModal({
                 </div>
               </div>
 
-              <div className="flex justify-center gap-3">
+              <div className="flex flex-wrap justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-navy-900 border border-slate-300 font-display font-bold text-sm"
+                >
+                  🖨️ Print / Save E-Bib PDF
+                </button>
                 <button
                   type="button"
                   onClick={onClose}
