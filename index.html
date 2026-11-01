@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>4th Edition Dwarka Half Marathon | Delhi Dwarka Run 2027</title>
+  <link rel="icon" href="./assets/ddr-logo.png?v=3" type="image/png" />
   <meta name="description" content="4th Edition of Dwarka Half Marathon (Delhi Dwarka Run 2027) on 14-Feb-2027. Starting Point: Max Hospital, Sector 10, Dwarka, New Delhi. Register for 21.097 KM, 10.5 KM, 5 KM, or 3 KM with 50% Discount till 30-Nov-2026!" />
 
   <!-- Google Fonts: Montserrat, Teko & Inter -->
@@ -637,11 +638,11 @@
             </div>
           </section>
 
-          {/* OFFICIAL KIT SECTION */}
-          <section id="race-kit" className="py-24 bg-navy-950 text-white">
+          {/* OFFICIAL KIT & CERTIFICATES SECTION */}
+          <section id="race-kit" className="py-24 bg-navy-950 text-white space-y-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-7">
-                <img src="./assets/race-kit-2027.jpg" alt="Official Race Kit" className="rounded-3xl border border-white/15 w-full h-auto object-cover shadow-2xl" />
+              <div className="lg:col-span-7 bg-white p-6 rounded-3xl">
+                <img src="./assets/event-tee-2027.png" alt="Official DDR Event Tee" className="rounded-2xl w-full h-auto object-contain" />
               </div>
               <div className="lg:col-span-5 space-y-4">
                 {KIT_HOTSPOTS.map((item) => (
@@ -651,6 +652,24 @@
                   </div>
                 ))}
               </div>
+            </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
+              <div className="bg-white p-4 rounded-2xl">
+                <img src="./assets/certificate-1.png" alt="Official DDR Finisher Certificate" className="w-full h-auto max-h-[360px] object-contain mx-auto" />
+              </div>
+              <div className="bg-white p-4 rounded-2xl">
+                <img src="./assets/certificate-2.png" alt="Official DDR Chip-Time Certificate" className="w-full h-auto max-h-[360px] object-contain mx-auto" />
+              </div>
+            </div>
+          </section>
+
+          {/* OFFICIAL ROUTE MAP SECTION */}
+          <section id="route-map" className="py-20 bg-white">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+              <h2 className="font-display font-black italic text-3xl sm:text-4xl text-navy-950 uppercase">
+                Official Race Route &amp; U-Turn Map
+              </h2>
+              <img src="./assets/route-map-official.png" alt="Official DDR Route Map" className="w-full h-auto max-h-[560px] object-contain mx-auto rounded-3xl border-2 border-slate-200 shadow-2xl" />
             </div>
           </section>
 
