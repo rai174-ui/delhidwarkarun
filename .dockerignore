@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.cache
+*.m4v
+*.zip
+*.docx
+*.pdf
+backgroundimage/
