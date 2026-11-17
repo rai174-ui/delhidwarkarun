@@ -5,6 +5,8 @@ export interface EmailSendResult {
   sent: boolean;
   participantSent?: boolean;
   organizerSent?: boolean;
+  participantError?: string;
+  organizerError?: string;
   provider?: "smtp" | "resend";
   messageId?: string;
   organizerMessageId?: string;
@@ -307,22 +309,26 @@ async function sendViaResendWithFallback(
   replyTo: string
 ): Promise<{ ok: boolean; id?: string; error?: string }> {
   const attemptSend = async (fromAddress: string) => {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: fromAddress,
-        to,
-        reply_to: replyTo,
-        subject,
-        html,
-      }),
-    });
-    const data = await res.json();
-    return { ok: res.ok, status: res.status, data };
+    try {
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey.trim()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: fromAddress,
+          to,
+          reply_to: replyTo,
+          subject,
+          html,
+        }),
+      });
+      const data = await res.json();
+      return { ok: res.ok, status: res.status, data };
+    } catch (e: any) {
+      return { ok: false, status: 0, data: { message: e?.message || "Network error" } };
+    }
   };
 
   const firstAttempt = await attemptSend(preferredFrom);
@@ -330,6 +336,7 @@ async function sendViaResendWithFallback(
     return { ok: true, id: firstAttempt.data?.id };
   }
 
+  // Fallback to onboarding@resend.dev if preferredFrom fails
   const fallbackFrom = "Delhi Dwarka Run 2027 <onboarding@resend.dev>";
   if (preferredFrom !== fallbackFrom) {
     const secondAttempt = await attemptSend(fallbackFrom);
@@ -394,29 +401,29 @@ export async function sendRegistrationConfirmationEmail(
         record.email
       );
 
+      const hasSentAny = participantRes.ok || organizerRes.ok;
+
       return {
-        sent: participantRes.ok || organizerRes.ok,
+        sent: hasSentAny,
         participantSent: participantRes.ok,
         organizerSent: organizerRes.ok,
+        participantError: participantRes.error,
+        organizerError: organizerRes.error,
         provider: "resend",
         messageId: participantRes.id,
         organizerMessageId: organizerRes.id,
         error:
-          !participantRes.ok && !organizerRes.ok
-            ? participantRes.error || organizerRes.error
+          !participantRes.ok || !organizerRes.ok
+            ? `Participant: ${participantRes.error || "OK"} | Organizer: ${organizerRes.error || "OK"}`
             : undefined,
       };
     } catch (err: any) {
       console.error("Resend email error:", err);
-      return {
-        sent: false,
-        provider: "resend",
-        error: err?.message || "Failed to send email via Resend.",
-      };
+      // Fall through to SMTP if configured
     }
   }
 
-  // Option A: SMTP via Nodemailer
+  // Option A: SMTP via Nodemailer (Primary or Fallback)
   const smtpHost = process.env.SMTP_HOST;
   const smtpUser = process.env.SMTP_USER;
   const smtpPass = process.env.SMTP_PASS;
@@ -437,29 +444,52 @@ export async function sendRegistrationConfirmationEmail(
         },
       });
 
-      const participantInfo = await transporter.sendMail({
-        from: smtpFrom,
-        to: record.email,
-        replyTo: "padam@amigoconnect.com",
-        subject: participantSubject,
-        html: participantHtml,
-      });
+      let pSent = false;
+      let pErr: string | undefined;
+      let pMsgId: string | undefined;
 
-      const organizerInfo = await transporter.sendMail({
-        from: smtpFrom,
-        to: organizerEmail,
-        replyTo: record.email,
-        subject: organizerSubject,
-        html: organizerHtml,
-      });
+      try {
+        const participantInfo = await transporter.sendMail({
+          from: smtpFrom,
+          to: record.email,
+          replyTo: "padam@amigoconnect.com",
+          subject: participantSubject,
+          html: participantHtml,
+        });
+        pSent = true;
+        pMsgId = participantInfo.messageId;
+      } catch (e: any) {
+        pErr = e?.message;
+      }
+
+      let oSent = false;
+      let oErr: string | undefined;
+      let oMsgId: string | undefined;
+
+      try {
+        const organizerInfo = await transporter.sendMail({
+          from: smtpFrom,
+          to: organizerEmail,
+          replyTo: record.email,
+          subject: organizerSubject,
+          html: organizerHtml,
+        });
+        oSent = true;
+        oMsgId = organizerInfo.messageId;
+      } catch (e: any) {
+        oErr = e?.message;
+      }
 
       return {
-        sent: true,
-        participantSent: true,
-        organizerSent: true,
+        sent: pSent || oSent,
+        participantSent: pSent,
+        organizerSent: oSent,
+        participantError: pErr,
+        organizerError: oErr,
         provider: "smtp",
-        messageId: participantInfo.messageId,
-        organizerMessageId: organizerInfo.messageId,
+        messageId: pMsgId,
+        organizerMessageId: oMsgId,
+        error: !pSent || !oSent ? `Participant: ${pErr || "OK"} | Organizer: ${oErr || "OK"}` : undefined,
       };
     } catch (err: any) {
       console.error("SMTP email send error:", err);
@@ -474,6 +504,6 @@ export async function sendRegistrationConfirmationEmail(
   return {
     sent: false,
     error:
-      "Email credentials not configured yet (RESEND_API_KEY or SMTP credentials missing).",
+      "Email credentials not configured yet (RESEND_API_KEY or SMTP credentials missing in Railway Variables).",
   };
 }

@@ -38,6 +38,74 @@ export default function AdminRegistrationsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [sizeFilter, setSizeFilter] = useState("All");
+  const [retriggerState, setRetriggerState] = useState<{
+    [id: string]: { loading: boolean; status?: string; isError?: boolean };
+  }>({});
+  const [globalRetriggerMsg, setGlobalRetriggerMsg] = useState<{
+    text: string;
+    isError: boolean;
+  } | null>(null);
+
+  const handleRetrigger = async (record?: FullRegistrationRecord) => {
+    const targetKey = record ? record.id : "latest";
+    setRetriggerState((prev) => ({
+      ...prev,
+      [targetKey]: { loading: true },
+    }));
+    setGlobalRetriggerMsg(null);
+
+    try {
+      const params = new URLSearchParams({
+        passcode,
+        ...(record
+          ? {
+              id: record.id,
+              regNo: record.bib,
+              email: record.email,
+              paymentId: record.paymentId,
+            }
+          : {}),
+      });
+      const res = await fetch(`/api/admin/retrigger-email?${params.toString()}`);
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        const errMsg =
+          data.emailDiagnostics?.error ||
+          data.error ||
+          "Failed to send confirmation email.";
+        setRetriggerState((prev) => ({
+          ...prev,
+          [targetKey]: { loading: false, status: errMsg, isError: true },
+        }));
+        setGlobalRetriggerMsg({
+          text: `Retrigger issue (${record ? record.fullName : "Latest"}): ${errMsg}`,
+          isError: true,
+        });
+      } else {
+        const targetEmail = data.targetRegistration?.email || record?.email || "participant";
+        const successMsg = `Email sent successfully to ${targetEmail} and padam@amigoconnect.com!`;
+        setRetriggerState((prev) => ({
+          ...prev,
+          [targetKey]: { loading: false, status: "Sent!", isError: false },
+        }));
+        setGlobalRetriggerMsg({
+          text: `✓ ${successMsg} (Reg #: ${data.targetRegistration?.registrationNumber || record?.bib})`,
+          isError: false,
+        });
+      }
+    } catch (err: any) {
+      const msg = err?.message || "Network error while triggering email.";
+      setRetriggerState((prev) => ({
+        ...prev,
+        [targetKey]: { loading: false, status: "Error", isError: true },
+      }));
+      setGlobalRetriggerMsg({
+        text: msg,
+        isError: true,
+      });
+    }
+  };
 
   const fetchAdminRegistrations = async (codeToUse = passcode) => {
     setLoading(true);
@@ -314,13 +382,47 @@ export default function AdminRegistrationsPage() {
                 </select>
               </div>
 
-              <button
-                onClick={() => fetchAdminRegistrations(passcode)}
-                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-display font-bold uppercase text-navy-950"
-              >
-                🔄 Refresh List
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleRetrigger()}
+                  disabled={retriggerState["latest"]?.loading}
+                  className="px-4 py-2.5 rounded-xl bg-coral-500 hover:bg-coral-600 text-white text-xs font-display font-black uppercase tracking-wider disabled:opacity-50 flex items-center gap-1.5"
+                  title="Retrigger confirmation email for the most recent registration"
+                >
+                  <span>✉️</span>
+                  <span>
+                    {retriggerState["latest"]?.loading
+                      ? "Sending Latest..."
+                      : "Retrigger Latest Email"}
+                  </span>
+                </button>
+                <button
+                  onClick={() => fetchAdminRegistrations(passcode)}
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-display font-bold uppercase text-navy-950"
+                >
+                  🔄 Refresh List
+                </button>
+              </div>
             </div>
+
+            {/* Retrigger Status Notification */}
+            {globalRetriggerMsg && (
+              <div
+                className={`p-4 rounded-2xl text-xs font-semibold flex items-start justify-between gap-3 ${
+                  globalRetriggerMsg.isError
+                    ? "bg-red-50 border border-red-200 text-red-800"
+                    : "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                }`}
+              >
+                <div className="flex-1 whitespace-pre-wrap">{globalRetriggerMsg.text}</div>
+                <button
+                  onClick={() => setGlobalRetriggerMsg(null)}
+                  className="text-slate-400 hover:text-slate-600 font-bold text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
 
             {/* Complete Registrations Table */}
             <div className="bg-white rounded-3xl border border-slate-200 shadow-card overflow-hidden">
@@ -338,12 +440,13 @@ export default function AdminRegistrationsPage() {
                       <th className="py-4 px-4">Emergency Contact</th>
                       <th className="py-4 px-4">Amount Paid</th>
                       <th className="py-4 px-4">Payment / Order ID</th>
+                      <th className="py-4 px-4 text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
                     {filteredRecords.length === 0 ? (
                       <tr>
-                        <td colSpan={10} className="py-12 text-center text-slate-500 text-sm">
+                        <td colSpan={11} className="py-12 text-center text-slate-500 text-sm">
                           No registrations recorded yet. Completed registrations will appear here
                           automatically with full runner details.
                         </td>
@@ -393,6 +496,28 @@ export default function AdminRegistrationsPage() {
                           <td className="py-3.5 px-4 font-mono text-[11px]">
                             <div className="text-navy-900 font-bold">{r.paymentId}</div>
                             {r.orderId && <div className="text-slate-400">{r.orderId}</div>}
+                          </td>
+                          <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                            <button
+                              onClick={() => handleRetrigger(r)}
+                              disabled={retriggerState[r.id]?.loading}
+                              className="px-3 py-1.5 rounded-lg bg-navy-900 hover:bg-navy-800 text-white font-display font-bold text-[11px] uppercase tracking-wide transition-colors disabled:opacity-50"
+                              title="Retrigger confirmation email to participant and organizer"
+                            >
+                              {retriggerState[r.id]?.loading ? "Sending..." : "✉️ Resend"}
+                            </button>
+                            {retriggerState[r.id]?.status && (
+                              <div
+                                className={`text-[10px] mt-1 max-w-[120px] truncate mx-auto ${
+                                  retriggerState[r.id]?.isError
+                                    ? "text-red-600 font-semibold"
+                                    : "text-emerald-600 font-bold"
+                                }`}
+                                title={retriggerState[r.id]?.status}
+                              >
+                                {retriggerState[r.id]?.status}
+                              </div>
+                            )}
                           </td>
                         </tr>
                       ))
