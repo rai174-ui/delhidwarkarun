@@ -11,6 +11,8 @@ export interface EmailSendResult {
   messageId?: string;
   organizerMessageId?: string;
   error?: string;
+  isSandboxRedirect?: boolean;
+  sandboxOwnerEmail?: string;
 }
 
 /**
@@ -307,8 +309,19 @@ async function sendViaResendWithFallback(
   subject: string,
   html: string,
   replyTo: string
-): Promise<{ ok: boolean; id?: string; error?: string }> {
-  const attemptSend = async (fromAddress: string) => {
+): Promise<{
+  ok: boolean;
+  id?: string;
+  error?: string;
+  isSandboxRedirect?: boolean;
+  sandboxOwnerEmail?: string;
+}> {
+  const attemptSend = async (
+    fromAddress: string,
+    recipients: string[] = to,
+    emailSubject: string = subject,
+    emailHtml: string = html
+  ) => {
     try {
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -318,10 +331,10 @@ async function sendViaResendWithFallback(
         },
         body: JSON.stringify({
           from: fromAddress,
-          to,
+          to: recipients,
           reply_to: replyTo,
-          subject,
-          html,
+          subject: emailSubject,
+          html: emailHtml,
         }),
       });
       const data = await res.json();
@@ -331,30 +344,67 @@ async function sendViaResendWithFallback(
     }
   };
 
+  // Attempt 1: Preferred custom domain from address (e.g. noreply@delhidwarkarun.com)
   const firstAttempt = await attemptSend(preferredFrom);
   if (firstAttempt.ok) {
     return { ok: true, id: firstAttempt.data?.id };
   }
 
-  // Fallback to onboarding@resend.dev if preferredFrom fails
+  // Attempt 2: Fallback to Resend default test sender onboarding@resend.dev
   const fallbackFrom = "Delhi Dwarka Run 2027 <onboarding@resend.dev>";
+  let secondAttempt: any = null;
   if (preferredFrom !== fallbackFrom) {
-    const secondAttempt = await attemptSend(fallbackFrom);
+    secondAttempt = await attemptSend(fallbackFrom);
     if (secondAttempt.ok) {
       return { ok: true, id: secondAttempt.data?.id };
     }
-    return {
-      ok: false,
-      error:
-        secondAttempt.data?.message ||
-        firstAttempt.data?.message ||
-        "Resend API error",
-    };
+  }
+
+  // Attempt 3: If Resend sandbox restricts sending to only the account owner's email:
+  // "You can only send testing emails to your own email address (rai.174@gmail.com)..."
+  const rawMsg =
+    secondAttempt?.data?.message || firstAttempt?.data?.message || "";
+  const ownerMatch = rawMsg.match(/to your own email address \(([^)]+)\)/i);
+  const sandboxOwnerEmail = ownerMatch
+    ? ownerMatch[1].trim()
+    : process.env.RESEND_TEST_EMAIL || null;
+
+  if (
+    sandboxOwnerEmail &&
+    !to.map((e) => e.toLowerCase()).includes(sandboxOwnerEmail.toLowerCase())
+  ) {
+    const sandboxBanner = `
+      <div style="background-color:#FFFBEB;border:2px solid #F59E0B;border-radius:12px;padding:16px;margin:16px 0;font-family:sans-serif;color:#92400E;font-size:13px;line-height:1.5;">
+        <strong style="font-size:15px;color:#B45309;">⚠️ RESEND SANDBOX TEST DELIVERY NOTICE</strong><br/>
+        This official confirmation email was originally addressed to: <strong>${to.join(", ")}</strong>.<br/>
+        Because the domain <em>delhidwarkarun.com</em> is not yet verified on <a href="https://resend.com/domains" target="_blank" style="color:#B45309;font-weight:bold;text-decoration:underline;">resend.com/domains</a>, Resend redirected delivery in sandbox mode to your registered account email (<strong>${sandboxOwnerEmail}</strong>).<br/>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed #FCD34D;font-size:12px;">
+          👉 <strong>To send directly to participant and organizer emails:</strong> Verify <code>delhidwarkarun.com</code> in Resend or configure SMTP in Railway Variables.
+        </div>
+      </div>
+    `;
+
+    const sandboxAttempt = await attemptSend(
+      fallbackFrom,
+      [sandboxOwnerEmail],
+      `[SANDBOX TEST for ${to.join(", ")}] ${subject}`,
+      sandboxBanner + html
+    );
+
+    if (sandboxAttempt.ok) {
+      return {
+        ok: true,
+        id: sandboxAttempt.data?.id,
+        isSandboxRedirect: true,
+        sandboxOwnerEmail,
+        error: `Sandbox delivered to ${sandboxOwnerEmail} (verify delhidwarkarun.com to deliver to ${to.join(", ")})`,
+      };
+    }
   }
 
   return {
     ok: false,
-    error: firstAttempt.data?.message || "Resend API error",
+    error: rawMsg || "Resend API error",
   };
 }
 
@@ -374,6 +424,15 @@ export async function sendRegistrationConfirmationEmail(
   const organizerHtml = buildOrganizerNotificationHtml(record);
   const organizerEmail =
     process.env.ORGANIZER_NOTIFICATION_EMAIL || "padam@amigoconnect.com";
+
+  // Check SMTP credentials
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  const smtpPort = Number(process.env.SMTP_PORT || 587);
+  const smtpFrom =
+    process.env.SMTP_FROM ||
+    `Delhi Dwarka Run 2027 <${smtpUser || "padam@amigoconnect.com"}>`;
 
   // Option B: Resend HTTP API
   const resendApiKey = process.env.RESEND_API_KEY;
@@ -402,21 +461,35 @@ export async function sendRegistrationConfirmationEmail(
       );
 
       const hasSentAny = participantRes.ok || organizerRes.ok;
+      const isSandbox = Boolean(
+        participantRes.isSandboxRedirect || organizerRes.isSandboxRedirect
+      );
+      const sandboxOwnerEmail =
+        participantRes.sandboxOwnerEmail || organizerRes.sandboxOwnerEmail;
 
-      return {
-        sent: hasSentAny,
-        participantSent: participantRes.ok,
-        organizerSent: organizerRes.ok,
-        participantError: participantRes.error,
-        organizerError: organizerRes.error,
-        provider: "resend",
-        messageId: participantRes.id,
-        organizerMessageId: organizerRes.id,
-        error:
-          !participantRes.ok || !organizerRes.ok
-            ? `Participant: ${participantRes.error || "OK"} | Organizer: ${organizerRes.error || "OK"}`
-            : undefined,
-      };
+      // If Resend only delivered to sandbox and SMTP credentials are present, fall through to SMTP to reach actual recipients
+      if ((!hasSentAny || isSandbox) && smtpHost && smtpUser && smtpPass) {
+        console.log("Resend in sandbox mode; falling through to SMTP to reach external recipients...");
+      } else {
+        return {
+          sent: hasSentAny,
+          participantSent: participantRes.ok,
+          organizerSent: organizerRes.ok,
+          participantError: participantRes.error,
+          organizerError: organizerRes.error,
+          provider: "resend",
+          messageId: participantRes.id,
+          organizerMessageId: organizerRes.id,
+          isSandboxRedirect: isSandbox,
+          sandboxOwnerEmail,
+          error:
+            !participantRes.ok || !organizerRes.ok
+              ? `Participant: ${participantRes.error || "OK"} | Organizer: ${organizerRes.error || "OK"}`
+              : isSandbox
+              ? `Delivered to ${sandboxOwnerEmail} (Resend Sandbox Mode). Verify delhidwarkarun.com at resend.com/domains to deliver to runner and organizer.`
+              : undefined,
+        };
+      }
     } catch (err: any) {
       console.error("Resend email error:", err);
       // Fall through to SMTP if configured
@@ -424,14 +497,6 @@ export async function sendRegistrationConfirmationEmail(
   }
 
   // Option A: SMTP via Nodemailer (Primary or Fallback)
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
-  const smtpPort = Number(process.env.SMTP_PORT || 587);
-  const smtpFrom =
-    process.env.SMTP_FROM ||
-    `Delhi Dwarka Run 2027 <${smtpUser || "padam@amigoconnect.com"}>`;
-
   if (smtpHost && smtpUser && smtpPass) {
     try {
       const transporter = nodemailer.createTransport({

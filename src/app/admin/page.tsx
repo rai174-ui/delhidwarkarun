@@ -84,13 +84,22 @@ export default function AdminRegistrationsPage() {
         });
       } else {
         const targetEmail = data.targetRegistration?.email || record?.email || "participant";
-        const successMsg = `Email sent successfully to ${targetEmail} and padam@amigoconnect.com!`;
+        const isSandbox = Boolean(data.emailDiagnostics?.isSandboxRedirect);
+        const sandboxEmail = data.emailDiagnostics?.sandboxOwnerEmail || "rai.174@gmail.com";
+
         setRetriggerState((prev) => ({
           ...prev,
-          [targetKey]: { loading: false, status: "Sent!", isError: false },
+          [targetKey]: {
+            loading: false,
+            status: isSandbox ? "Sent (Sandbox)" : "Sent!",
+            isError: false,
+          },
         }));
+
         setGlobalRetriggerMsg({
-          text: `✓ ${successMsg} (Reg #: ${data.targetRegistration?.registrationNumber || record?.bib})`,
+          text: isSandbox
+            ? `⚠️ Resend Sandbox Delivery: Confirmation email for ${data.targetRegistration?.fullName || record?.fullName} (Reg #${data.targetRegistration?.registrationNumber || record?.bib}) was delivered to ${sandboxEmail}.\n\n👉 Next Step to deliver directly to participant (${targetEmail}) and organizer (padam@amigoconnect.com):\nVerify domain 'delhidwarkarun.com' at resend.com/domains or configure SMTP credentials in Railway Variables.`
+            : `✓ Confirmation email sent successfully to ${targetEmail} and padam@amigoconnect.com! (Reg #: ${data.targetRegistration?.registrationNumber || record?.bib})`,
           isError: false,
         });
       }
@@ -423,6 +432,42 @@ export default function AdminRegistrationsPage() {
                 </button>
               </div>
             )}
+
+            {/* Email Domain Setup Guide */}
+            <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 text-xs text-amber-950">
+              <div className="flex items-center justify-between gap-2">
+                <div className="font-bold flex items-center gap-2">
+                  <span>ℹ️</span>
+                  <span>Email Delivery Guide: Delivering Directly to Participants &amp; padam@amigoconnect.com</span>
+                </div>
+                <span className="text-[11px] bg-amber-200/80 px-2 py-0.5 rounded font-mono font-bold text-amber-950">
+                  Resend Test Mode → Live Production
+                </span>
+              </div>
+              <p className="mt-1 text-slate-700 leading-relaxed text-[11.5px]">
+                In test mode with an unverified domain, Resend redirects confirmation receipts safely to your account email (<code className="font-mono font-bold text-navy-950">rai.174@gmail.com</code>). To enable direct delivery to any participant inbox and organizer:
+              </p>
+              <div className="mt-3 pt-3 border-t border-amber-200/70 grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-700">
+                <div className="bg-white/90 p-3 rounded-xl border border-amber-200">
+                  <strong className="text-navy-950 block mb-1">Method 1: Verify Domain on Resend (Recommended)</strong>
+                  <ol className="list-decimal list-inside space-y-1 text-[11px]">
+                    <li>Open <a href="https://resend.com/domains" target="_blank" rel="noreferrer" className="text-blue-600 underline font-semibold">resend.com/domains</a> and click <strong>Add Domain</strong>.</li>
+                    <li>Enter <code className="font-mono text-navy-900">delhidwarkarun.com</code> and add the 3 DNS records to your Hostinger DNS panel.</li>
+                    <li>In Railway Variables, set: <code className="font-mono text-navy-900">RESEND_FROM=Delhi Dwarka Run 2027 &lt;noreply@delhidwarkarun.com&gt;</code></li>
+                  </ol>
+                </div>
+                <div className="bg-white/90 p-3 rounded-xl border border-amber-200">
+                  <strong className="text-navy-950 block mb-1">Method 2: Use Direct Email Hosting (SMTP)</strong>
+                  <p className="text-[11px] mb-1">Add your email credentials in Railway Variables to send without Resend:</p>
+                  <div className="bg-slate-900 text-amber-300 p-2.5 rounded-lg text-[10.5px] font-mono leading-relaxed">
+                    SMTP_HOST=smtp.hostinger.com<br/>
+                    SMTP_PORT=465<br/>
+                    SMTP_USER=padam@amigoconnect.com<br/>
+                    SMTP_PASS=your_email_password
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Complete Registrations Table */}
             <div className="bg-white rounded-3xl border border-slate-200 shadow-card overflow-hidden">
